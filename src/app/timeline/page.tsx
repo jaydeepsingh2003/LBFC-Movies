@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -78,7 +79,7 @@ export default function TimelinePage() {
   }, [debouncedYear, fetchMovies]);
 
   return (
-    <AppLayout>
+    <AppLayout showSidebar={false}>
       <div className="p-4 sm:p-6 md:p-8">
         <div className="space-y-8">
           <header className="space-y-2">
