@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useVideoPlayer } from "@/context/video-provider";
 
 export function VideoPlayer() {
@@ -9,6 +9,7 @@ export function VideoPlayer() {
   return (
     <Dialog open={!!videoId} onOpenChange={(open) => !open && setVideoId(null)}>
       <DialogContent className="max-w-4xl p-0 border-none bg-transparent">
+        <DialogTitle className="sr-only">Movie Trailer</DialogTitle>
         <div className="aspect-video">
           {videoId && (
             <iframe
