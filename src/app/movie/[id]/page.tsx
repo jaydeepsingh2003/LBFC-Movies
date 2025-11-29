@@ -65,7 +65,7 @@ export default function MovieDetailsPage({ params: { id } }: { params: { id: str
 
   if (isLoading) {
     return (
-      <AppLayout>
+      <AppLayout showSidebar={false}>
         <div className="flex justify-center items-center h-screen">
           <Loader2 className="h-32 w-32 animate-spin text-primary" />
         </div>
@@ -75,7 +75,7 @@ export default function MovieDetailsPage({ params: { id } }: { params: { id: str
 
   if (!movie) {
     return (
-      <AppLayout>
+      <AppLayout showSidebar={false}>
         <div className="text-center py-16">
           <h2 className="text-2xl font-bold">Movie not found</h2>
           <p className="text-muted-foreground mt-2">We couldn't find details for this movie.</p>

@@ -64,7 +64,7 @@ export default function ProfilePage({ params }: { params: { userId: string } }) 
 
   if (isLoading) {
     return (
-      <AppLayout>
+      <AppLayout showSidebar={false}>
         <div className="flex justify-center items-center h-screen">
           <Loader2 className="h-32 w-32 animate-spin text-primary" />
         </div>
@@ -74,7 +74,7 @@ export default function ProfilePage({ params }: { params: { userId: string } }) 
 
   if (!userProfile) {
     return (
-      <AppLayout>
+      <AppLayout showSidebar={false}>
         <div className="text-center py-16">
           <h2 className="text-2xl font-bold">User not found</h2>
         </div>
