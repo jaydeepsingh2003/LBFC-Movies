@@ -31,7 +31,10 @@ export default function HeroSection() {
             const heroMovieTitles = [
                 "Dune: Part Two",
                 "Godzilla x Kong: The New Empire",
-                "Kung Fu Panda 4"
+                "Kung Fu Panda 4",
+                "Furiosa: A Mad Max Saga",
+                "The Fall Guy",
+                "Inside Out 2"
             ];
             try {
                 const searchPromises = heroMovieTitles.map(title => searchMovies(title));
