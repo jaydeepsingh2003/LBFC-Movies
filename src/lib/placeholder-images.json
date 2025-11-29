@@ -95,6 +95,12 @@
       "description": "Hero image",
       "imageUrl": "https://images.unsplash.com/photo-1707312900236-12d6fefd2bbb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxlcGljJTIwbW92aWUlMjBzY2VuZXxlbnwwfHx8fDE3NjQ0MDYwODl8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "epic movie scene"
+    },
+    {
+      "id": "franchise-1",
+      "description": "Franchise hero image",
+      "imageUrl": "https://images.unsplash.com/photo-1511875762315-c36d7d4f4245?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhY3Rpb24lMjBoZXJvfGVufDB8fHx8MTc2NDQ1MjUwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "action hero"
     }
   ]
 }

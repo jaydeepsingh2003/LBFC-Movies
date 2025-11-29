@@ -7,6 +7,7 @@ import SmartPlaylistSection from '@/components/sections/smart-playlist-section';
 import NewsFeedSection from '@/components/sections/news-feed-section';
 import FavoriteArtistsSection from '@/components/sections/favorite-artists-section';
 import LanguagePicksSection from '@/components/sections/language-picks-section';
+import FranchiseFocusSection from '@/components/sections/franchise-focus-section';
 
 export default function DashboardPage() {
   return (
@@ -14,6 +15,7 @@ export default function DashboardPage() {
       <div className="flex flex-col">
         <HeroSection />
         <div className="p-4 sm:p-6 md:p-8 space-y-12">
+            <FranchiseFocusSection />
             <ForYouSection />
             <TrendingSection />
             <MoodSection />
