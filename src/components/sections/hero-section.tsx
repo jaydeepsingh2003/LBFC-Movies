@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Info, PlayCircle } from "lucide-react";
 import Image from 'next/image';
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
-import { getPosterUrl, searchMovies } from "@/lib/tmdb.client";
+import { searchMovies } from "@/lib/tmdb.client";
 import { Movie } from "@/lib/tmdb";
 import { Skeleton } from "../ui/skeleton";
 import { getBackdropUrl } from "@/lib/tmdb.client";
@@ -15,7 +15,6 @@ import { getBackdropUrl } from "@/lib/tmdb.client";
 
 interface MovieWithImages extends Movie {
     backdropUrl: string | null;
-    posterUrl: string | null;
 }
 
 export default function HeroSection() {
@@ -52,9 +51,8 @@ export default function HeroSection() {
                         poster_path: movie?.poster_path ?? null,
                         backdrop_path: movie?.backdrop_path ?? null,
                         backdropUrl: movie ? getBackdropUrl(movie.backdrop_path) : null,
-                        posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
                     };
-                }).filter(movie => movie.backdropUrl); // Only include movies with backdrops
+                }).filter((movie): movie is MovieWithImages => !!movie.backdropUrl);
                 setMovies(moviesData);
             } catch (error) {
                 console.error("Failed to fetch hero movies:", error);
