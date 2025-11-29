@@ -35,7 +35,7 @@ export function SidebarNav() {
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <SidebarMenuButton href="#" tooltip="Playlists" {...buttonProps}>
+                <SidebarMenuButton href="/playlists" isActive={pathname === '/playlists'} tooltip="Playlists" {...buttonProps}>
                     <ListVideo />
                     Playlists
                 </SidebarMenuButton>
