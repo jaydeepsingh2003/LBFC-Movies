@@ -25,6 +25,7 @@ export async function searchMovies(query: string): Promise<Movie[]> {
         accept: 'application/json',
         Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
       },
+      cache: 'no-store',
     });
 
     if (!response.ok) {
