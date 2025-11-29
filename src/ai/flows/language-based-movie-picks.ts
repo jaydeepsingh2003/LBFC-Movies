@@ -1,10 +1,10 @@
 'use server';
 
 /**
- * @fileOverview This file defines a Genkit flow for providing movie recommendations based on user's preferred languages.
+ * @fileOverview This file defines a Genkit flow for providing movie recommendations based on user's preferred languages and optionally by year.
  *
- * The flow takes a user's preferred languages as input and returns a list of movie recommendations in those languages.
- * @param input - An object containing the user's preferred languages.
+ * The flow takes a user's preferred languages and an optional year as input and returns a list of movie recommendations.
+ * @param input - An object containing the user's preferred languages and optional year.
  * @returns An object containing a list of movie recommendations.
  */
 
@@ -16,6 +16,7 @@ const LanguageBasedMoviePicksInputSchema = z.object({
     .array(z.string())
     .describe('An array of the user preferred languages.'),
   numberOfRecommendations: z.number().optional().default(15),
+  year: z.number().optional().describe('The release year of the movies to recommend.')
 });
 export type LanguageBasedMoviePicksInput = z.infer<
   typeof LanguageBasedMoviePicksInputSchema
@@ -40,7 +41,7 @@ const prompt = ai.definePrompt({
   name: 'languageBasedMoviePicksPrompt',
   input: {schema: LanguageBasedMoviePicksInputSchema},
   output: {schema: LanguageBasedMoviePicksOutputSchema},
-  prompt: `You are a movie expert. Recommend a list of {{numberOfRecommendations}} movies in the following languages: {{{languages}}}. Return a JSON array of strings.`,
+  prompt: `You are a movie expert. Recommend a list of {{numberOfRecommendations}} movies in the following languages: {{{languages}}}{{#if year}} from the year {{year}}{{/if}}. Return a JSON array of strings.`,
 });
 
 const languageBasedMoviePicksFlow = ai.defineFlow(
