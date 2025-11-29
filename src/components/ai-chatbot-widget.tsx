@@ -28,7 +28,7 @@ export function AiChatbotWidget() {
         setIsLoading(true);
         setTimeout(() => {
             setMessages([
-                { id: "1", role: "bot", text: "Hello! I'm FlickRecs' AI assistant. How can I help you find a movie today?" }
+                { id: "1", role: "bot", text: "Hello! I'm LBFC's AI assistant. How can I help you find a movie today?" }
             ]);
             setIsLoading(false);
         }, 1000);

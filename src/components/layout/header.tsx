@@ -15,7 +15,7 @@ export function Header({ showSidebarTrigger = false }: { showSidebarTrigger?: bo
             {showSidebarTrigger && <SidebarTrigger className="md:hidden" />}
             <div className="flex items-center gap-2">
                  <Film className="size-8 text-primary" />
-                 <h1 className="font-headline text-2xl font-bold text-primary tracking-wider hidden md:block">FLIX</h1>
+                 <h1 className="font-headline text-2xl font-bold text-primary tracking-wider hidden md:block">LBFC</h1>
             </div>
             <div className="ml-6 hidden md:flex">
                 <SidebarNav />

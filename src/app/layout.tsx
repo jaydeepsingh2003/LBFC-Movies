@@ -6,7 +6,7 @@ import { AiChatbotWidget } from '@/components/ai-chatbot-widget';
 import { VideoPlayerProvider } from '@/context/video-provider';
 
 export const metadata: Metadata = {
-  title: 'FlickRecs',
+  title: 'LBFC',
   description: 'AI-Powered Movie Recommendations',
 };
 

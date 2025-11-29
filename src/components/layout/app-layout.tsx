@@ -17,7 +17,7 @@ export function AppLayout({ children, showSidebar = true }: { children: React.Re
               <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10 rounded-lg">
                   <Film className="size-6" />
               </Button>
-              <h1 className="font-headline text-2xl font-bold text-primary tracking-wider">FLIX</h1>
+              <h1 className="font-headline text-2xl font-bold text-primary tracking-wider">LBFC</h1>
             </div>
           </SidebarHeader>
           <SidebarContent>
