@@ -8,6 +8,7 @@ import NewsFeedSection from '@/components/sections/news-feed-section';
 import FavoriteArtistsSection from '@/components/sections/favorite-artists-section';
 import LanguagePicksSection from '@/components/sections/language-picks-section';
 import FranchiseFocusSection from '@/components/sections/franchise-focus-section';
+import HindiMoviesSection from '@/components/sections/hindi-movies-section';
 
 export default function DashboardPage() {
   return (
@@ -18,6 +19,7 @@ export default function DashboardPage() {
             <FranchiseFocusSection />
             <ForYouSection />
             <TrendingSection />
+            <HindiMoviesSection />
             <MoodSection />
             <FavoriteArtistsSection />
             <LanguagePicksSection />

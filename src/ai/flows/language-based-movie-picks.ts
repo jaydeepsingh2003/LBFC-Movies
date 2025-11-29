@@ -15,6 +15,7 @@ const LanguageBasedMoviePicksInputSchema = z.object({
   languages: z
     .array(z.string())
     .describe('An array of the user preferred languages.'),
+  numberOfRecommendations: z.number().optional().default(10),
 });
 export type LanguageBasedMoviePicksInput = z.infer<
   typeof LanguageBasedMoviePicksInputSchema
@@ -39,7 +40,7 @@ const prompt = ai.definePrompt({
   name: 'languageBasedMoviePicksPrompt',
   input: {schema: LanguageBasedMoviePicksInputSchema},
   output: {schema: LanguageBasedMoviePicksOutputSchema},
-  prompt: `You are a movie expert. Recommend a list of 10 movies in the following languages: {{{languages}}}. Return a JSON array of strings.`,
+  prompt: `You are a movie expert. Recommend a list of {{numberOfRecommendations}} movies in the following languages: {{{languages}}}. Return a JSON array of strings.`,
 });
 
 const languageBasedMoviePicksFlow = ai.defineFlow(
