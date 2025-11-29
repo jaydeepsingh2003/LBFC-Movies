@@ -34,7 +34,10 @@ export default function HeroSection() {
                 "Kung Fu Panda 4",
                 "Furiosa: A Mad Max Saga",
                 "The Fall Guy",
-                "Inside Out 2"
+                "Inside Out 2",
+                "Kingdom of the Planet of the Apes",
+                "Bad Boys: Ride or Die",
+                "A Quiet Place: Day One",
             ];
             try {
                 const searchPromises = heroMovieTitles.map(title => searchMovies(title));
@@ -51,7 +54,7 @@ export default function HeroSection() {
                         backdropUrl: movie ? getBackdropUrl(movie.backdrop_path) : null,
                         posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
                     };
-                });
+                }).filter(movie => movie.backdropUrl); // Only include movies with backdrops
                 setMovies(moviesData);
             } catch (error) {
                 console.error("Failed to fetch hero movies:", error);
