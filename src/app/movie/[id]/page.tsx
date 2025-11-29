@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getMovieDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
 import type { MovieDetails, CastMember, CrewMember, Review } from '@/lib/tmdb';
 import { getMovieTrivia } from '@/ai/flows/movie-trivia';
@@ -24,7 +25,9 @@ interface Trivia {
     goofs: string[];
 }
 
-export default function MovieDetailsPage({ params: { id } }: { params: { id: string } }) {
+export default function MovieDetailsPage({ params: paramsProp }: { params: { id: string } }) {
+  const params = React.use(paramsProp);
+  const { id } = params;
   const [movie, setMovie] = useState<MovieDetailsWithMedia | null>(null);
   const [trivia, setTrivia] = useState<Trivia | null>(null);
   const [isLoading, setIsLoading] = useState(true);
