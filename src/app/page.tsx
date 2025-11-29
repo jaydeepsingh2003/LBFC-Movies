@@ -1,16 +1,16 @@
+
 import { AppLayout } from '@/components/layout/app-layout';
 import HeroSection from '@/components/sections/hero-section';
 import ForYouSection from '@/components/sections/for-you-section';
 import MoodSection from '@/components/sections/mood-section';
 import TrendingSection from '@/components/sections/trending-section';
-import NewsFeedSection from '@/components/sections/news-feed-section';
 import FavoriteArtistsSection from '@/components/sections/favorite-artists-section';
 import LanguagePicksSection from '@/components/sections/language-picks-section';
 import FranchiseFocusSection from '@/components/sections/franchise-focus-section';
 import HindiMoviesSection from '@/components/sections/hindi-movies-section';
 import KannadaMoviesSection from '@/components/sections/kannada-movies-section';
 import TamilMoviesSection from '@/components/sections/tamil-movies-section';
-import MovieMatchmakerSection from '@/components/sections/movie-matchmaker-section';
+import MovieMatchmakerSection from '@/components/movie-matchmaker-section';
 
 export default function DashboardPage() {
   return (
@@ -28,7 +28,6 @@ export default function DashboardPage() {
             <FavoriteArtistsSection />
             <LanguagePicksSection />
             <MovieMatchmakerSection />
-            <NewsFeedSection />
         </div>
       </div>
     </AppLayout>

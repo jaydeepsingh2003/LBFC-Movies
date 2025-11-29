@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Compass, Home, ListVideo, Newspaper, Users, History } from "lucide-react";
@@ -47,7 +48,7 @@ export function SidebarNav() {
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <SidebarMenuButton href="#" tooltip="News" {...buttonProps}>
+                <SidebarMenuButton href="/news" isActive={pathname === '/news'} tooltip="News" {...buttonProps}>
                     <Newspaper />
                     News
                 </SidebarMenuButton>
