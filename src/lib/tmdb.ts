@@ -28,6 +28,16 @@ export interface CrewMember {
     profile_path: string | null;
 }
 
+export interface Review {
+    author: string;
+    content: string;
+    id: string;
+    author_details: {
+        avatar_path: string | null;
+        rating: number | null;
+    };
+}
+
 export interface MovieDetails extends Movie {
     genres: { id: number; name: string }[];
     runtime: number;
@@ -39,6 +49,9 @@ export interface MovieDetails extends Movie {
     };
     videos: {
         results: TmdbVideo[];
+    };
+    reviews: {
+        results: Review[];
     };
 }
 

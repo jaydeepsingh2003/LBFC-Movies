@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { getMovieDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
-import type { MovieDetails, CastMember, CrewMember } from '@/lib/tmdb';
+import type { MovieDetails, CastMember, CrewMember, Review } from '@/lib/tmdb';
 import { getMovieTrivia } from '@/ai/flows/movie-trivia';
 import { AppLayout } from '@/components/layout/app-layout';
 import Image from 'next/image';
-import { Loader2, PlayCircle, Star } from 'lucide-react';
+import { Loader2, PlayCircle, Star, MessageSquareQuote } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
 import { Button } from '@/components/ui/button';
@@ -102,6 +102,35 @@ export default function MovieDetailsPage({ params }: { params: { id: string } })
       ))}
     </div>
   );
+  
+  const renderReviews = (reviews: Review[], maxItems = 3) => (
+    <div className="space-y-4">
+        {reviews.slice(0, maxItems).map(review => (
+            <Card key={review.id} className="bg-card/50">
+                <CardHeader>
+                    <div className="flex items-center gap-3">
+                        <Avatar>
+                            <AvatarImage src={review.author_details.avatar_path ? getPosterUrl(review.author_details.avatar_path) : undefined} />
+                            <AvatarFallback>{review.author.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <p className="font-semibold">{review.author}</p>
+                            {review.author_details.rating && (
+                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                    <Star className="w-3 h-3 text-yellow-400" />
+                                    <span>{review.author_details.rating} / 10</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-sm text-foreground/80 line-clamp-4 italic">"{review.content}"</p>
+                </CardContent>
+            </Card>
+        ))}
+    </div>
+  );
 
   return (
     <AppLayout showSidebar={false}>
@@ -146,8 +175,15 @@ export default function MovieDetailsPage({ params }: { params: { id: string } })
                  <span className="text-muted-foreground">&#8226;</span>
                 <span className="text-muted-foreground">{Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m</span>
             </div>
+            
+            {movie.reviews && movie.reviews.results.length > 0 && (
+                <section className="space-y-4 pt-8">
+                    <h2 className="font-headline text-2xl font-bold">Critical Acclaim</h2>
+                    {renderReviews(movie.reviews.results)}
+                </section>
+            )}
 
-            <section className="space-y-4">
+            <section className="space-y-4 pt-8">
               <h2 className="font-headline text-2xl font-bold">Cast</h2>
               {renderCreditList(movie.credits.cast)}
             </section>
