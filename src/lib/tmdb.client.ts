@@ -16,13 +16,7 @@ export async function searchMovies(query: string): Promise<Movie[]> {
   const url = `${TMDB_API_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false&language=en-US&page=1`;
   
   try {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        accept: 'application/json',
-      },
-      cache: 'no-store',
-    });
+    const response = await fetch(url);
 
     if (!response.ok) {
       console.error(`TMDB API request failed with status ${response.status}`);
