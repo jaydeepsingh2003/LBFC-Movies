@@ -10,3 +10,4 @@ import '@/ai/flows/mood-based-recommendations.ts';
 import '@/ai/flows/smart-playlists.ts';
 import '@/ai/flows/language-based-movie-picks.ts';
 import '@/ai/flows/personalized-recommendations-based-on-viewing-history.ts';
+import '@/ai/flows/advanced-movie-search.ts';
