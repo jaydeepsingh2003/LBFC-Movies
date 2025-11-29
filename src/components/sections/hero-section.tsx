@@ -39,7 +39,9 @@ export default function HeroSection() {
                 "A Quiet Place: Day One",
                 "Civil War",
                 "The Garfield Movie",
-                "IF"
+                "IF",
+                "Challengers",
+                "The Beekeeper"
             ];
             try {
                 const searchPromises = heroMovieTitles.map(title => searchMovies(title));
