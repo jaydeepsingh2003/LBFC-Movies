@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -32,7 +33,7 @@ interface DiscoverFiltersProps {
 
 export default function DiscoverFilters({ onSearch, isLoading }: DiscoverFiltersProps) {
   const [filters, setFilters] = useState<FilterState>({
-    genre: '',
+    genre: 'any',
     releaseYear: [1980, currentYear],
     actors: '',
     directors: '',
@@ -58,7 +59,10 @@ export default function DiscoverFilters({ onSearch, isLoading }: DiscoverFilters
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch(filters);
+    onSearch({
+        ...filters,
+        genre: filters.genre === 'any' ? '' : filters.genre,
+    });
   };
 
   return (
@@ -77,7 +81,7 @@ export default function DiscoverFilters({ onSearch, isLoading }: DiscoverFilters
                   <SelectValue placeholder="Any Genre" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Any Genre</SelectItem>
+                  <SelectItem value="any">Any Genre</SelectItem>
                   {genres.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
                 </SelectContent>
               </Select>

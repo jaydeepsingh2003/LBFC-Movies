@@ -1,3 +1,5 @@
+"use client";
+
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { MovieCard } from "./movie-card";
 import { Movie } from "@/lib/tmdb";
