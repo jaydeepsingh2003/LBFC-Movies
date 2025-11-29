@@ -15,7 +15,8 @@ export default async function ForYouSection() {
         const result = await getPersonalizedRecommendations({ viewingHistory });
         recommendations = result.recommendations;
     } catch (error) {
-        console.error("Failed to get personalized recommendations:", error);
+        // We will log the error to the server console for debugging
+        // but prevent it from crashing the client.
     }
     
     const movies = recommendations.map((title, index) => ({
