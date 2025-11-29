@@ -14,6 +14,7 @@ import { useDebounce } from '@/hooks/use-debounce';
 interface MovieWithPoster extends Partial<Movie> {
   posterUrl: string | null;
   title: string;
+  id: number;
 }
 
 const currentYear = new Date().getFullYear();
@@ -119,4 +120,3 @@ export default function TimelinePage() {
     </AppLayout>
   );
 }
-

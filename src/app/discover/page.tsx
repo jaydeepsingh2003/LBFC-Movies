@@ -29,10 +29,10 @@ export default function DiscoverPage() {
 
       const searchInput = {
         genre: filters.genre,
-        releaseYear: filters.releaseYear,
+        releaseYear: filters.releaseYear as [number, number],
         actors,
         directors,
-        rating: filters.rating,
+        rating: filters.rating as [number, number],
         numberOfRecommendations: 24,
       };
 
@@ -105,7 +105,7 @@ export default function DiscoverPage() {
             ) : results.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                     {results.map((movie) => (
-                        <MovieCard key={movie.id} title={movie.title} posterUrl={movie.posterUrl} trailerUrl={movie.trailerUrl} />
+                        <MovieCard key={movie.id} id={movie.id} title={movie.title} posterUrl={movie.posterUrl} trailerUrl={movie.trailerUrl} />
                     ))}
                 </div>
             ) : (

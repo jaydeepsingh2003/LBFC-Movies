@@ -49,13 +49,14 @@ export default function DiscoverFilters({ onSearch, isLoading }: DiscoverFilters
     setFilters(prev => ({ ...prev, genre: value }));
   };
 
-  const handleYearChange = (value: [number, number]) => {
-    setFilters(prev => ({ ...prev, releaseYear: value }));
+  const handleYearChange = (value: number[]) => {
+    setFilters(prev => ({ ...prev, releaseYear: value as [number, number] }));
   };
 
-  const handleRatingChange = (value: [number, number]) => {
-    setFilters(prev => ({ ...prev, rating: value }));
+  const handleRatingChange = (value: number[]) => {
+    setFilters(prev => ({ ...prev, rating: value as [number, number] }));
   };
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -7,6 +7,7 @@ import { Movie } from "@/lib/tmdb";
 interface MovieWithPoster extends Partial<Movie> {
   posterUrl: string | null;
   title: string;
+  id: number;
 }
 
 interface MovieCarouselProps {
@@ -30,7 +31,7 @@ export function MovieCarousel({ title, movies }: MovieCarouselProps) {
           <CarouselContent className="-ml-2">
             {movies.map((movie, index) => (
               <CarouselItem key={movie.id || index} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 pl-2">
-                <MovieCard title={movie.title} posterUrl={movie.posterUrl} trailerUrl={movie.trailerUrl} />
+                <MovieCard id={movie.id} title={movie.title} posterUrl={movie.posterUrl} trailerUrl={movie.trailerUrl} />
               </CarouselItem>
             ))}
           </CarouselContent>
