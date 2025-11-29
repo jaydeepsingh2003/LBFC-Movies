@@ -1,6 +1,6 @@
 import { getPersonalizedRecommendations } from "@/ai/flows/personalized-recommendations-based-on-viewing-history";
 import { MovieCarousel } from "../movie-carousel";
-import { searchMovies, getPosterUrl } from "@/lib/tmdb";
+import { searchMovies, getPosterUrl, getMovieVideos } from "@/lib/tmdb";
 import { Movie } from "@/lib/tmdb";
 
 export default async function ForYouSection() {
@@ -17,20 +17,31 @@ export default async function ForYouSection() {
         const result = await getPersonalizedRecommendations({ viewingHistory, numberOfRecommendations: 10 });
         recommendations = result.recommendations;
     } catch (error) {
-        // We will log the error to the server console for debugging
-        // but prevent it from crashing the client.
+        console.error("AI recommendations error:", error)
     }
     
-    const moviePromises = recommendations.map(title => searchMovies(title));
-    const searchResults = await Promise.all(moviePromises);
-    
-    const moviesData = searchResults.map((result, index) => {
-        const movie = result.length > 0 ? result[0] : null;
-        return {
-            title: movie ? movie.title : recommendations[index],
-            posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
+    const moviePromises = recommendations.map(async (title) => {
+        const searchResults = await searchMovies(title);
+        const movie = searchResults.length > 0 ? searchResults[0] : null;
+        if (movie) {
+            const videos = await getMovieVideos(movie.id);
+            const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
+            movie.trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
         }
+        return movie;
     });
+    
+    const moviesData = (await Promise.all(moviePromises))
+        .map((movie, index) => ({
+            id: movie?.id,
+            title: movie ? movie.title : recommendations[index],
+            poster_path: movie?.poster_path || null,
+            overview: movie?.overview || '',
+            backdrop_path: movie?.backdrop_path || null,
+            posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
+            trailerUrl: movie?.trailerUrl,
+        }));
+
 
     return <MovieCarousel title="For You" movies={moviesData} />;
 }

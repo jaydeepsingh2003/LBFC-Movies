@@ -1,4 +1,4 @@
-import { getPosterUrl, searchMovies } from "@/lib/tmdb";
+import { getMovieVideos, getPosterUrl, searchMovies } from "@/lib/tmdb";
 import { MovieCarousel } from "../movie-carousel";
 
 export default async function FranchiseFocusSection() {
@@ -13,16 +13,26 @@ export default async function FranchiseFocusSection() {
 
     let moviesData = [];
     try {
-        const searchPromises = franchiseMovies.map(title => searchMovies(title));
-        const searchResults = await Promise.all(searchPromises);
+        const searchPromises = franchiseMovies.map(async (title) => {
+            const searchResults = await searchMovies(title);
+            const movie = searchResults.length > 0 ? searchResults[0] : null;
+            if (movie) {
+                const videos = await getMovieVideos(movie.id);
+                const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
+                movie.trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
+            }
+            return movie;
+        });
 
-        moviesData = searchResults.map((result, index) => {
-            const movie = result.length > 0 ? result[0] : null;
+        const resolvedMovies = await Promise.all(searchPromises);
+
+        moviesData = resolvedMovies.map((movie, index) => {
             return {
                 id: movie?.id,
                 title: movie ? movie.title : franchiseMovies[index],
                 posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
-                overview: movie?.overview || ''
+                overview: movie?.overview || '',
+                trailerUrl: movie?.trailerUrl,
             };
         });
 

@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Loader2, Globe } from "lucide-react"
 import { Movie } from "@/lib/tmdb"
-import { getPosterUrl, searchMovies } from "@/lib/tmdb.client"
+import { getPosterUrl, searchMovies, getMovieVideos } from "@/lib/tmdb.client"
 
 const availableLanguages = ["English", "Spanish", "French", "Japanese", "Korean", "Hindi", "Kannada"];
 
@@ -45,17 +45,24 @@ export default function LanguagePicksSection() {
     try {
       const result = await languageBasedMoviePicks({ languages: selectedLanguages });
       
-      const moviePromises = result.movieRecommendations.map(title => searchMovies(title));
-      const searchResults = await Promise.all(moviePromises);
+      const moviePromises = result.movieRecommendations.map(async (title) => {
+        const searchResults = await searchMovies(title);
+        const movie = searchResults.length > 0 ? searchResults[0] : null;
+        if (movie) {
+            const videos = await getMovieVideos(movie.id);
+            const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
+            movie.trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
+        }
+        return movie;
+      });
 
-      const moviesData = searchResults.map((searchResult, index) => {
-        const movie = searchResult.length > 0 ? searchResult[0] : null;
-        return {
+      const moviesData = (await Promise.all(moviePromises))
+        .map((movie, index) => ({
           ...(movie || { title: result.movieRecommendations[index], poster_path: null, id: 0, overview: "" }),
           title: movie ? movie.title : result.movieRecommendations[index],
           posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
-        }
-      });
+          trailerUrl: movie?.trailerUrl
+        }));
       
       setRecommendations(moviesData);
     } catch (error) {

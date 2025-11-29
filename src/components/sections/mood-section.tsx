@@ -7,7 +7,7 @@ import { getMoodBasedRecommendations } from "@/ai/flows/mood-based-recommendatio
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { Loader2 } from "lucide-react"
-import { getPosterUrl, searchMovies } from "@/lib/tmdb.client"
+import { getPosterUrl, searchMovies, getMovieVideos } from "@/lib/tmdb.client"
 import { Movie } from "@/lib/tmdb"
 
 const moods = ["Happy", "Sad", "Adventurous", "Romantic", "Thrilling", "Funny"];
@@ -29,17 +29,25 @@ export default function MoodSection() {
     try {
       const result = await getMoodBasedRecommendations({ mood })
       
-      const moviePromises = result.movieSuggestions.map(title => searchMovies(title));
-      const searchResults = await Promise.all(moviePromises);
-      
-      const moviesData = searchResults.map((searchResult, index) => {
-          const movie = searchResult.length > 0 ? searchResult[0] : null;
-          return {
-              ...(movie || { title: result.movieSuggestions[index], poster_path: null, id: 0, overview: "" }),
-              title: movie ? movie.title : result.movieSuggestions[index],
-              posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
-          }
+      const moviePromises = result.movieSuggestions.map(async (title) => {
+        const searchResults = await searchMovies(title);
+        const movie = searchResults.length > 0 ? searchResults[0] : null;
+        if (movie) {
+            const videos = await getMovieVideos(movie.id);
+            const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
+            movie.trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
+        }
+        return movie;
       });
+
+      const moviesData = (await Promise.all(moviePromises))
+        .map((movie, index) => ({
+            ...(movie || { title: result.movieSuggestions[index], poster_path: null, id: 0, overview: "" }),
+            title: movie ? movie.title : result.movieSuggestions[index],
+            posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
+            trailerUrl: movie?.trailerUrl
+        }));
+
       setRecommendations(moviesData)
 
     } catch (error) {

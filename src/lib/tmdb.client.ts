@@ -7,6 +7,17 @@ const TMDB_API_KEY = "2dc0bd12c7bd63b2c691d3a64f3a3db7";
 const TMDB_IMAGE_BASE_URL_POSTER = 'https://image.tmdb.org/t/p/w500';
 const TMDB_IMAGE_BASE_URL_BACKDROP = 'https://image.tmdb.org/t/p/w1280';
 
+interface TmdbVideo {
+  id: string;
+  iso_639_1: string;
+  iso_3166_1: string;
+  key: string;
+  name: string;
+  site: string;
+  size: number;
+  type: string;
+  official: boolean;
+}
 
 export async function searchMovies(query: string): Promise<Movie[]> {
   if (!TMDB_API_KEY) {
@@ -29,6 +40,27 @@ export async function searchMovies(query: string): Promise<Movie[]> {
     return [];
   }
 }
+
+export async function getMovieVideos(movieId: number): Promise<TmdbVideo[]> {
+    if (!TMDB_API_KEY) {
+      console.error('TMDB_API_KEY is not set. API requests will be skipped.');
+      return [];
+    }
+  
+    const url = `/api/tmdb/3/movie/${movieId}/videos?api_key=${TMDB_API_KEY}&language=en-US`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error(`TMDB API request for videos failed with status ${response.status}`);
+        return [];
+      }
+      const data = await response.json();
+      return data.results;
+    } catch (error) {
+      console.error('Error fetching movie videos from TMDB API via proxy:', error);
+      return [];
+    }
+  }
 
 export function getPosterUrl(path: string | null) {
   return path ? `${TMDB_IMAGE_BASE_URL_POSTER}${path}` : null;
