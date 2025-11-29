@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -118,9 +117,12 @@ export default function MovieMatchmakerSection() {
           <div className="flex justify-center">
             <div className="w-full max-w-xs">
                 <MovieCard
+                    id={result.id}
                     title={result.title}
                     posterUrl={result.posterUrl}
                     trailerUrl={result.trailerUrl}
+                    overview={result.overview}
+                    poster_path={result.poster_path}
                 />
             </div>
           </div>

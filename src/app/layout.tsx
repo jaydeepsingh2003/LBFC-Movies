@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AiChatbotWidget } from '@/components/ai-chatbot-widget';
 import { VideoPlayerProvider } from '@/context/video-provider';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
   title: 'LBFC',
@@ -25,13 +26,15 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <VideoPlayerProvider>
-          <SidebarProvider>
-              {children}
-          </SidebarProvider>
-          <AiChatbotWidget />
-          <Toaster />
-        </VideoPlayerProvider>
+          <FirebaseClientProvider>
+            <VideoPlayerProvider>
+              <SidebarProvider>
+                  {children}
+              </SidebarProvider>
+              <AiChatbotWidget />
+              <Toaster />
+            </VideoPlayerProvider>
+          </FirebaseClientProvider>
       </body>
     </html>
   );
