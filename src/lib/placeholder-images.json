@@ -1,3 +1,94 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "movie-poster-1",
+      "description": "Abstract movie poster 1",
+      "imageUrl": "https://images.unsplash.com/photo-1655006852875-7912caa28e8e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzY2ktZmklMjBtb3ZpZXxlbnwwfHx8fDE3NjQzNDQ1MzR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sci-fi movie"
+    },
+    {
+      "id": "movie-poster-2",
+      "description": "Abstract movie poster 2",
+      "imageUrl": "https://images.unsplash.com/photo-1764197944213-3beb56dcf9b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxkcmFtYSUyMGZpbG18ZW58MHx8fHwxNzY0MzUzOTg1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "drama film"
+    },
+    {
+      "id": "movie-poster-3",
+      "description": "Abstract movie poster 3",
+      "imageUrl": "https://images.unsplash.com/photo-1635281844773-dc254011367f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhY3Rpb24lMjBtb3ZpZXxlbnwwfHx8fDE3NjQzMTkwMDB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "action movie"
+    },
+    {
+      "id": "movie-poster-4",
+      "description": "Abstract movie poster 4",
+      "imageUrl": "https://images.unsplash.com/photo-1764197944213-3beb56dcf9b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjb21lZHklMjBmaWxtfGVufDB8fHx8MTc2NDI5NzQ4M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "comedy film"
+    },
+    {
+      "id": "movie-poster-5",
+      "description": "Abstract movie poster 5",
+      "imageUrl": "https://images.unsplash.com/photo-1563905463861-7d77975b3a44?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8aG9ycm9yJTIwbW92aWV8ZW58MHx8fHwxNzY0MzYwMjUwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "horror movie"
+    },
+    {
+      "id": "movie-poster-6",
+      "description": "Abstract movie poster 6",
+      "imageUrl": "https://images.unsplash.com/photo-1579519904645-8638edbbdf5b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxmYW50YXN5JTIwbW92aWV8ZW58MHx8fHwxNzY0MzkzNTE1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fantasy movie"
+    },
+    {
+      "id": "movie-poster-7",
+      "description": "Abstract movie poster 7",
+      "imageUrl": "https://images.unsplash.com/photo-1624644722923-220e7c723aea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cm9tYW5jZSUyMG1vdmllfGVufDB8fHx8MTc2NDQwNDI1MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "romance movie"
+    },
+    {
+      "id": "movie-poster-8",
+      "description": "Abstract movie poster 8",
+      "imageUrl": "https://images.unsplash.com/photo-1758525862392-1b25015f3fe1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx0aHJpbGxlciUyMG1vdmllfGVufDB8fHx8MTc2NDM3Nzk5M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "thriller movie"
+    },
+    {
+      "id": "movie-poster-9",
+      "description": "Abstract movie poster 9",
+      "imageUrl": "https://images.unsplash.com/photo-1632670535523-161b063d84e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkb2N1bWVudGFyeSUyMGZpbG18ZW58MHx8fHwxNzY0MzYwMjUxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "documentary film"
+    },
+    {
+      "id": "movie-poster-10",
+      "description": "Abstract movie poster 10",
+      "imageUrl": "https://images.unsplash.com/photo-1759335858774-efa2e81e466c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhbmltYXRlZCUyMG1vdmllfGVufDB8fHx8MTc2NDQwNTY1NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "animated movie"
+    },
+    {
+      "id": "avatar-1",
+      "description": "User avatar 1",
+      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cGVyc29uJTIwc21pbGluZ3xlbnwwfHx8fDE3NjQzNDcwMjN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person smiling"
+    },
+    {
+      "id": "avatar-2",
+      "description": "User avatar 2",
+      "imageUrl": "https://images.unsplash.com/photo-1557053908-4793c484d06f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NDM3NDYyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "news-1",
+      "description": "News article thumbnail 1",
+      "imageUrl": "https://images.unsplash.com/photo-1604085558041-55eab7044eaf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjaW5lbWElMjBwcmVtaWVyZXxlbnwwfHx8fDE3NjQ0MDU2NTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cinema premiere"
+    },
+    {
+      "id": "news-2",
+      "description": "News article thumbnail 2",
+      "imageUrl": "https://images.unsplash.com/photo-1497015289639-54688650d173?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmaWxtJTIwc2V0fGVufDB8fHx8MTc2NDM2MDY0NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "film set"
+    },
+    {
+      "id": "news-3",
+      "description": "News article thumbnail 3",
+      "imageUrl": "https://images.unsplash.com/photo-1579702455185-e998d4c209c7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtb3ZpZSUyMGRpcmVjdG9yfGVufDB8fHx8MTc2NDQwNTY1M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "movie director"
+    }
+  ]
 }

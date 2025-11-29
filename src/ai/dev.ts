@@ -1,1 +1,12 @@
-// Flows will be imported for their side effects in this file.
+import { config } from 'dotenv';
+config();
+
+import '@/ai/flows/user-profile-creation.ts';
+import '@/ai/flows/favorite-artists-directors.ts';
+import '@/ai/flows/ai-powered-movie-search.ts';
+import '@/ai/flows/ai-chatbot.ts';
+import '@/ai/flows/regional-age-based-trending-movies.ts';
+import '@/ai/flows/mood-based-recommendations.ts';
+import '@/ai/flows/smart-playlists.ts';
+import '@/ai/flows/language-based-movie-picks.ts';
+import '@/ai/flows/personalized-recommendations-based-on-viewing-history.ts';
