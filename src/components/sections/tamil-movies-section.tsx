@@ -5,7 +5,7 @@ import { searchMovies, getPosterUrl, getMovieVideos } from "@/lib/tmdb";
 export default async function TamilMoviesSection() {
     let recommendations: string[] = [];
     try {
-        const result = await languageBasedMoviePicks({ languages: ["Tamil"], numberOfRecommendations: 15, year: 2025 });
+        const result = await languageBasedMoviePicks({ languages: ["Tamil"], numberOfRecommendations: 15 });
         recommendations = result.movieRecommendations;
     } catch (error) {
         console.error("AI recommendations error for Tamil movies:", error)
@@ -34,5 +34,5 @@ export default async function TamilMoviesSection() {
             trailerUrl: movie!.trailerUrl,
         }));
 
-    return <MovieCarousel title="Popular in Tamil - 2025 Releases" movies={moviesData} />;
+    return <MovieCarousel title="Popular in Tamil" movies={moviesData} />;
 }
