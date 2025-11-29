@@ -13,8 +13,8 @@ export interface Movie {
 }
 
 export async function searchMovies(query: string): Promise<Movie[]> {
-  if (!TMDB_API_KEY) {
-    console.error('TMDB_API_KEY is not set');
+  if (!TMDB_ACCESS_TOKEN) {
+    console.error('TMDB_ACCESS_TOKEN is not set in .env file. API requests will be skipped.');
     return [];
   }
 
