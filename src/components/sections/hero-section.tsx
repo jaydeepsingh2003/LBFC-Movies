@@ -37,6 +37,9 @@ export default function HeroSection() {
                 "Kingdom of the Planet of the Apes",
                 "Bad Boys: Ride or Die",
                 "A Quiet Place: Day One",
+                "Civil War",
+                "The Garfield Movie",
+                "IF"
             ];
             try {
                 const searchPromises = heroMovieTitles.map(title => searchMovies(title));
