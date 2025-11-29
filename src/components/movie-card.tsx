@@ -1,7 +1,10 @@
+"use client";
+
 import Image from 'next/image';
 import { Card, CardContent } from './ui/card';
 import { cn } from '@/lib/utils';
 import { Film, PlayCircle } from 'lucide-react';
+import { useVideoPlayer } from '@/context/video-provider';
 
 interface MovieCardProps {
   title: string;
@@ -13,10 +16,22 @@ interface MovieCardProps {
 
 export function MovieCard({ title, posterUrl, trailerUrl, className, aspect = "portrait" }: MovieCardProps) {
   const aspectRatio = aspect === 'portrait' ? 'aspect-[2/3]' : 'aspect-video';
+  const { setVideoId } = useVideoPlayer();
 
-  const CardWrapper = ({ children }: { children: React.ReactNode }) => 
+  const handlePlayTrailer = () => {
+    if (trailerUrl) {
+      const videoId = trailerUrl.split('v=')[1];
+      if (videoId) {
+        setVideoId(videoId);
+      }
+    }
+  };
+
+  const CardWrapper = ({ children }: { children: React.ReactNode }) =>
     trailerUrl ? (
-      <a href={trailerUrl} target="_blank" rel="noopener noreferrer">{children}</a>
+      <div onClick={handlePlayTrailer} className="cursor-pointer">
+        {children}
+      </div>
     ) : (
       <div>{children}</div>
     );

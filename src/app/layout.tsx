@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AiChatbotWidget } from '@/components/ai-chatbot-widget';
+import { VideoPlayerProvider } from '@/context/video-provider';
 
 export const metadata: Metadata = {
   title: 'FlickRecs',
@@ -24,11 +25,13 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <SidebarProvider>
-            {children}
-        </SidebarProvider>
-        <AiChatbotWidget />
-        <Toaster />
+        <VideoPlayerProvider>
+          <SidebarProvider>
+              {children}
+          </SidebarProvider>
+          <AiChatbotWidget />
+          <Toaster />
+        </VideoPlayerProvider>
       </body>
     </html>
   );
