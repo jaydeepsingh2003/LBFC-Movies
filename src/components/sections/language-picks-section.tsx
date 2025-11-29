@@ -11,7 +11,7 @@ import { Loader2, Globe } from "lucide-react"
 import { Movie } from "@/lib/tmdb"
 import { getPosterUrl, searchMovies } from "@/lib/tmdb.client"
 
-const availableLanguages = ["English", "Spanish", "French", "Japanese", "Korean", "Hindi"];
+const availableLanguages = ["English", "Spanish", "French", "Japanese", "Korean", "Hindi", "Kannada"];
 
 interface MovieWithPoster extends Movie {
     posterUrl: string | null;
