@@ -8,14 +8,16 @@ interface MovieCardProps {
   title: string;
   posterId: string;
   className?: string;
+  aspect?: "portrait" | "landscape";
 }
 
-export function MovieCard({ title, posterId, className }: MovieCardProps) {
+export function MovieCard({ title, posterId, className, aspect = "portrait" }: MovieCardProps) {
   const poster = PlaceHolderImages.find(p => p.id === posterId);
+  const aspectRatio = aspect === 'portrait' ? 'aspect-[2/3]' : 'aspect-video';
 
   return (
-    <Card className={cn("overflow-hidden border-none shadow-lg group", className)}>
-      <CardContent className="p-0 relative aspect-[2/3] w-full">
+    <Card className={cn("overflow-hidden border-none group bg-card", className)}>
+      <CardContent className={cn("p-0 relative w-full", aspectRatio)}>
         {poster ? (
           <Image
             src={poster.imageUrl}
@@ -29,8 +31,8 @@ export function MovieCard({ title, posterId, className }: MovieCardProps) {
             <Film className="w-12 h-12 text-muted-foreground" />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 p-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute bottom-0 left-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <h3 className="font-headline text-lg font-bold text-white shadow-md">{title}</h3>
         </div>
       </CardContent>
