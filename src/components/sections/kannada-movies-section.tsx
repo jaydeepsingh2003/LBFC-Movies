@@ -1,3 +1,4 @@
+
 import { languageBasedMoviePicks } from "@/ai/flows/language-based-movie-picks";
 import { MovieCarousel } from "../movie-carousel";
 import { searchMovies, getPosterUrl, getMovieVideos } from "@/lib/tmdb";
@@ -6,7 +7,7 @@ export default async function KannadaMoviesSection() {
     let recommendations: string[] = [];
     try {
         const result = await languageBasedMoviePicks({ languages: ["Kannada"], numberOfRecommendations: 15 });
-        recommendations = result.movieRecommendations;
+        recommendations = result.movieRecommendations.filter(title => title.toLowerCase() !== 'lucia');
     } catch (error) {
         console.error("AI recommendations error for Kannada movies:", error)
     }
