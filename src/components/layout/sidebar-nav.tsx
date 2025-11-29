@@ -1,6 +1,6 @@
 "use client"
 
-import { Compass, Home, ListVideo, Newspaper, Users } from "lucide-react";
+import { Compass, Home, ListVideo, Newspaper, Users, History } from "lucide-react";
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "../ui/sidebar";
 import { useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
@@ -26,6 +26,12 @@ export function SidebarNav() {
                 <SidebarMenuButton href="/discover" isActive={pathname === '/discover'} tooltip="Discover" {...buttonProps}>
                     <Compass />
                     Discover
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+                <SidebarMenuButton href="/timeline" isActive={pathname === '/timeline'} tooltip="Timeline" {...buttonProps}>
+                    <History />
+                    Timeline
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
