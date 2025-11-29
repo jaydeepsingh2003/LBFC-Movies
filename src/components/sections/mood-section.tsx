@@ -28,11 +28,12 @@ export default function MoodSection() {
     setRecommendations([])
     try {
       const result = await getMoodBasedRecommendations({ mood })
+      
       const moviePromises = result.movieSuggestions.map(title => searchMovies(title));
       const searchResults = await Promise.all(moviePromises);
       
-      const moviesData = searchResults.map((result, index) => {
-          const movie = result.length > 0 ? result[0] : null;
+      const moviesData = searchResults.map((searchResult, index) => {
+          const movie = searchResult.length > 0 ? searchResult[0] : null;
           return {
               ...(movie || { title: result.movieSuggestions[index], poster_path: null, id: 0, overview: "" }),
               title: movie ? movie.title : result.movieSuggestions[index],

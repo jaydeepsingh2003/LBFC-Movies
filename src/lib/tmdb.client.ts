@@ -8,18 +8,11 @@ const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
 
 export async function searchMovies(query: string): Promise<Movie[]> {
-  // Note: This is a client-side file, so we can't access process.env here.
-  // We would typically fetch the API key from a server endpoint or have it available in the client environment.
-  // For this implementation, we will assume there is a way to get the access token, maybe from a context or a dedicated endpoint.
-  // Since we don't have that setup, and to avoid exposing keys, we'll return an empty array if no token is found.
-  // A real app would need a secure way to handle this.
-  
-  const TMDB_ACCESS_TOKEN = process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN; // This needs to be configured in next.config.js and .env.local
+  // This is a client-side file, we read the public env var from next.config.js
+  const TMDB_ACCESS_TOKEN = process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN;
 
   if (!TMDB_ACCESS_TOKEN) {
     console.error('TMDB_ACCESS_TOKEN is not available in the client. API requests will be skipped.');
-    // To make this work without exposing the key, we'd need a backend endpoint to proxy the TMDB API.
-    // For now, we will return an empty array.
     return [];
   }
 
