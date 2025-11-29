@@ -11,6 +11,7 @@ import FranchiseFocusSection from '@/components/sections/franchise-focus-section
 import HindiMoviesSection from '@/components/sections/hindi-movies-section';
 import KannadaMoviesSection from '@/components/sections/kannada-movies-section';
 import TamilMoviesSection from '@/components/sections/tamil-movies-section';
+import MovieMatchmakerSection from '@/components/sections/movie-matchmaker-section';
 
 export default function DashboardPage() {
   return (
@@ -28,6 +29,7 @@ export default function DashboardPage() {
             <FavoriteArtistsSection />
             <LanguagePicksSection />
             <SmartPlaylistSection />
+            <MovieMatchmakerSection />
             <NewsFeedSection />
         </div>
       </div>

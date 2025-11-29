@@ -12,3 +12,4 @@ import '@/ai/flows/language-based-movie-picks.ts';
 import '@/ai/flows/personalized-recommendations-based-on-viewing-history.ts';
 import '@/ai/flows/advanced-movie-search.ts';
 import '@/ai/flows/movie-timeline.ts';
+import '@/ai/flows/movie-matchmaker.ts';
