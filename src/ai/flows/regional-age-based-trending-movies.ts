@@ -37,7 +37,7 @@ const prompt = ai.definePrompt({
   name: 'regionalAgeBasedTrendingMoviesPrompt',
   input: {schema: RegionalAgeBasedTrendingMoviesInputSchema},
   output: {schema: RegionalAgeBasedTrendingMoviesOutputSchema},
-  prompt: `You are a movie expert. Based on the user's region and age group, you will return a list of movies that are trending in that region and age group.
+  prompt: `You are a movie expert. Based on the user's region and age group, you will return a list of at least 10 movies that are trending in that region and age group.
 
 Region: {{{region}}}
 Age Group: {{{ageGroup}}}

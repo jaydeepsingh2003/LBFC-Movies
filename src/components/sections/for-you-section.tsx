@@ -14,7 +14,7 @@ export default async function ForYouSection() {
 
     let recommendations: string[] = [];
     try {
-        const result = await getPersonalizedRecommendations({ viewingHistory });
+        const result = await getPersonalizedRecommendations({ viewingHistory, numberOfRecommendations: 10 });
         recommendations = result.recommendations;
     } catch (error) {
         // We will log the error to the server console for debugging

@@ -29,7 +29,7 @@ const prompt = ai.definePrompt({
   name: 'favoriteArtistsDirectorsPrompt',
   input: {schema: FavoriteArtistsDirectorsInputSchema},
   output: {schema: FavoriteArtistsDirectorsOutputSchema},
-  prompt: `You are a movie recommendation expert. Based on the user's favorite actors and directors, provide a list of movie recommendations.
+  prompt: `You are a movie recommendation expert. Based on the user's favorite actors and directors, provide a list of 10 movie recommendations.
 
   Favorite Actors: {{#each favoriteActors}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
   Favorite Directors: {{#each favoriteDirectors}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}

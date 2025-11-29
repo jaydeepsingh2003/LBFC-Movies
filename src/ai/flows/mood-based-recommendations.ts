@@ -29,7 +29,7 @@ const moodBasedRecommendationsPrompt = ai.definePrompt({
   name: 'moodBasedRecommendationsPrompt',
   input: {schema: MoodBasedRecommendationsInputSchema},
   output: {schema: MoodBasedRecommendationsOutputSchema},
-  prompt: `You are a movie expert. Given the mood: {{{mood}}}, suggest a list of movies that would be appropriate for that mood. Return just the names of the movies. No explanation required. Return at least 3 movies.
+  prompt: `You are a movie expert. Given the mood: {{{mood}}}, suggest a list of movies that would be appropriate for that mood. Return just the names of the movies. No explanation required. Return at least 10 movies.
 
 Movies:`,
 });

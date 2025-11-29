@@ -17,7 +17,7 @@ const PersonalizedRecommendationsInputSchema = z.object({
     .describe('An array of movie titles the user has watched.'),
   numberOfRecommendations: z
     .number()
-    .default(5)
+    .default(10)
     .describe('The number of movie recommendations to generate.'),
 });
 export type PersonalizedRecommendationsInput = z.infer<

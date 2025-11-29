@@ -19,7 +19,7 @@ export default function SmartPlaylistSection() {
     setIsLoading(true);
     setPlaylist(null);
     try {
-      const result = await generateSmartPlaylist({ ...criteria, playlistLength: 8 });
+      const result = await generateSmartPlaylist({ ...criteria, playlistLength: 12 });
       setPlaylist(result);
     } catch (error) {
       console.error(error);
