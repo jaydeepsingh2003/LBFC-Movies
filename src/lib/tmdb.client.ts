@@ -1,4 +1,3 @@
-// src/lib/tmdb.client.ts
 'use client';
 
 import { Movie } from "./tmdb";
