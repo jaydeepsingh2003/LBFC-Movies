@@ -1,58 +1,43 @@
+
 "use client"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { MovieCarousel } from "@/components/movie-carousel"
 import { getFavoriteArtistsDirectorsRecommendations } from "@/ai/flows/favorite-artists-directors"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2 } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Movie } from "@/lib/tmdb"
-import { getPosterUrl, searchMovies } from "@/lib/tmdb.client"
-
-const artists = [
-  { type: 'actor', name: 'Tom Hanks' },
-  { type: 'actor', name: 'Meryl Streep' },
-  { type: 'director', name: 'Christopher Nolan' },
-  { type: 'director', name: 'Greta Gerwig' },
-  { type: 'actor', name: 'Denzel Washington' },
-  { type: 'director', name: 'Spike Lee' },
-];
-
-interface MovieWithPoster extends Movie {
-    posterUrl: string | null;
-}
+import { Loader2, Film } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function FavoriteArtistsSection() {
-  const [selectedArtist, setSelectedArtist] = useState<string | null>(null);
-  const [recommendations, setRecommendations] = useState<MovieWithPoster[]>([]);
+  const [favoriteActors, setFavoriteActors] = useState("");
+  const [favoriteDirectors, setFavoriteDirectors] = useState("");
+  const [recommendations, setRecommendations] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleGetRecommendations = async (artist: { type: string, name: string }) => {
-    setSelectedArtist(artist.name);
+  const handleGetRecommendations = async () => {
+    if (!favoriteActors && !favoriteDirectors) {
+      toast({
+        variant: "destructive",
+        title: "Input Required",
+        description: "Please enter at least one actor or director.",
+      });
+      return;
+    }
+
     setIsLoading(true);
     setRecommendations([]);
     try {
-      const input = {
-        favoriteActors: artist.type === 'actor' ? [artist.name] : [],
-        favoriteDirectors: artist.type === 'director' ? [artist.name] : [],
-      };
-      const result = await getFavoriteArtistsDirectorsRecommendations(input);
-      
-      const moviePromises = result.recommendations.map(title => searchMovies(title));
-      const searchResults = await Promise.all(moviePromises);
+      const actors = favoriteActors.split(',').map(s => s.trim()).filter(Boolean);
+      const directors = favoriteDirectors.split(',').map(s => s.trim()).filter(Boolean);
 
-      const moviesData = searchResults.map((searchResult, index) => {
-        const movie = searchResult.length > 0 ? searchResult[0] : null;
-        return {
-          ...(movie || { title: result.recommendations[index], poster_path: null, id: 0, overview: "" }),
-          title: movie ? movie.title : result.recommendations[index],
-          posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
-        }
+      const result = await getFavoriteArtistsDirectorsRecommendations({ 
+        favoriteActors: actors,
+        favoriteDirectors: directors 
       });
-
-      setRecommendations(moviesData);
+      
+      setRecommendations(result.recommendations);
 
     } catch (error) {
       console.error(error);
@@ -72,34 +57,70 @@ export default function FavoriteArtistsSection() {
         <h2 className="font-headline text-2xl font-bold tracking-tight">From Your Favorites</h2>
         <p className="text-muted-foreground">Get recommendations based on actors and directors you love.</p>
       </div>
-      <div className="flex flex-wrap gap-2">
-        {artists.map((artist) => (
-          <Button
-            key={artist.name}
-            variant="outline"
-            className={cn(
-              "transition-all",
-              selectedArtist === artist.name && "bg-accent text-accent-foreground border-accent"
-            )}
-            onClick={() => handleGetRecommendations(artist)}
-            disabled={isLoading && selectedArtist === artist.name}
-          >
-            {isLoading && selectedArtist === artist.name && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {artist.name}
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Find Movies by Artists</CardTitle>
+          <CardDescription>Enter your favorite actors or directors, separated by commas.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="actors" className="text-sm font-medium">Favorite Actors</label>
+              <Input 
+                id="actors" 
+                value={favoriteActors} 
+                onChange={e => setFavoriteActors(e.target.value)} 
+                placeholder="e.g., Tom Hanks, Meryl Streep" 
+                className="mt-1" 
+                disabled={isLoading}
+              />
+            </div>
+            <div>
+              <label htmlFor="directors" className="text-sm font-medium">Favorite Directors</label>
+              <Input 
+                id="directors" 
+                value={favoriteDirectors} 
+                onChange={e => setFavoriteDirectors(e.target.value)} 
+                placeholder="e.g., Christopher Nolan, Greta Gerwig" 
+                className="mt-1" 
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+          <Button onClick={handleGetRecommendations} disabled={isLoading}>
+            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Film className="mr-2 h-4 w-4" />}
+            Get Recommendations
           </Button>
-        ))}
-      </div>
+        </CardContent>
+      </Card>
       
       {isLoading && (
-         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {[...Array(6)].map((_, i) => (
-                <div key={i} className="aspect-[2/3] w-full bg-secondary rounded-lg animate-pulse"></div>
-            ))}
-        </div>
+        <Card className="animate-pulse">
+            <CardHeader>
+                <div className="h-6 w-2/5 bg-secondary rounded"></div>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-2">
+                    {[...Array(5)].map((_, i) => <div key={i} className="h-5 w-1/2 bg-secondary rounded"></div>)}
+                </div>
+            </CardContent>
+        </Card>
       )}
 
-      {recommendations.length > 0 && selectedArtist && (
-        <MovieCarousel title={`Because you like ${selectedArtist}`} movies={recommendations} />
+      {recommendations.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Recommendations</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc list-inside space-y-1">
+              {recommendations.map((movie, index) => (
+                <li key={index} className="text-foreground">{movie}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
       )}
     </section>
   )
