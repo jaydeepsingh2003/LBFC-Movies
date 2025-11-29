@@ -24,7 +24,7 @@ interface Trivia {
     goofs: string[];
 }
 
-export default function MovieDetailsPage({ params }: { params: { id: string } }) {
+export default function MovieDetailsPage({ params: { id } }: { params: { id: string } }) {
   const [movie, setMovie] = useState<MovieDetailsWithMedia | null>(null);
   const [trivia, setTrivia] = useState<Trivia | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,7 +34,7 @@ export default function MovieDetailsPage({ params }: { params: { id: string } })
     async function fetchData() {
       setIsLoading(true);
       try {
-        const movieId = parseInt(params.id, 10);
+        const movieId = parseInt(id, 10);
         const movieDetails = await getMovieDetails(movieId);
         
         const movieWithMedia = {
@@ -54,7 +54,7 @@ export default function MovieDetailsPage({ params }: { params: { id: string } })
       }
     }
     fetchData();
-  }, [params.id]);
+  }, [id]);
 
   const handlePlayTrailer = () => {
     const trailer = movie?.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
