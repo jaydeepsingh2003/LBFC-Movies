@@ -1,6 +1,14 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: '/api/tmdb/:path*',
+        destination: `https://api.themoviedb.org/:path*`,
+      },
+    ]
+  },
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
