@@ -4,33 +4,77 @@
 import * as React from "react"
 import Autoplay from "embla-carousel-autoplay"
 import { Button } from "@/components/ui/button";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Info, PlayCircle } from "lucide-react";
 import Image from 'next/image';
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
+import { getPosterUrl, searchMovies } from "@/lib/tmdb.client";
+import { Movie } from "@/lib/tmdb";
+import { Skeleton } from "../ui/skeleton";
+import { getBackdropUrl } from "@/lib/tmdb.client";
 
-const heroMovies = [
-    {
-        id: 'hero-1',
-        title: 'Movie of the Day',
-        description: 'This is a captivating tale of adventure and discovery in a world beyond imagination. A must-watch for all sci-fi enthusiasts.',
-    },
-    {
-        id: 'hero-2',
-        title: 'Action Packed Thriller',
-        description: 'An edge-of-your-seat thriller that will keep you guessing until the very end. Full of twists and turns.',
-    },
-    {
-        id: 'hero-3',
-        title: 'Heartwarming Drama',
-        description: 'A beautiful story about family, loss, and the power of hope. Prepare to be moved.',
-    }
-]
+
+interface MovieWithImages extends Movie {
+    backdropUrl: string | null;
+    posterUrl: string | null;
+}
 
 export default function HeroSection() {
     const plugin = React.useRef(
         Autoplay({ delay: 5000, stopOnInteraction: true })
     )
+    const [movies, setMovies] = React.useState<MovieWithImages[]>([]);
+    const [isLoading, setIsLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        async function fetchHeroMovies() {
+            setIsLoading(true);
+            const heroMovieTitles = [
+                "Dune: Part Two",
+                "Godzilla x Kong: The New Empire",
+                "Kung Fu Panda 4"
+            ];
+            try {
+                const searchPromises = heroMovieTitles.map(title => searchMovies(title));
+                const searchResults = await Promise.all(searchPromises);
+
+                const moviesData = searchResults.map((result, index) => {
+                    const movie = result.length > 0 ? result[0] : null;
+                    return {
+                        id: movie?.id ?? index,
+                        title: movie ? movie.title : heroMovieTitles[index],
+                        overview: movie?.overview ?? '',
+                        poster_path: movie?.poster_path ?? null,
+                        backdrop_path: movie?.backdrop_path ?? null,
+                        backdropUrl: movie ? getBackdropUrl(movie.backdrop_path) : null,
+                        posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
+                    };
+                });
+                setMovies(moviesData);
+            } catch (error) {
+                console.error("Failed to fetch hero movies:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        fetchHeroMovies();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="relative h-[56.25vw] min-h-[300px] max-h-[80vh] w-full">
+                <Skeleton className="w-full h-full" />
+                <div className="absolute bottom-[20%] left-4 md:left-8 lg:left-16 max-w-lg space-y-4">
+                    <Skeleton className="h-16 w-3/4" />
+                    <Skeleton className="h-6 w-full" />
+                    <Skeleton className="h-6 w-5/6" />
+                    <div className="flex gap-3 pt-2">
+                        <Skeleton className="h-12 w-32" />
+                        <Skeleton className="h-12 w-32" />
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <Carousel
@@ -40,19 +84,17 @@ export default function HeroSection() {
             onMouseLeave={plugin.current.reset}
         >
             <CarouselContent>
-                {heroMovies.map((movie) => {
-                    const heroImage = PlaceHolderImages.find(p => p.id === movie.id);
+                {movies.map((movie) => {
                     return (
                         <CarouselItem key={movie.id}>
                             <div className="relative h-[56.25vw] min-h-[300px] max-h-[80vh] w-full">
-                                {heroImage && (
+                                {movie.backdropUrl && (
                                     <Image
-                                        src={heroImage.imageUrl}
+                                        src={movie.backdropUrl}
                                         alt={movie.title}
                                         fill
                                         className="object-cover"
                                         priority
-                                        data-ai-hint={heroImage.imageHint}
                                     />
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
@@ -63,7 +105,7 @@ export default function HeroSection() {
                                         {movie.title}
                                     </h1>
                                     <p className="mt-4 text-sm md:text-base text-white/90 drop-shadow-md line-clamp-3 animate-in fade-in slide-in-from-bottom-12 duration-700 delay-100">
-                                        {movie.description}
+                                        {movie.overview}
                                     </p>
                                     <div className="mt-6 flex gap-3 animate-in fade-in slide-in-from-bottom-16 duration-700 delay-200">
                                         <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
