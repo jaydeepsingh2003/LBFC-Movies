@@ -4,25 +4,22 @@ import { Movie } from "./tmdb";
 
 const TMDB_API_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+const TMDB_API_KEY = "2dc0bd12c7bd63b2c691d3a64f3a3db7";
 
 
 export async function searchMovies(query: string): Promise<Movie[]> {
-  // This is a client-side file, we read the public env var from next.config.js
-  const TMDB_ACCESS_TOKEN = process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN;
-
-  if (!TMDB_ACCESS_TOKEN) {
-    console.error('TMDB_ACCESS_TOKEN is not available in the client. API requests will be skipped.');
+  if (!TMDB_API_KEY) {
+    console.error('TMDB_API_KEY is not available. API requests will be skipped.');
     return [];
   }
 
-  const url = `${TMDB_API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}&include_adult=false&language=en-US&page=1`;
+  const url = `${TMDB_API_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false&language=en-US&page=1`;
   
   try {
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         accept: 'application/json',
-        Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
       },
       cache: 'no-store',
     });
