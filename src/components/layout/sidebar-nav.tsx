@@ -41,7 +41,7 @@ export function SidebarNav() {
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <SidebarMenuButton href="#" tooltip="Social" {...buttonProps}>
+                <SidebarMenuButton href="/social" isActive={pathname === '/social'} tooltip="Social" {...buttonProps}>
                     <Users />
                     Social
                 </SidebarMenuButton>
