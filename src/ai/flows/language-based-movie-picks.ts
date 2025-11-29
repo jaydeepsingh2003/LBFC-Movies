@@ -15,7 +15,7 @@ const LanguageBasedMoviePicksInputSchema = z.object({
   languages: z
     .array(z.string())
     .describe('An array of the user preferred languages.'),
-  numberOfRecommendations: z.number().optional().default(10),
+  numberOfRecommendations: z.number().optional().default(15),
 });
 export type LanguageBasedMoviePicksInput = z.infer<
   typeof LanguageBasedMoviePicksInputSchema

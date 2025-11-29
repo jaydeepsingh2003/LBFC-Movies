@@ -5,7 +5,7 @@ import { searchMovies, getPosterUrl, getMovieVideos } from "@/lib/tmdb";
 export default async function HindiMoviesSection() {
     let recommendations: string[] = [];
     try {
-        const result = await languageBasedMoviePicks({ languages: ["Hindi"], numberOfRecommendations: 10 });
+        const result = await languageBasedMoviePicks({ languages: ["Hindi"], numberOfRecommendations: 15 });
         recommendations = result.movieRecommendations;
     } catch (error) {
         console.error("AI recommendations error for Hindi movies:", error)
