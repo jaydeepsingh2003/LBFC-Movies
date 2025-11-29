@@ -4,16 +4,21 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { MovieCarousel } from "@/components/movie-carousel"
 import { getMoodBasedRecommendations } from "@/ai/flows/mood-based-recommendations"
-import type { MoodBasedRecommendationsOutput } from "@/ai/flows/mood-based-recommendations"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { Loader2 } from "lucide-react"
+import { getPosterUrl, searchMovies } from "@/lib/tmdb.client"
+import { Movie } from "@/lib/tmdb"
 
 const moods = ["Happy", "Sad", "Adventurous", "Romantic", "Thrilling", "Funny"];
 
+interface MovieWithPoster extends Movie {
+    posterUrl: string | null;
+}
+
 export default function MoodSection() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null)
-  const [recommendations, setRecommendations] = useState<MoodBasedRecommendationsOutput["movieSuggestions"]>([])
+  const [recommendations, setRecommendations] = useState<MovieWithPoster[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
 
@@ -23,7 +28,19 @@ export default function MoodSection() {
     setRecommendations([])
     try {
       const result = await getMoodBasedRecommendations({ mood })
-      setRecommendations(result.movieSuggestions)
+      const moviePromises = result.movieSuggestions.map(title => searchMovies(title));
+      const searchResults = await Promise.all(moviePromises);
+      
+      const moviesData = searchResults.map((result, index) => {
+          const movie = result.length > 0 ? result[0] : null;
+          return {
+              ...(movie || { title: result.movieSuggestions[index], poster_path: null, id: 0, overview: "" }),
+              title: movie ? movie.title : result.movieSuggestions[index],
+              posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
+          }
+      });
+      setRecommendations(moviesData)
+
     } catch (error) {
       console.error(error)
       toast({
@@ -35,11 +52,6 @@ export default function MoodSection() {
       setIsLoading(false)
     }
   }
-
-  const movies = recommendations.map((title, index) => ({
-    title,
-    posterId: `movie-poster-${(index % 10) + 1}`,
-  }))
 
   return (
     <section className="space-y-6">
@@ -74,7 +86,7 @@ export default function MoodSection() {
       )}
       
       {recommendations.length > 0 && selectedMood && (
-        <MovieCarousel title={`For a ${selectedMood} Mood`} movies={movies} />
+        <MovieCarousel title={`For a ${selectedMood} Mood`} movies={recommendations} />
       )}
     </section>
   )

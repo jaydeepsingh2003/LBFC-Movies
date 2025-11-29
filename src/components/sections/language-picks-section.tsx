@@ -4,17 +4,22 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { MovieCarousel } from "@/components/movie-carousel"
 import { languageBasedMoviePicks } from "@/ai/flows/language-based-movie-picks"
-import type { LanguageBasedMoviePicksOutput } from "@/ai/flows/language-based-movie-picks"
 import { useToast } from "@/hooks/use-toast"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Loader2, Globe } from "lucide-react"
+import { Movie } from "@/lib/tmdb"
+import { getPosterUrl, searchMovies } from "@/lib/tmdb.client"
 
 const availableLanguages = ["English", "Spanish", "French", "Japanese", "Korean", "Hindi"];
 
+interface MovieWithPoster extends Movie {
+    posterUrl: string | null;
+}
+
 export default function LanguagePicksSection() {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(["English"]);
-  const [recommendations, setRecommendations] = useState<LanguageBasedMoviePicksOutput["movieRecommendations"]>([]);
+  const [recommendations, setRecommendations] = useState<MovieWithPoster[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -39,7 +44,20 @@ export default function LanguagePicksSection() {
     setRecommendations([]);
     try {
       const result = await languageBasedMoviePicks({ languages: selectedLanguages });
-      setRecommendations(result.movieRecommendations);
+      
+      const moviePromises = result.movieRecommendations.map(title => searchMovies(title));
+      const searchResults = await Promise.all(moviePromises);
+
+      const moviesData = searchResults.map((searchResult, index) => {
+        const movie = searchResult.length > 0 ? searchResult[0] : null;
+        return {
+          ...(movie || { title: result.movieRecommendations[index], poster_path: null, id: 0, overview: "" }),
+          title: movie ? movie.title : result.movieRecommendations[index],
+          posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
+        }
+      });
+      
+      setRecommendations(moviesData);
     } catch (error) {
       console.error(error);
       toast({
@@ -51,11 +69,6 @@ export default function LanguagePicksSection() {
       setIsLoading(false);
     }
   };
-
-  const movies = recommendations.map((title, index) => ({
-    title,
-    posterId: `movie-poster-${(index % 10) + 1}`,
-  }));
 
   return (
     <section className="space-y-6">
@@ -89,7 +102,7 @@ export default function LanguagePicksSection() {
       )}
 
       {recommendations.length > 0 && (
-        <MovieCarousel title={`Top Picks in ${selectedLanguages.join(', ')}`} movies={movies} />
+        <MovieCarousel title={`Top Picks in ${selectedLanguages.join(', ')}`} movies={recommendations} />
       )}
     </section>
   );

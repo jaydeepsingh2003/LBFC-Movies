@@ -1,12 +1,14 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { MovieCard } from "./movie-card";
+import { Movie } from "@/lib/tmdb";
+
+interface MovieWithPoster extends Movie {
+  posterUrl: string | null;
+}
 
 interface MovieCarouselProps {
   title: string;
-  movies: {
-    title: string;
-    posterUrl: string | null;
-  }[];
+  movies: MovieWithPoster[];
 }
 
 export function MovieCarousel({ title, movies }: MovieCarouselProps) {
@@ -24,7 +26,7 @@ export function MovieCarousel({ title, movies }: MovieCarouselProps) {
         >
           <CarouselContent className="-ml-2">
             {movies.map((movie, index) => (
-              <CarouselItem key={index} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 pl-2">
+              <CarouselItem key={movie.id || index} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 pl-2">
                 <MovieCard title={movie.title} posterUrl={movie.posterUrl} />
               </CarouselItem>
             ))}
