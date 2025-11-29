@@ -8,11 +8,18 @@ import { useToast } from "@/hooks/use-toast"
 import { Loader2, Film } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { MovieCarousel } from "../movie-carousel"
+import { getPosterUrl, searchMovies } from "@/lib/tmdb.client"
+import { Movie } from "@/lib/tmdb"
+
+interface MovieWithPoster extends Movie {
+  posterUrl: string | null;
+}
 
 export default function FavoriteArtistsSection() {
   const [favoriteActors, setFavoriteActors] = useState("");
   const [favoriteDirectors, setFavoriteDirectors] = useState("");
-  const [recommendations, setRecommendations] = useState<string[]>([]);
+  const [recommendations, setRecommendations] = useState<MovieWithPoster[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -37,7 +44,19 @@ export default function FavoriteArtistsSection() {
         favoriteDirectors: directors 
       });
       
-      setRecommendations(result.recommendations);
+      const moviePromises = result.recommendations.map(title => searchMovies(title));
+      const searchResults = await Promise.all(moviePromises);
+
+      const moviesData = searchResults.map((searchResult, index) => {
+        const movie = searchResult.length > 0 ? searchResult[0] : null;
+        return {
+          ...(movie || { title: result.recommendations[index], poster_path: null, id: 0, overview: "" }),
+          title: movie ? movie.title : result.recommendations[index],
+          posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
+        }
+      });
+      
+      setRecommendations(moviesData);
 
     } catch (error) {
       console.error(error);
@@ -96,31 +115,15 @@ export default function FavoriteArtistsSection() {
       </Card>
       
       {isLoading && (
-        <Card className="animate-pulse">
-            <CardHeader>
-                <div className="h-6 w-2/5 bg-secondary rounded"></div>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-2">
-                    {[...Array(5)].map((_, i) => <div key={i} className="h-5 w-1/2 bg-secondary rounded"></div>)}
-                </div>
-            </CardContent>
-        </Card>
+         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {[...Array(6)].map((_, i) => (
+                <div key={i} className="aspect-[2/3] w-full bg-secondary rounded-lg animate-pulse"></div>
+            ))}
+        </div>
       )}
 
       {recommendations.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Recommendations</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="list-disc list-inside space-y-1">
-              {recommendations.map((movie, index) => (
-                <li key={index} className="text-foreground">{movie}</li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+        <MovieCarousel title="Based on Your Favorites" movies={recommendations} />
       )}
     </section>
   )
