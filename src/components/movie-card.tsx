@@ -1,30 +1,27 @@
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent } from './ui/card';
 import { cn } from '@/lib/utils';
 import { Film } from 'lucide-react';
 
 interface MovieCardProps {
   title: string;
-  posterId: string;
+  posterUrl: string | null;
   className?: string;
   aspect?: "portrait" | "landscape";
 }
 
-export function MovieCard({ title, posterId, className, aspect = "portrait" }: MovieCardProps) {
-  const poster = PlaceHolderImages.find(p => p.id === posterId);
+export function MovieCard({ title, posterUrl, className, aspect = "portrait" }: MovieCardProps) {
   const aspectRatio = aspect === 'portrait' ? 'aspect-[2/3]' : 'aspect-video';
 
   return (
     <Card className={cn("overflow-hidden border-none group bg-card", className)}>
       <CardContent className={cn("p-0 relative w-full", aspectRatio)}>
-        {poster ? (
+        {posterUrl ? (
           <Image
-            src={poster.imageUrl}
+            src={posterUrl}
             alt={title}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
-            data-ai-hint={poster.imageHint}
           />
         ) : (
           <div className="w-full h-full bg-secondary flex items-center justify-center">

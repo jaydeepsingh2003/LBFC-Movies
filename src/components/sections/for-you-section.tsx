@@ -1,5 +1,7 @@
 import { getPersonalizedRecommendations } from "@/ai/flows/personalized-recommendations-based-on-viewing-history";
 import { MovieCarousel } from "../movie-carousel";
+import { searchMovies, getPosterUrl } from "@/lib/tmdb";
+import { Movie } from "@/lib/tmdb";
 
 export default async function ForYouSection() {
     const viewingHistory = [
@@ -19,10 +21,16 @@ export default async function ForYouSection() {
         // but prevent it from crashing the client.
     }
     
-    const movies = recommendations.map((title, index) => ({
-        title,
-        posterId: `movie-poster-${(index % 10) + 1}`,
-    }));
+    const moviePromises = recommendations.map(title => searchMovies(title));
+    const searchResults = await Promise.all(moviePromises);
+    
+    const moviesData = searchResults.map((result, index) => {
+        const movie = result.length > 0 ? result[0] : null;
+        return {
+            title: movie ? movie.title : recommendations[index],
+            posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
+        }
+    });
 
-    return <MovieCarousel title="For You" movies={movies} />;
+    return <MovieCarousel title="For You" movies={moviesData} />;
 }

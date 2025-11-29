@@ -5,7 +5,7 @@ interface MovieCarouselProps {
   title: string;
   movies: {
     title: string;
-    posterId: string;
+    posterUrl: string | null;
   }[];
 }
 
@@ -25,7 +25,7 @@ export function MovieCarousel({ title, movies }: MovieCarouselProps) {
           <CarouselContent className="-ml-2">
             {movies.map((movie, index) => (
               <CarouselItem key={index} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 pl-2">
-                <MovieCard title={movie.title} posterId={movie.posterId} />
+                <MovieCard title={movie.title} posterUrl={movie.posterUrl} />
               </CarouselItem>
             ))}
           </CarouselContent>
