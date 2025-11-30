@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getPersonalizedRecommendations } from "@/ai/flows/personalized-recommendations-based-on-viewing-history";
 import { MovieCarousel } from "../movie-carousel";
 import { searchMovies, getPosterUrl, getMovieVideos } from "@/lib/tmdb.client";
 import { Movie } from "@/lib/tmdb";
@@ -13,7 +12,6 @@ interface MovieWithPoster extends Partial<Movie> {
     title: string;
 }
 
-
 export default function ForYouSection() {
     const [moviesData, setMoviesData] = useState<MovieWithPoster[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -21,45 +19,45 @@ export default function ForYouSection() {
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
-            const viewingHistory = [
-                "Inception",
-                "The Matrix",
-                "Parasite",
-                "The Godfather",
-                "Pulp Fiction",
+            const forYouMovies = [
+                "The Shawshank Redemption",
+                "The Dark Knight",
+                "Forrest Gump",
+                "Spirited Away",
+                "The Lord of the Rings: The Return of the King",
+                "Interstellar",
             ];
 
-            let recommendations: string[] = [];
+            let fetchedMoviesData: MovieWithPoster[] = [];
             try {
-                const result = await getPersonalizedRecommendations({ viewingHistory, numberOfRecommendations: 10 });
-                recommendations = result.recommendations;
+                const searchPromises = forYouMovies.map(async (title) => {
+                    const searchResults = await searchMovies(title);
+                    const movie = searchResults.length > 0 ? searchResults[0] : null;
+                    if (movie) {
+                        const videos = await getMovieVideos(movie.id);
+                        const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
+                        movie.trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
+                    }
+                    return movie;
+                });
+
+                const resolvedMovies = await Promise.all(searchPromises);
+
+                fetchedMoviesData = resolvedMovies.map((movie, index) => {
+                    return {
+                        id: movie?.id,
+                        title: movie ? movie.title : forYouMovies[index],
+                        posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
+                        overview: movie?.overview || '',
+                        trailerUrl: movie?.trailerUrl,
+                    };
+                });
+
             } catch (error) {
-                console.error("AI recommendations error:", error)
+                console.error("Failed to fetch 'For You' movies:", error);
             }
             
-            const moviePromises = recommendations.map(async (title) => {
-                const searchResults = await searchMovies(title);
-                const movie = searchResults.length > 0 ? searchResults[0] : null;
-                if (movie) {
-                    const videos = await getMovieVideos(movie.id);
-                    const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-                    movie.trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
-                }
-                return movie;
-            });
-            
-            const fetchedMovies = (await Promise.all(moviePromises))
-                .map((movie, index) => ({
-                    id: movie?.id,
-                    title: movie ? movie.title : recommendations[index],
-                    poster_path: movie?.poster_path || null,
-                    overview: movie?.overview || '',
-                    backdrop_path: movie?.backdrop_path || null,
-                    posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
-                    trailerUrl: movie?.trailerUrl,
-                }));
-            
-            setMoviesData(fetchedMovies);
+            setMoviesData(fetchedMoviesData);
             setIsLoading(false);
         }
         fetchData();
