@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { languageBasedMoviePicks } from "@/ai/flows/language-based-movie-picks";
 import { MovieCarousel } from "../movie-carousel";
 import { searchMovies, getPosterUrl, getMovieVideos } from "@/lib/tmdb.client";
 import { Movie } from "@/lib/tmdb";
@@ -20,15 +19,16 @@ export default function KannadaMoviesSection() {
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
-            let recommendations: string[] = [];
-            try {
-                const result = await languageBasedMoviePicks({ languages: ["Kannada"], numberOfRecommendations: 15 });
-                recommendations = result.movieRecommendations.filter(title => title.toLowerCase() !== 'lucia');
-            } catch (error) {
-                console.error("AI recommendations error for Kannada movies:", error)
-            }
+            const kannadaMovies = [
+                "K.G.F: Chapter 1",
+                "Kantara",
+                "Kirik Party",
+                "Mungaru Male",
+                "Ulidavaru Kandanthe",
+                "Lucia"
+            ];
             
-            const moviePromises = recommendations.map(async (title) => {
+            const moviePromises = kannadaMovies.map(async (title) => {
                 const searchResults = await searchMovies(title);
                 const movie = searchResults.length > 0 ? searchResults[0] : null;
                 if (movie) {
@@ -41,7 +41,7 @@ export default function KannadaMoviesSection() {
             
             const fetchedMovies = (await Promise.all(moviePromises))
                 .filter(movie => movie !== null)
-                .map((movie) => ({
+                .map((movie, index) => ({
                     id: movie!.id,
                     title: movie!.title,
                     poster_path: movie!.poster_path || null,
