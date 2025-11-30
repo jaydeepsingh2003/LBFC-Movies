@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -10,13 +11,16 @@ import { MovieSearch } from "../movie-search"
 import { SidebarNav } from "./sidebar-nav"
 import { useUser, logout } from "@/firebase/auth/auth-client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export function Header({ showSidebarTrigger = false }: { showSidebarTrigger?: boolean }) {
     const { user, isLoading } = useUser();
     const avatar = PlaceHolderImages.find(p => p.id === 'avatar-1');
+    const router = useRouter();
 
     const handleLogout = async () => {
         await logout();
+        router.push('/login');
     };
 
     return (
