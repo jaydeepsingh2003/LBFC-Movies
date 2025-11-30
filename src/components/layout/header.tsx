@@ -4,15 +4,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { SidebarTrigger } from "@/components/ui/sidebar"
 import { CreditCard, Film, LogOut, Settings, User } from "lucide-react"
 import { MovieSearch } from "../movie-search"
-import { SidebarNav } from "./sidebar-nav"
 import { useUser, logout } from "@/firebase/auth/auth-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export function Header({ showSidebarTrigger = false }: { showSidebarTrigger?: boolean }) {
+export function Header() {
     const { user, isLoading } = useUser();
     const router = useRouter();
 
@@ -23,16 +21,15 @@ export function Header({ showSidebarTrigger = false }: { showSidebarTrigger?: bo
 
     return (
         <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-transparent bg-gradient-to-b from-background to-transparent px-4 backdrop-blur-sm md:px-8">
-            {showSidebarTrigger && <SidebarTrigger className="md:hidden" />}
             <div className="flex items-center gap-2 md:hidden">
                  <Link href="/"><Film className="size-8 text-primary" /></Link>
-                 <h1 className="font-headline text-2xl font-bold text-primary tracking-wider hidden md:block">LBFC</h1>
+                 <h1 className="font-headline text-2xl font-bold text-primary tracking-wider">LBFC</h1>
             </div>
-            <div className="ml-6 hidden md:flex">
-                <SidebarNav />
-            </div>
+            
             <div className="ml-auto flex items-center gap-4">
-                <MovieSearch />
+                <div className="hidden md:block">
+                  <MovieSearch />
+                </div>
                 {isLoading ? (
                     <div className="h-10 w-10 rounded-full bg-secondary animate-pulse" />
                 ) : user ? (

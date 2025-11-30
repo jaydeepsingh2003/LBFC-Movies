@@ -6,6 +6,15 @@ import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "../ui/sidebar";
 import { useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 
+export const navItems = [
+    { href: "/", label: "Home", icon: Home },
+    { href: "/discover", label: "Discover", icon: Compass },
+    { href: "/timeline", label: "Timeline", icon: History },
+    { href: "/playlists", label: "Playlists", icon: ListVideo },
+    { href: "/social", label: "Social", icon: Users },
+    { href: "/news", label: "News", icon: Newspaper },
+];
+
 export function SidebarNav() {
     const { state } = useSidebar() ?? { state: 'expanded' };
     const pathname = usePathname();
@@ -17,42 +26,14 @@ export function SidebarNav() {
 
     return (
         <SidebarMenu className="md:flex-row md:gap-1">
-            <SidebarMenuItem>
-                <SidebarMenuButton href="/" isActive={pathname === '/'} tooltip="Home" {...buttonProps}>
-                    <Home />
-                    Home
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-                <SidebarMenuButton href="/discover" isActive={pathname === '/discover'} tooltip="Discover" {...buttonProps}>
-                    <Compass />
-                    Discover
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-             <SidebarMenuItem>
-                <SidebarMenuButton href="/timeline" isActive={pathname === '/timeline'} tooltip="Timeline" {...buttonProps}>
-                    <History />
-                    Timeline
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-                <SidebarMenuButton href="/playlists" isActive={pathname === '/playlists'} tooltip="Playlists" {...buttonProps}>
-                    <ListVideo />
-                    Playlists
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-                <SidebarMenuButton href="/social" isActive={pathname === '/social'} tooltip="Social" {...buttonProps}>
-                    <Users />
-                    Social
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-                <SidebarMenuButton href="/news" isActive={pathname === '/news'} tooltip="News" {...buttonProps}>
-                    <Newspaper />
-                    News
-                </SidebarMenuButton>
-            </SidebarMenuItem>
+            {navItems.map((item) => (
+                 <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton href={item.href} isActive={pathname === item.href} tooltip={item.label} {...buttonProps}>
+                        <item.icon />
+                        {item.label}
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            ))}
         </SidebarMenu>
     );
 }
