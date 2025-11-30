@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { languageBasedMoviePicks } from "@/ai/flows/language-based-movie-picks";
 import { MovieCarousel } from "../movie-carousel";
 import { searchMovies, getPosterUrl, getMovieVideos } from "@/lib/tmdb.client";
 import { Movie } from "@/lib/tmdb";
@@ -20,15 +19,16 @@ export default function HindiMoviesSection() {
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
-            let recommendations: string[] = [];
-            try {
-                const result = await languageBasedMoviePicks({ languages: ["Hindi"], numberOfRecommendations: 15 });
-                recommendations = result.movieRecommendations;
-            } catch (error) {
-                console.error("AI recommendations error for Hindi movies:", error)
-            }
+            const hindiMovies = [
+                "3 Idiots",
+                "Dangal",
+                "Lagaan",
+                "Sholay",
+                "Dilwale Dulhania Le Jayenge",
+                "Zindagi Na Milegi Dobara"
+            ];
             
-            const moviePromises = recommendations.map(async (title) => {
+            const moviePromises = hindiMovies.map(async (title) => {
                 const searchResults = await searchMovies(title);
                 const movie = searchResults.length > 0 ? searchResults[0] : null;
                 if (movie) {
