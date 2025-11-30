@@ -1,9 +1,9 @@
+
 "use client"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { MovieCarousel } from "@/components/movie-carousel"
-import { getMoodBasedRecommendations } from "@/ai/flows/mood-based-recommendations"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { Loader2 } from "lucide-react"
@@ -11,6 +11,40 @@ import { getPosterUrl, searchMovies, getMovieVideos } from "@/lib/tmdb.client"
 import { Movie } from "@/lib/tmdb"
 
 const moods = ["Happy", "Sad", "Adventurous", "Romantic", "Thrilling", "Funny"];
+
+const moodPlaylists: Record<string, string[]> = {
+  Happy: [
+    "Paddington 2", "School of Rock", "Mamma Mia!", "Little Miss Sunshine", 
+    "The Lego Movie", "Singin' in the Rain", "Ferris Bueller's Day Off", "Up", 
+    "Enchanted", "My Neighbor Totoro"
+  ],
+  Sad: [
+    "Grave of the Fireflies", "Schindler's List", "The Boy in the Striped Pyjamas", 
+    "Hachi: A Dog's Tale", "Manchester by the Sea", "Brokeback Mountain", 
+    "Atonement", "The Green Mile", "Million Dollar Baby", "Dancer in the Dark"
+  ],
+  Adventurous: [
+    "Indiana Jones and the Raiders of the Lost Ark", "The Lord of the Rings: The Fellowship of the Ring", 
+    "Mad Max: Fury Road", "Jurassic Park", "Pirates of ahe Caribbean: The Curse of the Black Pearl", 
+    "The Goonies", "Star Wars: A New Hope", "Avatar", "Jumanji: Welcome to the Jungle", "The Mummy (1999)"
+  ],
+  Romantic: [
+    "Pride & Prejudice", "Before Sunrise", "Casablanca", "When Harry Met Sally...", 
+    "The Notebook", "La La Land", "Amélie", "The Princess Bride", 
+    "Notting Hill", "About Time"
+  ],
+  Thrilling: [
+    "The Silence of the Lambs", "Zodiac", "Parasite", "Get Out", 
+    "A Quiet Place", "The Fugitive", "No Country for Old Men", "Prisoners",
+    "Sicario", "Seven"
+  ],
+  Funny: [
+    "Superbad", "Booksmart", "Step Brothers", "What We Do in the Shadows", 
+    "Airplane!", "Monty Python and the Holy Grail", "Shaun of the Dead", "Bridesmaids", 
+    "The Grand Budapest Hotel", "Borat"
+  ]
+};
+
 
 interface MovieWithPoster extends Movie {
     posterUrl: string | null;
@@ -23,13 +57,15 @@ export default function MoodSection() {
   const { toast } = useToast()
 
   const handleMoodSelect = async (mood: string) => {
+    if (selectedMood === mood) return;
+    
     setSelectedMood(mood)
     setIsLoading(true)
     setRecommendations([])
     try {
-      const result = await getMoodBasedRecommendations({ mood })
+      const movieTitles = moodPlaylists[mood] || [];
       
-      const moviePromises = result.movieSuggestions.map(async (title) => {
+      const moviePromises = movieTitles.map(async (title) => {
         const searchResults = await searchMovies(title);
         const movie = searchResults.length > 0 ? searchResults[0] : null;
         if (movie) {
@@ -42,8 +78,8 @@ export default function MoodSection() {
 
       const moviesData = (await Promise.all(moviePromises))
         .map((movie, index) => ({
-            ...(movie || { title: result.movieSuggestions[index], poster_path: null, id: 0, overview: "" }),
-            title: movie ? movie.title : result.movieSuggestions[index],
+            ...(movie || { title: movieTitles[index], poster_path: null, id: 0, overview: "" }),
+            title: movie ? movie.title : movieTitles[index],
             posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
             trailerUrl: movie?.trailerUrl
         }));
