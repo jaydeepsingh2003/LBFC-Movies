@@ -17,6 +17,18 @@ service cloud.firestore {
       match /savedMovies/{movieId} {
         allow read, write, delete: if isOwner(userId);
       }
+      
+      // FOLLOWING sub-collection
+      match /following/{followedUserId} {
+        allow read: if true;
+        allow write, delete: if isOwner(userId);
+      }
+
+      // FOLLOWERS sub-collection
+      match /followers/{followerUserId} {
+        allow read: if true;
+        allow write, delete: if isOwner(followerUserId);
+      }
     }
   }
 }

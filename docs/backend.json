@@ -27,6 +27,17 @@
       },
       "required": ["uid", "email"]
     },
+    "Follow": {
+      "title": "Follow Relationship",
+      "description": "Represents a follow relationship between two users.",
+      "type": "object",
+      "properties": {
+        "followedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "SavedMovie": {
       "title": "Saved Movie",
       "description": "Represents a movie saved by a user.",
@@ -52,6 +63,14 @@
     "/users/{userId}/savedMovies/{movieId}": {
       "schema": { "$ref": "#/entities/SavedMovie" },
       "description": "Sub-collection storing movies saved by a user."
+    },
+    "/users/{userId}/following/{followedUserId}": {
+      "schema": { "$ref": "#/entities/Follow" },
+      "description": "Sub-collection storing users that this user is following."
+    },
+    "/users/{userId}/followers/{followerUserId}": {
+      "schema": { "$ref": "#/entities/Follow" },
+      "description": "Sub-collection storing users that are following this user."
     }
   }
 }

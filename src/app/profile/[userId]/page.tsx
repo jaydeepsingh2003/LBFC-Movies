@@ -4,11 +4,15 @@ import { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
 import { useFirestore } from '@/firebase';
 import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
-import { Loader2, Film } from 'lucide-react';
+import { Loader2, Film, UserPlus, Users } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MovieCard } from '@/components/movie-card';
 import { getPosterUrl } from '@/lib/tmdb.client';
 import { Separator } from '@/components/ui/separator';
+import {
+  Card,
+  CardContent,
+} from '@/components/ui/card';
 
 interface UserProfile {
   uid: string;
@@ -28,6 +32,8 @@ export default function ProfilePage({ params }: { params: { userId: string } }) 
   const firestore = useFirestore();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [savedMovies, setSavedMovies] = useState<SavedMovie[]>([]);
+  const [followers, setFollowers] = useState(0);
+  const [following, setFollowing] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const { userId } = params;
 
@@ -37,16 +43,22 @@ export default function ProfilePage({ params }: { params: { userId: string } }) 
     async function fetchProfileData() {
       setIsLoading(true);
       try {
-        // Fetch user profile
         const userDocRef = doc(firestore, 'users', userId as string);
-        const userDoc = await getDoc(userDocRef);
+        const [userDoc, followersSnapshot, followingSnapshot] = await Promise.all([
+          getDoc(userDocRef),
+          getDocs(collection(firestore, `users/${userId}/followers`)),
+          getDocs(collection(firestore, `users/${userId}/following`)),
+        ]);
+        
         if (userDoc.exists()) {
           setUserProfile(userDoc.data() as UserProfile);
         } else {
           console.error("No such user!");
         }
 
-        // Fetch saved movies
+        setFollowers(followersSnapshot.size);
+        setFollowing(followingSnapshot.size);
+
         const moviesCollectionRef = collection(firestore, `users/${userId}/savedMovies`);
         const movieSnapshot = await getDocs(moviesCollectionRef);
         const moviesList = movieSnapshot.docs.map(doc => doc.data() as SavedMovie);
@@ -93,6 +105,20 @@ export default function ProfilePage({ params }: { params: { userId: string } }) 
           <div>
             <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">{userProfile.displayName}</h1>
             <p className="text-muted-foreground">{userProfile.email}</p>
+          </div>
+          <div className="flex gap-6 pt-2">
+            <div className="text-center">
+              <p className="font-bold text-xl">{followers}</p>
+              <p className="text-sm text-muted-foreground">Followers</p>
+            </div>
+            <div className="text-center">
+              <p className="font-bold text-xl">{following}</p>
+              <p className="text-sm text-muted-foreground">Following</p>
+            </div>
+             <div className="text-center">
+              <p className="font-bold text-xl">{savedMovies.length}</p>
+              <p className="text-sm text-muted-foreground">Movies</p>
+            </div>
           </div>
         </header>
 
