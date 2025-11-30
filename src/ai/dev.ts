@@ -14,3 +14,4 @@ import '@/ai/flows/advanced-movie-search.ts';
 import '@/ai/flows/movie-timeline.ts';
 import '@/ai/flows/movie-matchmaker.ts';
 import '@/ai/flows/movie-trivia.ts';
+import '@/ai/flows/get-external-ratings.ts';

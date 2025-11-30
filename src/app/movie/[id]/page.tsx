@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { getMovieDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
 import type { MovieDetails, CastMember, CrewMember, Review } from '@/lib/tmdb';
 import { getMovieTrivia } from '@/ai/flows/movie-trivia';
+import { getExternalRatings } from '@/ai/flows/get-external-ratings';
 import { AppLayout } from '@/components/layout/app-layout';
 import Image from 'next/image';
 import { Loader2, PlayCircle, Star, MessageSquareQuote } from 'lucide-react';
@@ -25,11 +26,33 @@ interface Trivia {
     goofs: string[];
 }
 
+interface ExternalRatings {
+    imdb: string;
+    rottenTomatoes: string;
+}
+
+const RottenTomatoesIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.17 14.83c-.39.39-1.02.39-1.41 0L12 15.41l-1.76 1.42c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41l1.42-1.76-1.42-1.76c-.39-.39-.39-10.2 0-1.41.39-.39 1.02-.39 1.41 0l1.76 1.42 1.76-1.42c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-1.42 1.76 1.42 1.76c.39.39.39 1.02 0 1.41z" fill="#FA320A"/>
+    </svg>
+);
+
+const ImdbIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-auto">
+    <rect width="48" height="24" rx="4" fill="#F5C518"/>
+    <path d="M8 6H11V18H8V6Z" fill="black"/>
+    <path d="M15.2 6H19.4L16.4 13.8L15.2 18H12L14.6 11.4L13.4 6H15.2Z" fill="black"/>
+    <path d="M21.6 6H24.6C26.4 6 27.6 6.9 27.6 9C27.6 10.5 26.7 11.4 25.5 11.7L28.2 18H24.9L22.8 12.3H24V8.4H22.2L21.6 6ZM24 8.4V10.2C25.2 10.2 25.5 9.9 25.5 9C25.5 8.1 25.2 8.4 24 8.4Z" fill="black"/>
+    <path d="M31 6H39V8.1H35.5V18H32.5V8.1H31V6Z" fill="black"/>
+  </svg>
+);
+
 export default function MovieDetailsPage({ params: paramsProp }: { params: { id: string } }) {
   const params = React.use(paramsProp);
   const { id } = params;
   const [movie, setMovie] = useState<MovieDetailsWithMedia | null>(null);
   const [trivia, setTrivia] = useState<Trivia | null>(null);
+  const [externalRatings, setExternalRatings] = useState<ExternalRatings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { setVideoId } = useVideoPlayer();
 
@@ -47,8 +70,13 @@ export default function MovieDetailsPage({ params: paramsProp }: { params: { id:
         };
         setMovie(movieWithMedia);
 
-        const triviaResult = await getMovieTrivia({ movieTitle: movieDetails.title });
+        const [triviaResult, ratingsResult] = await Promise.all([
+            getMovieTrivia({ movieTitle: movieDetails.title }),
+            getExternalRatings({ movieTitle: movieDetails.title })
+        ]);
+        
         setTrivia(triviaResult);
+        setExternalRatings(ratingsResult);
 
       } catch (error) {
         console.error("Failed to fetch movie details or trivia", error);
@@ -65,6 +93,17 @@ export default function MovieDetailsPage({ params: paramsProp }: { params: { id:
       setVideoId(trailer.key);
     }
   };
+  
+  const getAverageRating = () => {
+    if (!externalRatings) return null;
+    const imdbScore = parseFloat(externalRatings.imdb.split('/')[0]);
+    const rtScore = parseInt(externalRatings.rottenTomatoes.replace('%', ''));
+
+    if (isNaN(imdbScore) || isNaN(rtScore)) return null;
+
+    const average = (imdbScore * 10 + rtScore) / 2;
+    return `${average.toFixed(0)}%`;
+  }
 
   if (isLoading) {
     return (
@@ -167,13 +206,31 @@ export default function MovieDetailsPage({ params: paramsProp }: { params: { id:
 
             <p className="text-foreground/80 leading-relaxed">{movie.overview}</p>
             
-            <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-1">
+            <div className="flex items-center flex-wrap gap-4 text-sm">
+                <div className="flex items-center gap-2" title="TMDB User Score">
                     <Star className="w-5 h-5 text-yellow-400" />
                     <span className="font-bold text-lg">{movie.vote_average.toFixed(1)}</span>
                     <span className="text-muted-foreground">/ 10</span>
                 </div>
-                <span className="text-muted-foreground">&#8226;</span>
+
+                {externalRatings && (
+                    <>
+                        <div className="flex items-center gap-2" title="IMDb Rating">
+                           <ImdbIcon />
+                           <span className="font-bold text-lg">{externalRatings.imdb}</span>
+                        </div>
+                        <div className="flex items-center gap-2" title="Rotten Tomatoes Score">
+                           <RottenTomatoesIcon />
+                           <span className="font-bold text-lg">{externalRatings.rottenTomatoes}</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-2 rounded-md bg-secondary" title="Average Critic Score">
+                            <span className="text-xs font-bold text-muted-foreground">AVG</span>
+                            <span className="font-bold text-lg">{getAverageRating()}</span>
+                        </div>
+                    </>
+                )}
+
+                <span className="text-muted-foreground hidden md:inline">&#8226;</span>
                 <span className="text-muted-foreground">{new Date(movie.release_date).getFullYear()}</span>
                  <span className="text-muted-foreground">&#8226;</span>
                 <span className="text-muted-foreground">{Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m</span>
