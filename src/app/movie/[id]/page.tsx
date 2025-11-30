@@ -8,7 +8,7 @@ import { getMovieTrivia } from '@/ai/flows/movie-trivia';
 import { getExternalRatings } from '@/ai/flows/get-external-ratings';
 import { AppLayout } from '@/components/layout/app-layout';
 import Image from 'next/image';
-import { Loader2, PlayCircle, Star, MessageSquareQuote } from 'lucide-react';
+import { Loader2, PlayCircle, Star, MessageSquareQuote, Bookmark } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,6 +17,11 @@ import { Button } from '@/components/ui/button';
 import { MovieRating } from '@/components/movie-rating';
 import { useUser } from '@/firebase/auth/auth-client';
 import { UserReviewsSection } from '@/components/user-reviews-section';
+import { useFirestore } from '@/firebase';
+import { useToast } from '@/hooks/use-toast';
+import { saveMovieToPlaylist, removeMovieFromPlaylist } from '@/firebase/firestore/playlists';
+import { doc } from 'firebase/firestore';
+import { useDocumentData } from 'react-firebase-hooks/firestore';
 
 interface MovieDetailsWithMedia extends MovieDetails {
   posterUrl: string | null;
@@ -54,11 +59,18 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
   const params = React.use(props.params);
   const id = params.id;
   const { user } = useUser();
+  const firestore = useFirestore();
+  const { toast } = useToast();
   const [movie, setMovie] = useState<MovieDetailsWithMedia | null>(null);
   const [trivia, setTrivia] = useState<Trivia | null>(null);
   const [externalRatings, setExternalRatings] = useState<ExternalRatings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { setVideoId } = useVideoPlayer();
+
+  const savedMovieRef = user && firestore && id ? doc(firestore, `users/${user.uid}/savedMovies/${id}`) : null;
+  const [savedMovieDoc, isSavedMovieLoading] = useDocumentData(savedMovieRef);
+  const isSaved = !!savedMovieDoc;
+
 
   useEffect(() => {
     async function fetchData() {
@@ -98,6 +110,40 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
     }
   };
   
+  const handleSaveToggle = async () => {
+    if (!user || !firestore || !movie) {
+        toast({
+            variant: "destructive",
+            title: "Please log in",
+            description: "You must be logged in to manage your playlist.",
+        });
+        return;
+    }
+
+    try {
+        if (isSaved) {
+            await removeMovieFromPlaylist(firestore, user.uid, movie.id);
+            toast({ title: "Movie removed from your playlist." });
+        } else {
+            await saveMovieToPlaylist(firestore, user.uid, {
+                id: movie.id,
+                title: movie.title,
+                overview: movie.overview,
+                poster_path: movie.poster_path,
+            });
+            toast({ title: "Movie added to your playlist!" });
+        }
+    } catch (error) {
+        console.error("Error toggling save state:", error);
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Could not update your playlist. Please try again.",
+        });
+    }
+  };
+
+
   const getAverageRating = () => {
     if (!externalRatings) return null;
     const imdbScore = parseFloat(externalRatings.imdb.split('/')[0]);
@@ -197,9 +243,16 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
                 {movie.posterUrl && <Image src={movie.posterUrl} alt={movie.title} fill className="object-cover" />}
               </CardContent>
             </Card>
-            <Button onClick={handlePlayTrailer} className="w-full mt-4" size="lg">
-              <PlayCircle className="mr-2" /> Play Trailer
-            </Button>
+            <div className="flex gap-2 mt-4">
+              <Button onClick={handlePlayTrailer} className="w-full" size="lg">
+                <PlayCircle className="mr-2" /> Play Trailer
+              </Button>
+               {user && (
+                <Button onClick={handleSaveToggle} variant={isSaved ? "secondary" : "default"} size="lg" disabled={isSavedMovieLoading}>
+                  <Bookmark className={isSaved ? "mr-2 fill-current" : "mr-2"} /> {isSaved ? 'Saved' : 'Save'}
+                </Button>
+              )}
+            </div>
              {streamingProviders.length > 0 && (
                 <Card className="mt-4 bg-secondary">
                     <CardHeader>
@@ -319,3 +372,5 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
     </AppLayout>
   );
 }
+
+    
