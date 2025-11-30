@@ -16,6 +16,7 @@ import { useVideoPlayer } from '@/context/video-provider';
 import { Button } from '@/components/ui/button';
 import { MovieRating } from '@/components/movie-rating';
 import { useUser } from '@/firebase/auth/auth-client';
+import { UserReviewsSection } from '@/components/user-reviews-section';
 
 interface MovieDetailsWithMedia extends MovieDetails {
   posterUrl: string | null;
@@ -265,18 +266,20 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
                  <span className="text-muted-foreground">&#8226;</span>
                 <span className="text-muted-foreground">{Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m</span>
             </div>
-            
-            {movie.reviews && movie.reviews.results.length > 0 && (
-                <section className="space-y-4 pt-8">
-                    <h2 className="font-headline text-2xl font-bold">Critical Acclaim</h2>
-                    {renderReviews(movie.reviews.results)}
-                </section>
-            )}
 
             <section className="space-y-4 pt-8">
               <h2 className="font-headline text-2xl font-bold">Cast</h2>
               {renderCreditList(movie.credits.cast)}
             </section>
+            
+            {movie.reviews && movie.reviews.results.length > 0 && (
+                <section className="space-y-4 pt-8">
+                    <h2 className="font-headline text-2xl font-bold">Critical Acclaim (from TMDB)</h2>
+                    {renderReviews(movie.reviews.results)}
+                </section>
+            )}
+
+            <UserReviewsSection movieId={movie.id} />
 
              {trivia && (
                 <section className="space-y-4 pt-8">
