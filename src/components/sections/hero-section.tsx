@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Info, PlayCircle } from "lucide-react";
 import Image from 'next/image';
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
-import { searchMovies } from "@/lib/tmdb.client";
+import { searchMovies, getMovieVideos } from "@/lib/tmdb.client";
 import { Movie } from "@/lib/tmdb";
 import { Skeleton } from "../ui/skeleton";
 import { getBackdropUrl } from "@/lib/tmdb.client";
+import { useVideoPlayer } from "@/context/video-provider";
+import Link from "next/link";
 
 
 interface MovieWithImages extends Movie {
@@ -23,6 +25,8 @@ export default function HeroSection() {
     )
     const [movies, setMovies] = React.useState<MovieWithImages[]>([]);
     const [isLoading, setIsLoading] = React.useState(true);
+    const { setVideoId } = useVideoPlayer();
+
 
     React.useEffect(() => {
         async function fetchHeroMovies() {
@@ -44,20 +48,25 @@ export default function HeroSection() {
                 "The Beekeeper"
             ];
             try {
-                const searchPromises = heroMovieTitles.map(title => searchMovies(title));
-                const searchResults = await Promise.all(searchPromises);
+                const searchPromises = heroMovieTitles.map(async (title) => {
+                    const results = await searchMovies(title);
+                    return results.length > 0 ? results[0] : null;
+                });
+                const searchResults = (await Promise.all(searchPromises)).filter((m): m is Movie => m !== null);
 
-                const moviesData = searchResults.map((result, index) => {
-                    const movie = result.length > 0 ? result[0] : null;
+                const moviesDataPromises = searchResults.map(async (movie) => {
+                    const videos = await getMovieVideos(movie.id);
+                    const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
                     return {
-                        id: movie?.id ?? index,
-                        title: movie ? movie.title : heroMovieTitles[index],
-                        overview: movie?.overview ?? '',
-                        poster_path: movie?.poster_path ?? null,
-                        backdrop_path: movie?.backdrop_path ?? null,
-                        backdropUrl: movie ? getBackdropUrl(movie.backdrop_path) : null,
+                        ...movie,
+                        backdropUrl: movie.backdrop_path ? getBackdropUrl(movie.backdrop_path) : null,
+                        trailerUrl: trailer ? trailer.key : undefined,
                     };
-                }).filter((movie): movie is MovieWithImages => !!movie.backdropUrl);
+                });
+
+                const moviesData = (await Promise.all(moviesDataPromises))
+                    .filter((movie): movie is MovieWithImages => !!movie.backdropUrl);
+
                 setMovies(moviesData);
             } catch (error) {
                 console.error("Failed to fetch hero movies:", error);
@@ -67,6 +76,13 @@ export default function HeroSection() {
         }
         fetchHeroMovies();
     }, []);
+
+    const handlePlayTrailer = (e: React.MouseEvent, videoId: string | undefined) => {
+        e.preventDefault();
+        if (videoId) {
+            setVideoId(videoId);
+        }
+    };
 
     if (isLoading) {
         return (
@@ -117,11 +133,13 @@ export default function HeroSection() {
                                         {movie.overview}
                                     </p>
                                     <div className="mt-6 flex gap-3 animate-in fade-in slide-in-from-bottom-16 duration-700 delay-200">
-                                        <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
+                                        <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold" onClick={(e) => handlePlayTrailer(e, movie.trailerUrl)}>
                                             <PlayCircle className="mr-2" /> Play
                                         </Button>
-                                        <Button size="lg" variant="secondary" className="bg-white/30 hover:bg-white/20 text-white backdrop-blur-sm font-bold">
-                                            <Info className="mr-2" /> More Info
+                                        <Button size="lg" variant="secondary" className="bg-white/30 hover:bg-white/20 text-white backdrop-blur-sm font-bold" asChild>
+                                            <Link href={`/movie/${movie.id}`}>
+                                                <Info className="mr-2" /> More Info
+                                            </Link>
                                         </Button>
                                     </div>
                                 </div>
