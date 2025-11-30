@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 import { aiChatbot } from "@/ai/flows/ai-chatbot";
 import type { AIChatbotOutput } from "@/ai/flows/ai-chatbot";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 type Message = {
   id: string;
@@ -22,6 +24,7 @@ export function AiChatbotWidget() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -66,7 +69,10 @@ export function AiChatbotWidget() {
   return (
     <>
       <Button
-        className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90"
+        className={cn(
+          "fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90",
+          isMobile && "bottom-20"
+        )}
         onClick={() => setIsOpen(true)}
         aria-label="Open AI Chatbot"
       >
