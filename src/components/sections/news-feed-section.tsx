@@ -33,6 +33,36 @@ const newsItems = [
     date: "3 days ago",
     imageId: "news-3",
     excerpt: "The Oscar-winning composer is set to create the soundscape for a new film about the life of Cleopatra, starring Zendaya."
+  },
+  {
+    id: 4,
+    title: "'Blade Runner 2099' Series Greenlit for Streaming",
+    source: "Deadline",
+    author: "Alex Green",
+    authorAvatarId: "avatar-1",
+    date: "4 days ago",
+    imageId: "movie-poster-1",
+    excerpt: "Ridley Scott is set to produce a new series expanding the Blade Runner universe, set 50 years after the events of 'Blade Runner 2049'."
+  },
+  {
+    id: 5,
+    title: "A24 Acquires Rights to Psychological Thriller 'The Echo Chamber'",
+    source: "Variety",
+    author: "Jane Smith",
+    authorAvatarId: "avatar-2",
+    date: "5 days ago",
+    imageId: "movie-poster-8",
+    excerpt: "The indie studio continues its streak of acquiring unique and thought-provoking films with its latest purchase."
+  },
+  {
+    id: 6,
+    title: "Animation Pioneer Hayao Miyazaki Announces One Final Film",
+    source: "IndieWire",
+    author: "Mike Johnson",
+    authorAvatarId: "avatar-1",
+    date: "1 week ago",
+    imageId: "movie-poster-10",
+    excerpt: "The celebrated director of Studio Ghibli fame is coming out of retirement for one last animated feature, details of which are still under wraps."
   }
 ];
 
