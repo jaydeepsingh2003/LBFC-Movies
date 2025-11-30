@@ -1,9 +1,9 @@
+
 "use client"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { MovieCarousel } from "@/components/movie-carousel"
-import { languageBasedMoviePicks } from "@/ai/flows/language-based-movie-picks"
 import { useToast } from "@/hooks/use-toast"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
@@ -12,6 +12,44 @@ import { Movie } from "@/lib/tmdb"
 import { getPosterUrl, searchMovies, getMovieVideos } from "@/lib/tmdb.client"
 
 const availableLanguages = ["English", "Spanish", "French", "Japanese", "Korean", "Hindi", "Kannada"];
+
+const languagePlaylists: Record<string, string[]> = {
+  English: [
+    "The Shawshank Redemption", "The Dark Knight", "Forrest Gump", "Pulp Fiction",
+    "Inception", "The Matrix", "Goodfellas", "The Lord of the Rings: The Fellowship of the Ring",
+    "Fight Club", "Gladiator"
+  ],
+  Spanish: [
+    "Pan's Labyrinth", "The Secret in Their Eyes", "Amores perros", "Y tu mamá también",
+    "Roma", "Wild Tales", "The Sea Inside", "All About My Mother",
+    "The Motorcycle Diaries", "The Platform"
+  ],
+  French: [
+    "Amélie", "The Intouchables", "La Haine", "Portrait of a Lady on Fire",
+    "Blue Is the Warmest Colour", "The 400 Blows", "Breathless", "Le Dîner de Cons",
+    "A Prophet", "Rust and Bone"
+  ],
+  Japanese: [
+    "Spirited Away", "Seven Samurai", "Your Name.", "My Neighbor Totoro",
+    "Akira", "Grave of the Fireflies", "Princess Mononoke", "Battle Royale",
+    "Drive My Car", "Shoplifters"
+  ],
+  Korean: [
+    "Parasite", "Oldboy", "Train to Busan", "The Handmaiden",
+    "Memories of Murder", "Burning", "The Wailing", "I Saw the Devil",
+    "A Taxi Driver", "The Man from Nowhere"
+  ],
+  Hindi: [
+    "3 Idiots", "Dangal", "Lagaan", "Sholay", "Dilwale Dulhania Le Jayenge",
+    "Zindagi Na Milegi Dobara", "Gangs of Wasseypur", "Taare Zameen Par",
+    "Andhadhun", "Barfi!"
+  ],
+  Kannada: [
+    "K.G.F: Chapter 1", "Kantara", "Kirik Party", "Mungaru Male", "Ulidavaru Kandanthe",
+    "Lucia", "Thithi", "Rangitaranga", "Garuda Gamana Vrishabha Vahana", "777 Charlie"
+  ]
+};
+
 
 interface MovieWithPoster extends Movie {
     posterUrl: string | null;
@@ -43,9 +81,10 @@ export default function LanguagePicksSection() {
     setIsLoading(true);
     setRecommendations([]);
     try {
-      const result = await languageBasedMoviePicks({ languages: selectedLanguages });
+      const movieTitles = selectedLanguages.flatMap(lang => languagePlaylists[lang] || []);
+      const uniqueMovieTitles = Array.from(new Set(movieTitles));
       
-      const moviePromises = result.movieRecommendations.map(async (title) => {
+      const moviePromises = uniqueMovieTitles.map(async (title) => {
         const searchResults = await searchMovies(title);
         const movie = searchResults.length > 0 ? searchResults[0] : null;
         if (movie) {
@@ -58,8 +97,8 @@ export default function LanguagePicksSection() {
 
       const moviesData = (await Promise.all(moviePromises))
         .map((movie, index) => ({
-          ...(movie || { title: result.movieRecommendations[index], poster_path: null, id: 0, overview: "" }),
-          title: movie ? movie.title : result.movieRecommendations[index],
+          ...(movie || { title: uniqueMovieTitles[index], poster_path: null, id: 0, overview: "" }),
+          title: movie ? movie.title : uniqueMovieTitles[index],
           posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
           trailerUrl: movie?.trailerUrl
         }));
