@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from 'next/image';
@@ -11,6 +12,7 @@ import { useUser } from '@/firebase/auth/auth-client';
 import { useToast } from '@/hooks/use-toast';
 import { saveMovieToPlaylist } from '@/firebase/firestore/playlists';
 import { useFirestore } from '@/firebase';
+import { MovieRating } from './movie-rating';
 
 interface MovieCardProps {
   id: number;
@@ -86,15 +88,17 @@ export function MovieCard({ id, title, posterUrl, trailerUrl, className, aspect 
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="absolute top-2 right-2 text-white/80 hover:bg-white/20 hover:text-white"
-            onClick={handleSaveMovie}
-            aria-label="Save to playlist"
-          >
-            <Bookmark className="w-6 h-6" />
-          </Button>
+          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-white/80 hover:bg-white/20 hover:text-white"
+              onClick={handleSaveMovie}
+              aria-label="Save to playlist"
+            >
+              <Bookmark className="w-6 h-6" />
+            </Button>
+          </div>
           
           <div 
             className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -107,8 +111,14 @@ export function MovieCard({ id, title, posterUrl, trailerUrl, className, aspect 
             )}
           </div>
 
-          <div className="absolute bottom-0 left-0 p-4">
+          <div className="absolute bottom-0 left-0 p-4 w-full">
             <h3 className="font-headline text-lg font-bold text-white shadow-md ">{title}</h3>
+            <div 
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} 
+              className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            >
+               {user && <MovieRating movieId={id} />}
+            </div>
           </div>
         </CardContent>
       </Card>

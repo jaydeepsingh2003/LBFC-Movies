@@ -1,3 +1,4 @@
+
 rules_version = '2';
 
 service cloud.firestore {
@@ -28,6 +29,11 @@ service cloud.firestore {
       match /followers/{followerUserId} {
         allow read: if true;
         allow write, delete: if isOwner(followerUserId);
+      }
+
+      // RATINGS sub-collection
+      match /ratings/{movieId} {
+        allow read, write: if isOwner(userId);
       }
     }
   }

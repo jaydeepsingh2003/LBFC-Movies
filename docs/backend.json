@@ -50,6 +50,22 @@
         "savedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["id", "title"]
+    },
+    "UserMovieRating": {
+      "title": "User Movie Rating",
+      "description": "Represents a rating given by a user to a movie.",
+      "type": "object",
+      "properties": {
+        "rating": {
+          "type": "number",
+          "description": "The rating given by the user (e.g., 1-10)."
+        },
+        "ratedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["rating"]
     }
   },
   "auth": {
@@ -71,6 +87,10 @@
     "/users/{userId}/followers/{followerUserId}": {
       "schema": { "$ref": "#/entities/Follow" },
       "description": "Sub-collection storing users that are following this user."
+    },
+    "/users/{userId}/ratings/{movieId}": {
+      "schema": { "$ref": "#/entities/UserMovieRating" },
+      "description": "Sub-collection storing a user's movie ratings."
     }
   }
 }

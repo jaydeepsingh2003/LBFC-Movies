@@ -14,6 +14,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
 import { Button } from '@/components/ui/button';
+import { MovieRating } from '@/components/movie-rating';
+import { useUser } from '@/firebase/auth/auth-client';
 
 interface MovieDetailsWithMedia extends MovieDetails {
   posterUrl: string | null;
@@ -50,6 +52,7 @@ const ImdbIcon = () => (
 export default function MovieDetailsPage(props: { params: { id: string } }) {
   const params = React.use(props.params);
   const id = params.id;
+  const { user } = useUser();
   const [movie, setMovie] = useState<MovieDetailsWithMedia | null>(null);
   const [trivia, setTrivia] = useState<Trivia | null>(null);
   const [externalRatings, setExternalRatings] = useState<ExternalRatings | null>(null);
@@ -223,6 +226,13 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
                 {movie.genres.map(genre => <Badge key={genre.id} variant="secondary">{genre.name}</Badge>)}
               </div>
             </header>
+            
+            {user && (
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-foreground">Your Rating</h3>
+                <MovieRating movieId={movie.id} />
+              </div>
+            )}
 
             <p className="text-foreground/80 leading-relaxed">{movie.overview}</p>
             
