@@ -17,36 +17,37 @@ const languagePlaylists: Record<string, string[]> = {
   English: [
     "The Shawshank Redemption", "The Dark Knight", "Forrest Gump", "Pulp Fiction",
     "Inception", "The Matrix", "Goodfellas", "The Lord of the Rings: The Fellowship of the Ring",
-    "Fight Club", "Gladiator"
+    "Fight Club", "Gladiator", "The Godfather", "12 Angry Men", "Schindler's List", "The Green Mile", "Se7en"
   ],
   Spanish: [
     "Pan's Labyrinth", "The Secret in Their Eyes", "Amores perros", "Y tu mamá también",
     "Roma", "Wild Tales", "The Sea Inside", "All About My Mother",
-    "The Motorcycle Diaries", "The Platform"
+    "The Motorcycle Diaries", "The Platform", "The Orphanage", "Biutiful", "Talk to Her", "Open Your Eyes", "REC"
   ],
   French: [
     "Amélie", "The Intouchables", "La Haine", "Portrait of a Lady on Fire",
     "Blue Is the Warmest Colour", "The 400 Blows", "Breathless", "Le Dîner de Cons",
-    "A Prophet", "Rust and Bone"
+    "A Prophet", "Rust and Bone", "Caché", "The Class", "Raw", "Titane", "Les Misérables (2019)"
   ],
   Japanese: [
     "Spirited Away", "Seven Samurai", "Your Name.", "My Neighbor Totoro",
     "Akira", "Grave of the Fireflies", "Princess Mononoke", "Battle Royale",
-    "Drive My Car", "Shoplifters"
+    "Drive My Car", "Shoplifters", "Tokyo Story", "Harakiri", "Rashomon", "Ikiru", "Perfect Blue"
   ],
   Korean: [
     "Parasite", "Oldboy", "Train to Busan", "The Handmaiden",
     "Memories of Murder", "Burning", "The Wailing", "I Saw the Devil",
-    "A Taxi Driver", "The Man from Nowhere"
+    "A Taxi Driver", "The Man from Nowhere", "Joint Security Area", "Mother", "The Host", "Minari", "Decision to Leave"
   ],
   Hindi: [
     "3 Idiots", "Dangal", "Lagaan", "Sholay", "Dilwale Dulhania Le Jayenge",
     "Zindagi Na Milegi Dobara", "Gangs of Wasseypur", "Taare Zameen Par",
-    "Andhadhun", "Barfi!"
+    "Andhadhun", "Barfi!", "Queen", "My Name Is Khan", "Swades", "Haider", "Gully Boy"
   ],
   Kannada: [
     "K.G.F: Chapter 1", "Kantara", "Kirik Party", "Mungaru Male", "Ulidavaru Kandanthe",
-    "Lucia", "Thithi", "Rangitaranga", "Garuda Gamana Vrishabha Vahana", "777 Charlie"
+    "Lucia", "Thithi", "Rangitaranga", "Garuda Gamana Vrishabha Vahana", "777 Charlie",
+    "K.G.F: Chapter 2", "Sapta Sagaradaache Ello - Side A", "Bettada Hoovu", "Om", "Aa Dinagalu"
   ]
 };
 
