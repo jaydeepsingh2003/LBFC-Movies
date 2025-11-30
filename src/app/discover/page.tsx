@@ -55,12 +55,14 @@ export default function DiscoverPage() {
           id: movie ? movie.id : index,
           title: movie ? movie.title : aiResult.recommendations[index],
           posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
-          trailerUrl: movie?.trailerUrl
+          trailerUrl: movie?.trailerUrl,
+          overview: movie?.overview ?? "",
+          poster_path: movie?.poster_path
         }));
 
       const uniqueMovies = moviesData.reduce((acc: MovieWithPoster[], current) => {
         if (!acc.find(item => item.title === current.title)) {
-            acc.push(current);
+            acc.push(current as MovieWithPoster);
         }
         return acc;
       }, []);
