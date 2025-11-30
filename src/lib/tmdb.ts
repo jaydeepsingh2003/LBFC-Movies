@@ -38,6 +38,12 @@ export interface Review {
     };
 }
 
+export interface WatchProvider {
+    logo_path: string;
+    provider_id: number;
+    provider_name: string;
+}
+
 export interface MovieDetails extends Movie {
     genres: { id: number; name: string }[];
     runtime: number;
@@ -52,6 +58,16 @@ export interface MovieDetails extends Movie {
     };
     reviews: {
         results: Review[];
+    };
+    'watch/providers': {
+        results: {
+            [countryCode: string]: {
+                link: string;
+                flatrate?: WatchProvider[];
+                rent?: WatchProvider[];
+                buy?: WatchProvider[];
+            }
+        }
     };
 }
 

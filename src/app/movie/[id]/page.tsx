@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getMovieDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
-import type { MovieDetails, CastMember, CrewMember, Review } from '@/lib/tmdb';
+import type { MovieDetails, CastMember, CrewMember, Review, WatchProvider } from '@/lib/tmdb';
 import { getMovieTrivia } from '@/ai/flows/movie-trivia';
 import { getExternalRatings } from '@/ai/flows/get-external-ratings';
 import { AppLayout } from '@/components/layout/app-layout';
@@ -47,9 +47,9 @@ const ImdbIcon = () => (
   </svg>
 );
 
-export default function MovieDetailsPage({ params: paramsProp }: { params: { id: string } }) {
-  const params = React.use(paramsProp);
-  const { id } = params;
+export default function MovieDetailsPage(props: { params: { id: string } }) {
+  const params = React.use(props.params);
+  const id = params.id;
   const [movie, setMovie] = useState<MovieDetailsWithMedia | null>(null);
   const [trivia, setTrivia] = useState<Trivia | null>(null);
   const [externalRatings, setExternalRatings] = useState<ExternalRatings | null>(null);
@@ -104,6 +104,9 @@ export default function MovieDetailsPage({ params: paramsProp }: { params: { id:
     const average = (imdbScore * 10 + rtScore) / 2;
     return `${average.toFixed(0)}%`;
   }
+  
+  const usProviders = movie?.['watch/providers']?.results?.US;
+  const streamingProviders = usProviders?.flatrate || [];
 
   if (isLoading) {
     return (
@@ -193,6 +196,23 @@ export default function MovieDetailsPage({ params: paramsProp }: { params: { id:
             <Button onClick={handlePlayTrailer} className="w-full mt-4" size="lg">
               <PlayCircle className="mr-2" /> Play Trailer
             </Button>
+             {streamingProviders.length > 0 && (
+                <Card className="mt-4 bg-secondary">
+                    <CardHeader>
+                        <CardTitle className="text-base">Where to Watch</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-wrap gap-2">
+                        {streamingProviders.map(provider => (
+                            <div key={provider.provider_id} title={provider.provider_name}>
+                                <Avatar className="h-10 w-10">
+                                    <AvatarImage src={getPosterUrl(provider.logo_path)} alt={provider.provider_name} />
+                                    <AvatarFallback>{provider.provider_name.substring(0, 2)}</AvatarFallback>
+                                </Avatar>
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
+            )}
           </div>
 
           <div className="w-full md:w-3/4 space-y-6">

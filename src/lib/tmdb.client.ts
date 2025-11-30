@@ -66,7 +66,7 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetails> {
     throw new Error('TMDB_API_KEY is not set.');
   }
 
-  const url = `/api/tmdb/3/movie/${movieId}?api_key=${TMDB_API_KEY}&append_to_response=credits,videos,keywords,reviews`;
+  const url = `/api/tmdb/3/movie/${movieId}?api_key=${TMDB_API_KEY}&append_to_response=credits,videos,keywords,reviews,watch/providers`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
