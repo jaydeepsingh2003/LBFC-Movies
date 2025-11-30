@@ -128,21 +128,25 @@ export default function LoginPage() {
                     {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : (isSignUp ? 'Sign Up' : 'Sign In')}
                   </Button>
               </form>
+              
+              {!isSignUp && (
+                <>
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-neutral-600" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-black/80 px-2 text-neutral-400">
+                                Or continue with
+                            </span>
+                        </div>
+                    </div>
 
-              <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-neutral-600" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-black/80 px-2 text-neutral-400">
-                          Or continue with
-                      </span>
-                  </div>
-              </div>
-
-              <Button onClick={handleGoogleLogin} variant="outline" className="w-full h-12 bg-transparent border-neutral-600 hover:bg-neutral-800 text-base font-semibold" disabled={isLoading}>
-                  {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Sign in with Google'}
-              </Button>
+                    <Button onClick={handleGoogleLogin} variant="outline" className="w-full h-12 bg-transparent border-neutral-600 hover:bg-neutral-800 text-base font-semibold" disabled={isLoading}>
+                        {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Sign in with Google'}
+                    </Button>
+                </>
+              )}
               
               <p className="text-sm text-neutral-400 text-center">
                 {isSignUp ? "Already have an account?" : "New to LBFC?"}{' '}
