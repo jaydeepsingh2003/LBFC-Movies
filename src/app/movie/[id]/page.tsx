@@ -114,7 +114,7 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
 
   if (isLoading) {
     return (
-      <AppLayout showSidebar={false}>
+      <AppLayout>
         <div className="flex justify-center items-center h-screen">
           <Loader2 className="h-32 w-32 animate-spin text-primary" />
         </div>
@@ -124,7 +124,7 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
 
   if (!movie) {
     return (
-      <AppLayout showSidebar={false}>
+      <AppLayout>
         <div className="text-center py-16">
           <h2 className="text-2xl font-bold">Movie not found</h2>
           <p className="text-muted-foreground mt-2">We couldn't find details for this movie.</p>
@@ -182,7 +182,7 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
   );
 
   return (
-    <AppLayout showSidebar={false}>
+    <AppLayout>
       <div className="relative h-96 md:h-[32rem] w-full">
         {movie.backdropUrl && <Image src={movie.backdropUrl} alt={movie.title} fill className="object-cover" />}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />

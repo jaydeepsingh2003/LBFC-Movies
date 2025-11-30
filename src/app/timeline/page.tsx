@@ -79,7 +79,7 @@ export default function TimelinePage() {
   }, [debouncedYear, fetchMovies]);
 
   return (
-    <AppLayout showSidebar={false}>
+    <AppLayout>
       <div className="p-4 sm:p-6 md:p-8">
         <div className="space-y-8">
           <header className="space-y-2">

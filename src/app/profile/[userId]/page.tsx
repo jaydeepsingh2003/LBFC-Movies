@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -76,7 +77,7 @@ export default function ProfilePage({ params }: { params: { userId: string } }) 
 
   if (isLoading) {
     return (
-      <AppLayout showSidebar={false}>
+      <AppLayout>
         <div className="flex justify-center items-center h-screen">
           <Loader2 className="h-32 w-32 animate-spin text-primary" />
         </div>
@@ -86,7 +87,7 @@ export default function ProfilePage({ params }: { params: { userId: string } }) 
 
   if (!userProfile) {
     return (
-      <AppLayout showSidebar={false}>
+      <AppLayout>
         <div className="text-center py-16">
           <h2 className="text-2xl font-bold">User not found</h2>
         </div>
@@ -95,7 +96,7 @@ export default function ProfilePage({ params }: { params: { userId: string } }) 
   }
 
   return (
-    <AppLayout showSidebar={false}>
+    <AppLayout>
       <div className="p-4 sm:p-6 md:p-8 space-y-8">
         <header className="flex flex-col items-center text-center space-y-4">
           <Avatar className="h-24 w-24 border-4 border-primary">

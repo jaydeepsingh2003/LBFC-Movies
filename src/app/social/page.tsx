@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -96,7 +97,7 @@ export default function SocialPage() {
   };
 
   return (
-    <AppLayout showSidebar={false}>
+    <AppLayout>
       <div className="p-4 sm:p-6 md:p-8">
         <header className="space-y-2 mb-8">
           <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">Discover Users</h1>

@@ -37,7 +37,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <AppLayout showSidebar={false}>
+    <AppLayout>
       <div className="flex flex-col">
         <HeroSection />
         <div className="p-4 sm:p-6 md:p-8 space-y-12">
