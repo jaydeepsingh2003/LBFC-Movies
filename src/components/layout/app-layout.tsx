@@ -1,4 +1,5 @@
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarInset } from '@/components/ui/sidebar';
+
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarNav } from './sidebar-nav';
 import { Header } from './header';
 import { Film, User } from 'lucide-react';
@@ -19,6 +20,7 @@ export function AppLayout({ children, showSidebar = true }: { children: React.Re
               </Button>
               <h1 className="font-headline text-2xl font-bold text-primary tracking-wider">LBFC</h1>
             </div>
+             <SidebarTrigger className="ml-auto" />
           </SidebarHeader>
           <SidebarContent>
             <SidebarNav />
