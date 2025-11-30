@@ -26,6 +26,10 @@ export default function ForYouSection() {
                 "Spirited Away",
                 "The Lord of the Rings: The Return of the King",
                 "Interstellar",
+                "Pulp Fiction",
+                "The Godfather",
+                "Schindler's List",
+                "Inception"
             ];
 
             let fetchedMoviesData: MovieWithPoster[] = [];
@@ -68,7 +72,7 @@ export default function ForYouSection() {
              <div className="space-y-4">
                 <Skeleton className="h-8 w-1/4" />
                 <div className="flex gap-4">
-                    {[...Array(6)].map((_, i) => (
+                    {[...Array(10)].map((_, i) => (
                         <Skeleton key={i} className="aspect-[2/3] w-1/6 rounded-lg" />
                     ))}
                 </div>
