@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getRegionalAgeBasedTrendingMovies } from "@/ai/flows/regional-age-based-trending-movies";
 import { MovieCarousel } from "../movie-carousel";
 import { getPosterUrl, getMovieVideos, searchMovies } from "@/lib/tmdb.client";
 import { Movie } from "@/lib/tmdb";
@@ -20,16 +19,14 @@ export default function TrendingSection() {
     useEffect(() => {
         const fetchTrending = async () => {
             setIsLoading(true);
-            let trendingMovies: string[] = [];
-            try {
-                const result = await getRegionalAgeBasedTrendingMovies({
-                    region: "United States",
-                    ageGroup: "25-34",
-                });
-                trendingMovies = result.trendingMovies;
-            } catch (error) {
-                console.error("Failed to get trending movies:", error);
-            }
+            const trendingMovies = [
+                "Oppenheimer",
+                "Barbie",
+                "Spider-Man: Across the Spider-Verse",
+                "Poor Things",
+                "The Holdovers",
+                "Past Lives"
+            ];
             
             const moviePromises = trendingMovies.map(async (title) => {
                 const searchResults = await searchMovies(title);
