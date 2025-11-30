@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from 'react';
@@ -7,6 +8,8 @@ import {
     GoogleAuthProvider, 
     signInWithPopup, 
     signOut,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
     type User
 } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -23,10 +26,12 @@ export function useUser() {
             if (user) {
                 const db = getFirestore(app);
                 const userRef = doc(db, 'users', user.uid);
+                // For new email/password sign-ups, displayName might be null initially
+                const displayName = user.displayName || user.email?.split('@')[0];
                 await setDoc(userRef, {
                     uid: user.uid,
                     email: user.email,
-                    displayName: user.displayName,
+                    displayName: displayName,
                     photoURL: user.photoURL,
                 }, { merge: true });
             }
@@ -47,6 +52,29 @@ export const loginWithGoogle = async () => {
         throw error;
     }
 };
+
+export const signUpWithEmail = async (email: string, password: string): Promise<User> => {
+    const auth = getAuth();
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        return userCredential.user;
+    } catch (error) {
+        console.error("Error signing up with email and password", error);
+        throw error;
+    }
+};
+
+export const signInWithEmail = async (email: string, password: string): Promise<User> => {
+    const auth = getAuth();
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        return userCredential.user;
+    } catch (error) {
+        console.error("Error signing in with email and password", error);
+        throw error;
+    }
+};
+
 
 export const logout = async () => {
     const auth = getAuth();
