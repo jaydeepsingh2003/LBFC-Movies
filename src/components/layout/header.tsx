@@ -8,7 +8,30 @@ import { CreditCard, Film, LogOut, Settings, User } from "lucide-react"
 import { MovieSearch } from "../movie-search"
 import { useUser, logout } from "@/firebase/auth/auth-client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { navItems } from "./sidebar-nav";
+import { cn } from "@/lib/utils";
+
+export function DesktopNav() {
+    const pathname = usePathname();
+    return (
+        <nav className="hidden md:flex items-center gap-4 text-sm font-medium text-muted-foreground">
+            {navItems.map((item) => (
+                <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                        "transition-colors hover:text-foreground",
+                        pathname === item.href && "text-foreground font-semibold"
+                    )}
+                >
+                    {item.label}
+                </Link>
+            ))}
+        </nav>
+    );
+}
+
 
 export function Header() {
     const { user, isLoading } = useUser();
@@ -20,11 +43,13 @@ export function Header() {
     };
 
     return (
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-transparent bg-gradient-to-b from-background to-transparent px-4 backdrop-blur-sm md:px-8">
-            <div className="flex items-center gap-2 md:hidden">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-8 border-b bg-background/95 px-4 backdrop-blur-sm md:px-8">
+            <div className="flex items-center gap-2">
                  <Link href="/"><Film className="size-8 text-primary" /></Link>
-                 <h1 className="font-headline text-2xl font-bold text-primary tracking-wider">LBFC</h1>
+                 <h1 className="font-headline text-2xl font-bold text-primary tracking-wider hidden md:block">LBFC</h1>
             </div>
+            
+            <DesktopNav />
             
             <div className="ml-auto flex items-center gap-4">
                 <div className="hidden md:block">
