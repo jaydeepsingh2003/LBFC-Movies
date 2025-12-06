@@ -190,7 +190,7 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
   const renderCreditList = (items: (CastMember | CrewMember)[], maxItems = 12) => (
      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
       {items.slice(0, maxItems).map(item => (
-        <Card key={item.id} className="bg-card/50 transition-colors hover:bg-secondary">
+        <Card key={item.credit_id} className="bg-card/50 transition-colors hover:bg-secondary">
           <Link href={`/person/${item.id}`} className="block h-full">
             <CardContent className="p-3 flex items-center gap-3 h-full">
               <Avatar>

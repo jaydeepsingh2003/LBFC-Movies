@@ -104,7 +104,7 @@ export default function PersonPage(props: { params: { id: string } }) {
                 )}
                  {person.deathday && (
                     <div className="flex items-center gap-2">
-                        <span>Died: {new Date(person.deathday).toLocaleDateString()} (aged {getAge(person.birthday, person.deathday)})</span>
+                        <span>Died: {new Date(person.deathday).toLocaleDateString()} (aged ${getAge(person.birthday, person.deathday)})</span>
                     </div>
                 )}
                 {person.place_of_birth && (
