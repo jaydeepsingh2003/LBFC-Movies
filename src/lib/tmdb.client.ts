@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Movie, MovieDetails, PersonDetails, TVShow, TVShowDetails } from "./tmdb";
+import { Movie, MovieDetails, Person, PersonDetails, TVShow, TVShowDetails } from "./tmdb";
 
 const TMDB_API_KEY = "2dc0bd12c7bd63b2c691d3a64f3a3db7";
 const TMDB_IMAGE_BASE_URL_POSTER = 'https://image.tmdb.org/t/p/w500';
@@ -158,6 +158,26 @@ export async function getPersonDetails(personId: number): Promise<PersonDetails>
         console.error('Error fetching person details from TMDB API via proxy:', error);
         throw error;
     }
+}
+
+export async function getPopularPeople(): Promise<Person[]> {
+  if (!TMDB_API_KEY) {
+    console.error('TMDB_API_KEY is not available. API requests will be skipped.');
+    return [];
+  }
+  const url = `/api/tmdb/3/person/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`TMDB API request for popular people failed with status ${response.status}`);
+      return [];
+    }
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error('Error fetching popular people from TMDB API via proxy:', error);
+    return [];
+  }
 }
 
 export async function getNowPlayingMovies(): Promise<Movie[]> {
