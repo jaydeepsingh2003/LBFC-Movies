@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
-import { getPersonDetails, getPosterUrl } from '@/lib/tmdb.client';
+import { getPersonDetails, getPosterUrl, getMovieVideos } from '@/lib/tmdb.client';
 import type { PersonDetails, Movie as FilmographyMovie } from '@/lib/tmdb';
 import { Loader2, Cake, MapPin, Film, Clapperboard } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -15,6 +15,7 @@ import Image from 'next/image';
 export default function PersonPage(props: { params: { id: string } }) {
   const params = React.use(props.params);
   const [person, setPerson] = useState<PersonDetails | null>(null);
+  const [knownForMovies, setKnownForMovies] = useState<FilmographyMovie[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { id } = params;
 
@@ -27,6 +28,24 @@ export default function PersonPage(props: { params: { id: string } }) {
         const personId = parseInt(id as string, 10);
         const personDetails = await getPersonDetails(personId);
         setPerson(personDetails);
+        
+        const filmography = [...personDetails.movie_credits.cast, ...personDetails.movie_credits.crew]
+          .filter(movie => movie.poster_path)
+          .sort((a, b) => b.vote_average - a.vote_average)
+          .slice(0, 18);
+
+        const moviePromises = filmography.map(async (movie) => {
+          const videos = await getMovieVideos(movie.id);
+          const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
+          return {
+            ...movie,
+            trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
+          };
+        });
+        
+        const moviesWithTrailers = await Promise.all(moviePromises);
+        setKnownForMovies(moviesWithTrailers);
+
       } catch (error) {
         console.error("Error fetching person data:", error);
       } finally {
@@ -56,14 +75,6 @@ export default function PersonPage(props: { params: { id: string } }) {
       </AppLayout>
     );
   }
-
-  const knownForMovies = [
-    ...person.movie_credits.cast, 
-    ...person.movie_credits.crew
-  ]
-  .filter(movie => movie.poster_path)
-  .sort((a, b) => b.vote_average - a.vote_average)
-  .slice(0, 18);
 
   const getAge = (birthDate: string, deathDate: string | null) => {
     if (!birthDate) return null;
@@ -129,12 +140,13 @@ export default function PersonPage(props: { params: { id: string } }) {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
               {knownForMovies.map(movie => (
                 <MovieCard
-                  key={`${movie.id}-${movie.credit_id}`}
+                  key={`${movie.id}-${(movie as any).credit_id}`}
                   id={movie.id}
                   title={movie.title}
                   posterUrl={getPosterUrl(movie.poster_path)}
                   overview={movie.overview}
                   poster_path={movie.poster_path}
+                  trailerUrl={movie.trailerUrl}
                 />
               ))}
             </div>
@@ -171,3 +183,5 @@ export default function PersonPage(props: { params: { id: string } }) {
     </AppLayout>
   );
 }
+
+    

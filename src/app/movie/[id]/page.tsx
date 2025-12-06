@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getMovieDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
+import { getMovieDetails, getPosterUrl, getBackdropUrl, getMovieVideos } from '@/lib/tmdb.client';
 import type { MovieDetails, CastMember, CrewMember, Review, WatchProvider, Movie } from '@/lib/tmdb';
 import { getMovieTrivia } from '@/ai/flows/movie-trivia';
 import { getExternalRatings } from '@/ai/flows/get-external-ratings';
@@ -74,6 +74,7 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
   const [externalRatings, setExternalRatings] = useState<ExternalRatings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { setVideoId } = useVideoPlayer();
+  const [similarMovies, setSimilarMovies] = useState<MovieWithPoster[]>([]);
 
   const savedMovieRef = user && firestore && id ? doc(firestore, `users/${user.uid}/savedMovies/${id}`) : null;
   const [savedMovieDoc, isSavedMovieLoading] = useDocumentData(savedMovieRef);
@@ -83,6 +84,7 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
+      setSimilarMovies([]);
       try {
         const movieId = parseInt(id, 10);
         const movieDetails = await getMovieDetails(movieId);
@@ -93,6 +95,22 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
           backdropUrl: getBackdropUrl(movieDetails.backdrop_path),
         };
         setMovie(movieWithMedia);
+
+        // Fetch similar movies with trailers in parallel
+        const similarMoviesPromises = movieDetails.similar.results.map(async (m) => {
+            const videos = await getMovieVideos(m.id);
+            const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
+            return {
+                ...m,
+                posterUrl: getPosterUrl(m.poster_path),
+                title: m.title,
+                trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
+            } as MovieWithPoster;
+        });
+
+        Promise.all(similarMoviesPromises).then(movies => {
+            setSimilarMovies(movies.filter(m => m.posterUrl));
+        });
 
         const [triviaResult, ratingsResult] = await Promise.all([
             getMovieTrivia({ movieTitle: movieDetails.title }),
@@ -237,9 +255,6 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
     </div>
   );
 
-  const similarMovies = movie.similar.results
-        .map(m => ({ ...m, posterUrl: getPosterUrl(m.poster_path), title: m.title } as MovieWithPoster))
-        .filter(m => m.posterUrl);
 
   return (
     <AppLayout>
@@ -391,3 +406,5 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
     </AppLayout>
   );
 }
+
+    
