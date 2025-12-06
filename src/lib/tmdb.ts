@@ -16,6 +16,16 @@ export interface Movie {
   vote_average: number;
 }
 
+export interface TVShow {
+  id: number;
+  name: string;
+  poster_path: string | null;
+  overview: string;
+  backdrop_path: string | null;
+  first_air_date: string;
+  vote_average: number;
+}
+
 export interface CastMember {
     id: number;
     name: string;
@@ -76,6 +86,42 @@ export interface MovieDetails extends Movie {
     similar: {
         results: Movie[];
     };
+}
+
+export interface TVShowDetails extends TVShow {
+    genres: { id: number; name: string }[];
+    number_of_seasons: number;
+    number_of_episodes: number;
+    tagline: string;
+    credits: {
+        cast: CastMember[];
+        crew: CrewMember[];
+    };
+    videos: {
+        results: TmdbVideo[];
+    };
+    'watch/providers': {
+        results: {
+            [countryCode: string]: {
+                link: string;
+                flatrate?: WatchProvider[];
+            }
+        }
+    };
+    similar: {
+        results: TVShow[];
+    };
+    seasons: TVSeason[];
+}
+
+export interface TVSeason {
+    id: number;
+    name: string;
+    overview: string;
+    air_date: string;
+    season_number: number;
+    episode_count: number;
+    poster_path: string | null;
 }
 
 export interface PersonDetails {

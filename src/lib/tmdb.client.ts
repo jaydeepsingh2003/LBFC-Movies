@@ -1,6 +1,6 @@
 'use client';
 
-import { Movie, MovieDetails, PersonDetails } from "./tmdb";
+import { Movie, MovieDetails, PersonDetails, TVShow, TVShowDetails } from "./tmdb";
 
 const TMDB_API_KEY = "2dc0bd12c7bd63b2c691d3a64f3a3db7";
 const TMDB_IMAGE_BASE_URL_POSTER = 'https://image.tmdb.org/t/p/w500';
@@ -40,6 +40,28 @@ export async function searchMovies(query: string): Promise<Movie[]> {
   }
 }
 
+export async function searchTvShows(query: string): Promise<TVShow[]> {
+  if (!TMDB_API_KEY) {
+    console.error('TMDB_API_KEY is not available. API requests will be skipped.');
+    return [];
+  }
+
+  const url = `/api/tmdb/3/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false&language=en-US&page=1`;
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`TMDB API request for TV shows failed with status ${response.status}`);
+      return [];
+    }
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error('Error fetching TV shows from TMDB API via proxy:', error);
+    return [];
+  }
+}
+
 export async function getMovieVideos(movieId: number): Promise<TmdbVideo[]> {
     if (!TMDB_API_KEY) {
       console.error('TMDB_API_KEY is not set. API requests will be skipped.');
@@ -75,6 +97,24 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetails> {
     return response.json();
   } catch (error) {
     console.error('Error fetching movie details from TMDB API via proxy:', error);
+    throw error;
+  }
+}
+
+export async function getTvShowDetails(tvId: number): Promise<TVShowDetails> {
+  if (!TMDB_API_KEY) {
+    throw new Error('TMDB_API_KEY is not set.');
+  }
+
+  const url = `/api/tmdb/3/tv/${tvId}?api_key=${TMDB_API_KEY}&append_to_response=credits,videos,keywords,watch/providers,similar`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`TMDB API request failed: ${response.statusText}`);
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching TV show details from TMDB API via proxy:', error);
     throw error;
   }
 }
