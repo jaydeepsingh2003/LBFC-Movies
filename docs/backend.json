@@ -119,6 +119,58 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["userId", "displayName", "text", "createdAt"]
+    },
+    "MovieClub": {
+      "title": "Movie Club",
+      "description": "Represents a user-created group for discussing movies.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "The name of the movie club." },
+        "description": { "type": "string", "description": "A short description of the club." },
+        "creatorId": { "type": "string", "description": "The UID of the user who created the club." },
+        "creatorName": { "type": "string", "description": "The display name of the creator." },
+        "creatorPhotoURL": { "type": "string", "format": "uri", "description": "The profile picture URL of the creator." },
+        "isPublic": { "type": "boolean", "description": "Whether the club is public or private." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "The timestamp when the club was created." }
+      },
+      "required": ["name", "creatorId", "creatorName", "isPublic", "createdAt"]
+    },
+    "ClubMember": {
+      "title": "Club Member",
+      "description": "Represents a member of a movie club.",
+      "type": "object",
+      "properties": {
+        "joinedAt": { "type": "string", "format": "date-time" },
+        "role": { "type": "string", "enum": ["admin", "member"], "description": "The role of the member in the club." }
+      },
+      "required": ["joinedAt", "role"]
+    },
+    "ClubPost": {
+      "title": "Club Post",
+      "description": "A post or message in a movie club's discussion thread.",
+      "type": "object",
+      "properties": {
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorPhotoURL": { "type": "string", "format": "uri" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["authorId", "authorName", "content", "createdAt"]
+    },
+    "ClubRecommendation": {
+      "title": "Club Recommendation",
+      "description": "A movie recommendation shared within a movie club.",
+      "type": "object",
+      "properties": {
+        "movieId": { "type": "number" },
+        "movieTitle": { "type": "string" },
+        "moviePosterPath": { "type": "string" },
+        "recommendedById": { "type": "string" },
+        "recommendedByName": { "type": "string" },
+        "recommendedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["movieId", "movieTitle", "recommendedById", "recommendedByName", "recommendedAt"]
     }
   },
   "auth": {
@@ -160,6 +212,22 @@
     "/watch-parties/{partyId}/messages/{messageId}": {
       "schema": { "$ref": "#/entities/ChatMessage" },
       "description": "A sub-collection for storing live chat messages for a party."
+    },
+    "/movie-clubs/{clubId}": {
+      "schema": { "$ref": "#/entities/MovieClub" },
+      "description": "A collection of all movie clubs."
+    },
+    "/movie-clubs/{clubId}/members/{userId}": {
+      "schema": { "$ref": "#/entities/ClubMember" },
+      "description": "Sub-collection storing members of a movie club."
+    },
+    "/movie-clubs/{clubId}/posts/{postId}": {
+      "schema": { "$ref": "#/entities/ClubPost" },
+      "description": "Sub-collection for discussion posts within a movie club."
+    },
+    "/movie-clubs/{clubId}/recommendations/{recommendationId}": {
+      "schema": { "$ref": "#/entities/ClubRecommendation" },
+      "description": "Sub-collection for shared movie recommendations within a club."
     }
   }
 }

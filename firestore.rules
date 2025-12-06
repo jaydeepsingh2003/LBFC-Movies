@@ -8,6 +8,19 @@ service cloud.firestore {
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isClubMember(clubId) {
+      return exists(/databases/$(database)/documents/movie-clubs/$(clubId)/members/$(request.auth.uid));
+    }
+
+    function isClubAdmin(clubId) {
+      let memberRole = get(/databases/$(database)/documents/movie-clubs/$(clubId)/members/$(request.auth.uid)).data.role;
+      return memberRole == 'admin';
+    }
 
     // USERS collection
     match /users/{userId} {
@@ -40,15 +53,15 @@ service cloud.firestore {
     // MOVIES collection for reviews
     match /movies/{movieId}/reviews/{reviewId} {
       allow read: if true;
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
 
     // WATCH PARTIES collection
     match /watch-parties/{partyId} {
       allow read: if true;
-      allow create: if request.auth != null && request.resource.data.hostId == request.auth.uid;
-      allow update, delete: if request.auth != null && resource.data.hostId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.hostId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.hostId == request.auth.uid;
 
       // RSVPs sub-collection
       match /rsvps/{userId} {
@@ -59,7 +72,40 @@ service cloud.firestore {
       // MESSAGES sub-collection (Chat)
       match /messages/{messageId} {
         allow read: if true;
-        allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+        allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      }
+    }
+    
+    // MOVIE CLUBS collection
+    match /movie-clubs/{clubId} {
+      allow read: if resource.data.isPublic == true || isClubMember(clubId);
+      allow create: if isSignedIn() && request.resource.data.creatorId == request.auth.uid;
+      allow update: if isClubAdmin(clubId);
+      allow delete: if resource.data.creatorId == request.auth.uid;
+
+      // MEMBERS sub-collection
+      match /members/{userId} {
+        allow read: if isClubMember(clubId);
+        // Joining a public club, or being an admin to manage members
+        allow create: if (request.resource.data.role == 'member' && get(/databases/$(database)/documents/movie-clubs/$(clubId)).data.isPublic == true) || isClubAdmin(clubId);
+        // Admins can remove members, users can remove themselves. Creator cannot be removed.
+        allow delete: if (isClubAdmin(clubId) && resource.data.role != 'creator') || isOwner(userId);
+        // Only admins can change roles
+        allow update: if isClubAdmin(clubId);
+      }
+
+      // POSTS sub-collection
+      match /posts/{postId} {
+        allow read: if isClubMember(clubId);
+        allow create: if isClubMember(clubId) && request.resource.data.authorId == request.auth.uid;
+        allow update, delete: if isOwner(request.resource.data.authorId) || isClubAdmin(clubId);
+      }
+      
+      // RECOMMENDATIONS sub-collection
+      match /recommendations/{recommendationId} {
+        allow read: if isClubMember(clubId);
+        allow create: if isClubMember(clubId) && request.resource.data.recommendedById == request.auth.uid;
+        allow delete: if isOwner(resource.data.recommendedById) || isClubAdmin(clubId);
       }
     }
   }
