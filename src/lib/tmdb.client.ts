@@ -180,6 +180,27 @@ export async function getPopularPeople(): Promise<Person[]> {
   }
 }
 
+export async function searchPeople(query: string): Promise<Person[]> {
+    if (!TMDB_API_KEY) {
+        console.error('TMDB_API_KEY is not available. API requests will be skipped.');
+        return [];
+    }
+    const url = `/api/tmdb/3/search/person?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=1`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            console.error(`TMDB API request for search people failed with status ${response.status}`);
+            return [];
+        }
+        const data = await response.json();
+        return data.results;
+    } catch (error) {
+        console.error('Error fetching search people from TMDB API via proxy:', error);
+        return [];
+    }
+}
+
+
 export async function getNowPlayingMovies(): Promise<Movie[]> {
   if (!TMDB_API_KEY) {
     console.error('TMDB_API_KEY is not available. API requests will be skipped.');
