@@ -12,7 +12,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
 
   return (
-    <SidebarProvider>
+    <div>
       <div className={`flex flex-col w-full pb-16 md:pb-0`}>
         <Header />
         <main className="flex-1 animate-in fade-in duration-500">
@@ -20,6 +20,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </main>
       </div>
       {isMobile && <BottomNav />}
-    </SidebarProvider>
+    </div>
   );
 }
