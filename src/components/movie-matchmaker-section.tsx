@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -121,6 +122,8 @@ export default function MovieMatchmakerSection() {
                     title={result.title}
                     posterUrl={result.posterUrl}
                     trailerUrl={result.trailerUrl}
+                    overview={result.overview}
+                    poster_path={result.poster_path}
                 />
             </div>
           </div>
