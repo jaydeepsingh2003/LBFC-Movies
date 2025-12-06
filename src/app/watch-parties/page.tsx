@@ -80,7 +80,7 @@ export default function WatchPartiesPage() {
 
   return (
     <AppLayout>
-      <div className="p-4 sm:p-6 md:p-8 space-y-8">
+      <div className="space-y-8">
         <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div className="space-y-1">
             <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">Watch Parties</h1>

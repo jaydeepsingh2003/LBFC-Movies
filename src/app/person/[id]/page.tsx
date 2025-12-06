@@ -90,7 +90,7 @@ export default function PersonPage(props: { params: { id: string } }) {
 
   return (
     <AppLayout>
-      <div className="p-4 sm:p-6 md:p-8 space-y-8">
+      <div className="space-y-8">
         <header className="flex flex-col md:flex-row items-center md:items-start gap-8">
           <Avatar className="h-48 w-48 border-4 border-primary">
             <AvatarImage src={getPosterUrl(person.profile_path)} alt={person.name} />

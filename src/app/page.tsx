@@ -47,7 +47,7 @@ export default function DashboardPage() {
     <AppLayout>
       <div className="flex flex-col">
         <HeroSection />
-        <div className="p-4 sm:p-6 md:p-8 space-y-12">
+        <div className="space-y-12">
             <NowPlayingSection />
             <UpcomingSection />
             <FranchiseFocusSection />

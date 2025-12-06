@@ -67,11 +67,11 @@ export default function WatchPartyDetailPage(props: { params: { id: string } }) 
   }
 
   if (partyError || rsvpsError) {
-    return <AppLayout><div className="p-8 text-center text-destructive">Error: {partyError?.message || rsvpsError?.message}</div></AppLayout>;
+    return <AppLayout><div className="text-center text-destructive">Error: {partyError?.message || rsvpsError?.message}</div></AppLayout>;
   }
 
   if (!party) {
-    return <AppLayout><div className="p-8 text-center"><h2>Watch party not found.</h2></div></AppLayout>;
+    return <AppLayout><div className="text-center"><h2>Watch party not found.</h2></div></AppLayout>;
   }
   
   const scheduledDateTime = party.scheduledAt.toDate();
@@ -85,7 +85,7 @@ export default function WatchPartyDetailPage(props: { params: { id: string } }) 
         <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent" />
       </div>
 
-      <div className="relative -mt-48 p-4 sm:p-6 md:p-8">
+      <div className="relative -mt-48">
         <div className="max-w-5xl mx-auto">
             <header className="space-y-4 text-center">
               <p className="text-primary font-semibold tracking-wide">MOVIE WATCH PARTY</p>

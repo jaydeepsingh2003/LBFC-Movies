@@ -229,7 +229,7 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
         <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent" />
       </div>
 
-      <div className="relative -mt-48 p-4 sm:p-6 md:p-8">
+      <div className="relative -mt-48">
         <div className="flex flex-col md:flex-row gap-8">
           <div className="w-full md:w-1/4">
             <Card className="overflow-hidden border-2 border-primary shadow-lg">

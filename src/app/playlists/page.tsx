@@ -121,7 +121,7 @@ export default function PlaylistsPage() {
 
   return (
     <AppLayout>
-      <div className="p-4 sm:p-6 md:p-8 space-y-8">
+      <div className="space-y-8">
         <header className="space-y-2">
           <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">My Playlist</h1>
           <p className="text-muted-foreground">All your saved movies in one place.</p>
