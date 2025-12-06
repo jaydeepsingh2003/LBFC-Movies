@@ -21,6 +21,7 @@ import { saveTvShowToPlaylist, removeTvShowFromPlaylist } from '@/firebase/fires
 import { doc } from 'firebase/firestore';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { TvShowRating } from '@/components/tv-show-rating';
+import { TVUserReviewsSection } from '@/components/tv-user-reviews-section';
 
 interface TVShowDetailsWithMedia extends TVShowDetails {
   posterUrl: string | null;
@@ -266,6 +267,8 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
                     <span>{show.number_of_episodes} Episodes</span>
                 </div>
             </div>
+
+            <TVUserReviewsSection showId={show.id} />
 
             <section className="space-y-4 pt-8">
               <h2 className="font-headline text-2xl font-bold">Seasons</h2>

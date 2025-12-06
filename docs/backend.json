@@ -96,9 +96,23 @@
       },
       "required": ["rating"]
     },
-    "UserReview": {
+    "UserMovieReview": {
       "title": "User Movie Review",
       "description": "A review for a movie written by a user.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The ID of the user who wrote the review." },
+        "displayName": { "type": "string", "description": "The display name of the user." },
+        "photoURL": { "type": "string", "format": "uri", "description": "The profile picture URL of the user." },
+        "content": { "type": "string", "description": "The text content of the review." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "The timestamp when the review was created." },
+        "rating": { "type": "number", "description": "The rating given along with the review." }
+      },
+      "required": ["userId", "displayName", "content", "createdAt", "rating"]
+    },
+    "UserTvShowReview": {
+      "title": "User TV Show Review",
+      "description": "A review for a TV show written by a user.",
       "type": "object",
       "properties": {
         "userId": { "type": "string", "description": "The ID of the user who wrote the review." },
@@ -235,8 +249,12 @@
       "description": "Sub-collection storing a user's TV show ratings."
     },
     "/movies/{movieId}/reviews/{reviewId}": {
-      "schema": { "$ref": "#/entities/UserReview" },
+      "schema": { "$ref": "#/entities/UserMovieReview" },
       "description": "Sub-collection storing all user reviews for a specific movie."
+    },
+     "/tv-shows/{showId}/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/UserTvShowReview" },
+      "description": "Sub-collection storing all user reviews for a specific TV show."
     },
     "/watch-parties/{partyId}": {
       "schema": { "$ref": "#/entities/WatchParty" },
