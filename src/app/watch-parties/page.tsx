@@ -21,16 +21,24 @@ export default function WatchPartiesPage() {
   const partiesQuery = useMemo(() => {
     if (!firestore) return null;
     
-    // Query for upcoming public parties, ordered by the scheduled time
+    // Query for upcoming parties, ordered by the scheduled time.
+    // The 'isPublic' filter is removed to avoid needing a composite index.
+    // We will filter on the client side.
     return query(
       collection(firestore, 'watch-parties'), 
       where('scheduledAt', '>=', Timestamp.now()), 
-      where('isPublic', '==', true),
       orderBy('scheduledAt', 'asc')
     );
   }, [firestore]);
 
   const [partiesSnapshot, loading, error] = useCollection(partiesQuery);
+
+  const publicParties = useMemo(() => {
+    return partiesSnapshot?.docs
+      .map(doc => ({ id: doc.id, ...doc.data() } as WatchParty & { id: string }))
+      .filter(party => party.isPublic);
+  }, [partiesSnapshot]);
+
 
   const renderContent = () => {
     if (userLoading || loading) {
@@ -45,7 +53,7 @@ export default function WatchPartiesPage() {
         return <p className="text-destructive text-center">Error: {error.message}</p>
     }
 
-    if (partiesSnapshot?.empty) {
+    if (!publicParties || publicParties.length === 0) {
       return (
         <div className="text-center py-16 border-2 border-dashed border-secondary rounded-lg">
           <h3 className="text-lg font-semibold text-foreground">No Upcoming Parties</h3>
@@ -56,10 +64,9 @@ export default function WatchPartiesPage() {
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {partiesSnapshot?.docs.map(doc => {
-          const party = { id: doc.id, ...doc.data() } as WatchParty & { id: string };
-          return <WatchPartyCard key={party.id} party={party} />;
-        })}
+        {publicParties.map(party => (
+          <WatchPartyCard key={party.id} party={party} />
+        ))}
       </div>
     );
   };
