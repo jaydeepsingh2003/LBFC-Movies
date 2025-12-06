@@ -103,22 +103,24 @@ export default function DiscoverPage() {
 
   return (
     <AppLayout>
-      <div className="space-y-8 p-4 md:p-8">
-        <header className="space-y-2">
+      <div className="space-y-8">
+        <header className="space-y-2 px-4 pt-8 md:px-8">
           <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">Discover</h1>
           <p className="text-muted-foreground">Use advanced filters to find exactly what you're looking for.</p>
         </header>
         
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'movie' | 'tv')} className="w-full">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'movie' | 'tv')} className="w-full px-4 md:px-8">
           <TabsList className="grid w-full grid-cols-2 max-w-sm mx-auto">
               <TabsTrigger value="movie"><Film className="mr-2"/>Movies</TabsTrigger>
               <TabsTrigger value="tv"><Tv className="mr-2"/>TV Shows</TabsTrigger>
           </TabsList>
         </Tabs>
 
-        <DiscoverFilters onSearch={handleSearch} isLoading={isLoading} searchType={activeTab} />
+        <div className="px-4 md:px-8">
+          <DiscoverFilters onSearch={handleSearch} isLoading={isLoading} searchType={activeTab} />
+        </div>
 
-        <div className="mt-8">
+        <div className="mt-8 px-4 md:px-8 pb-8">
           {isLoading ? (
             <div className="flex justify-center items-center h-64">
               <Loader2 className="h-16 w-16 animate-spin text-primary" />

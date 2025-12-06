@@ -40,7 +40,7 @@ export default function PeoplePage() {
 
   return (
     <AppLayout>
-      <div className="p-4 md:p-8">
+      <div className="px-4 py-8 md:px-8">
         <header className="space-y-4 mb-8">
           <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">
             {debouncedSearchQuery ? 'Search Results' : 'Popular People'}

@@ -99,7 +99,7 @@ export default function ProfilePage(props: { params: { userId: string } }) {
 
   return (
     <AppLayout>
-      <div className="space-y-8 p-4 md:p-8">
+      <div className="space-y-8 px-4 py-8 md:px-8">
         <header className="flex flex-col items-center text-center space-y-4">
           <Avatar className="h-24 w-24 border-4 border-primary">
             <AvatarImage src={userProfile.photoURL} alt={userProfile.displayName} />

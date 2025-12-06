@@ -85,7 +85,7 @@ export default function WatchPartyDetailPage(props: { params: { id: string } }) 
         <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent" />
       </div>
 
-      <div className="relative -mt-48 p-4 md:p-8">
+      <div className="relative -mt-48 px-4 md:px-8 pb-8">
         <div className="max-w-5xl mx-auto">
             <header className="space-y-4 text-center">
               <p className="text-primary font-semibold tracking-wide">MOVIE WATCH PARTY</p>
