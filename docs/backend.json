@@ -80,6 +80,45 @@
         "rating": { "type": "number", "description": "The rating given along with the review." }
       },
       "required": ["userId", "displayName", "content", "createdAt", "rating"]
+    },
+    "WatchParty": {
+      "title": "Watch Party",
+      "description": "Represents a scheduled watch party for a specific movie.",
+      "type": "object",
+      "properties": {
+        "movieId": { "type": "number", "description": "The ID of the movie for the watch party." },
+        "movieTitle": { "type": "string", "description": "The title of the movie." },
+        "moviePosterPath": { "type": "string", "description": "The poster path of the movie." },
+        "scheduledAt": { "type": "string", "format": "date-time", "description": "The scheduled date and time of the watch party." },
+        "hostId": { "type": "string", "description": "The UID of the user hosting the party." },
+        "hostDisplayName": { "type": "string", "description": "The display name of the host." },
+        "hostPhotoURL": { "type": "string", "format": "uri", "description": "The profile picture URL of the host." }
+      },
+      "required": ["movieId", "movieTitle", "scheduledAt", "hostId", "hostDisplayName"]
+    },
+    "Rsvp": {
+      "title": "RSVP",
+      "description": "Represents a user's RSVP to a watch party.",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["displayName", "timestamp"]
+    },
+    "ChatMessage": {
+      "title": "Chat Message",
+      "description": "Represents a single message in a watch party chat.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "displayName", "text", "createdAt"]
     }
   },
   "auth": {
@@ -109,6 +148,18 @@
     "/movies/{movieId}/reviews/{reviewId}": {
       "schema": { "$ref": "#/entities/UserReview" },
       "description": "Sub-collection storing all user reviews for a specific movie."
+    },
+    "/watch-parties/{partyId}": {
+      "schema": { "$ref": "#/entities/WatchParty" },
+      "description": "A collection of all scheduled watch parties."
+    },
+    "/watch-parties/{partyId}/rsvps/{userId}": {
+      "schema": { "$ref": "#/entities/Rsvp" },
+      "description": "A sub-collection storing all users who have RSVP'd to a party."
+    },
+    "/watch-parties/{partyId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ChatMessage" },
+      "description": "A sub-collection for storing live chat messages for a party."
     }
   }
 }
