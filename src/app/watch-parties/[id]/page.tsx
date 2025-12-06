@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
 import { useFirestore } from '@/firebase';
 import { useUser } from '@/firebase/auth/auth-client';

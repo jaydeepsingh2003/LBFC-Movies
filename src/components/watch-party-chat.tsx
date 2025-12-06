@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useFirestore } from '@/firebase';
 import { useUser } from '@/firebase/auth/auth-client';
 import { useCollection } from 'react-firebase-hooks/firestore';
@@ -128,4 +128,3 @@ export function WatchPartyChat({ partyId }: WatchPartyChatProps) {
         </Card>
     );
 }
-
