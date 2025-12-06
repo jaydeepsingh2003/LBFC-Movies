@@ -50,12 +50,16 @@ export function Header() {
     };
 
     return (
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-8 border-b bg-background/95 px-4 backdrop-blur-sm md:px-8">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/95 px-4 backdrop-blur-sm md:px-8">
             <div className="flex items-center gap-2">
                  <Link href="/"><Film className="size-8 text-primary" /></Link>
                  <h1 className="font-headline text-2xl font-bold text-primary tracking-wider hidden md:block">LBFC</h1>
             </div>
             
+            <div className="md:hidden flex-1 px-4">
+                <MovieSearch />
+            </div>
+
             <DesktopNav />
             
             <div className="ml-auto flex items-center gap-4">
