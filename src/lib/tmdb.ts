@@ -97,6 +97,18 @@ export interface TVShowDetails extends TVShow {
     tagline: string;
     in_production: boolean;
     last_air_date: string | null;
+    created_by: {
+        id: number;
+        credit_id: string;
+        name: string;
+        profile_path: string | null;
+    }[];
+    networks: {
+        id: number;
+        name: string;
+        logo_path: string | null;
+        origin_country: string;
+    }[];
     credits: {
         cast: CastMember[];
         crew: CrewMember[];
@@ -116,6 +128,13 @@ export interface TVShowDetails extends TVShow {
         results: TVShow[];
     };
     seasons: TVSeason[];
+    external_ids: {
+        imdb_id: string | null;
+        tvdb_id: number | null;
+        facebook_id: string | null;
+        instagram_id: string | null;
+        twitter_id: string | null;
+    };
 }
 
 export interface TVSeason {
@@ -216,5 +235,3 @@ export function getPosterUrl(path: string | null) {
 export function getBackdropUrl(path: string | null) {
     return path ? `${TMDB_IMAGE_BASE_URL_BACKDROP}${path}` : null;
 }
-
-    

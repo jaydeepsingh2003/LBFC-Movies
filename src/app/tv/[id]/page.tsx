@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getTvShowDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
+import { getTvShowDetails, getPosterUrl, getBackdropUrl, getLogoUrl } from '@/lib/tmdb.client';
 import type { TVShowDetails, CastMember, CrewMember, WatchProvider, TVShow, TVSeason } from '@/lib/tmdb';
 import { AppLayout } from '@/components/layout/app-layout';
 import Image from 'next/image';
@@ -22,6 +22,7 @@ import { doc } from 'firebase/firestore';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { TvShowRating } from '@/components/tv-show-rating';
 import { TVUserReviewsSection } from '@/components/tv-user-reviews-section';
+import { Separator } from '@/components/ui/separator';
 
 interface TVShowDetailsWithMedia extends TVShowDetails {
   posterUrl: string | null;
@@ -170,7 +171,7 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
                 </div>
                 <div className="p-4 flex flex-col">
                     <h3 className="font-bold text-lg leading-tight">{season.name}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{new Date(season.air_date).getFullYear()} | {season.episode_count} Episodes</p>
+                    <p className="text-xs text-muted-foreground mt-1">{season.air_date ? new Date(season.air_date).getFullYear() : ''} | {season.episode_count} Episodes</p>
                     <p className="text-sm text-foreground/80 mt-2 line-clamp-4">{season.overview}</p>
                 </div>
             </Card>
@@ -199,7 +200,7 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
               </CardContent>
             </Card>
             <div className="flex gap-2 mt-4">
-              <Button onClick={handlePlayTrailer} className="w-full" size="lg">
+              <Button onClick={handlePlayTrailer} className="w-full" size="lg" disabled={!show?.videos?.results?.find(v => v.type === 'Trailer')}>
                 <PlayCircle className="mr-2" /> Play Trailer
               </Button>
               {user && (
@@ -208,7 +209,7 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
                 </Button>
               )}
             </div>
-             {streamingProviders.length > 0 && (
+            {streamingProviders.length > 0 && (
                 <Card className="mt-4 bg-secondary">
                     <CardHeader>
                         <CardTitle className="text-base">Where to Watch</CardTitle>
@@ -224,6 +225,22 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
                         ))}
                     </CardContent>
                 </Card>
+            )}
+             {show.networks && show.networks.length > 0 && (
+              <Card className="mt-4 bg-secondary">
+                <CardHeader>
+                  <CardTitle className="text-base">Networks</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-wrap gap-4 items-center">
+                  {show.networks.map(network => (
+                     network.logo_path && (
+                      <div key={network.id} title={network.name} className="relative h-6 w-20">
+                          <Image src={getLogoUrl(network.logo_path)} alt={network.name} fill className="object-contain" />
+                      </div>
+                     )
+                  ))}
+                </CardContent>
+              </Card>
             )}
           </div>
 
@@ -247,7 +264,7 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
             
             <div className="flex items-center flex-wrap gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2" title="TMDB User Score">
-                    <Star className="w-5 h-5 text-yellow-400" />
+                    <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                     <span className="font-bold text-lg">{show.vote_average.toFixed(1)}</span>
                     <span className="text-muted-foreground">/ 10</span>
                 </div>
@@ -267,6 +284,27 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
                     <span>{show.number_of_episodes} Episodes</span>
                 </div>
             </div>
+
+            <Separator />
+            
+            {show.created_by && show.created_by.length > 0 && (
+                 <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-foreground">Created by</h3>
+                    <div className="flex flex-wrap gap-4">
+                    {show.created_by.map(creator => (
+                        <Link href={`/person/${creator.id}`} key={creator.credit_id}>
+                            <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary hover:bg-secondary/80">
+                                <Avatar className="h-10 w-10">
+                                    <AvatarImage src={getPosterUrl(creator.profile_path)} />
+                                    <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <span className="font-semibold text-sm">{creator.name}</span>
+                            </div>
+                        </Link>
+                    ))}
+                    </div>
+                </div>
+            )}
 
             <TVUserReviewsSection showId={show.id} />
 
@@ -301,5 +339,3 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
     </AppLayout>
   );
 }
-
-    

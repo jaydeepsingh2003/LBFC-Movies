@@ -6,6 +6,7 @@ import { Movie, MovieDetails, PersonDetails, TVShow, TVShowDetails } from "./tmd
 const TMDB_API_KEY = "2dc0bd12c7bd63b2c691d3a64f3a3db7";
 const TMDB_IMAGE_BASE_URL_POSTER = 'https://image.tmdb.org/t/p/w500';
 const TMDB_IMAGE_BASE_URL_BACKDROP = 'https://image.tmdb.org/t/p/w1280';
+const TMDB_IMAGE_BASE_URL_LOGO = 'https://image.tmdb.org/t/p/w200';
 
 interface TmdbVideo {
   id: string;
@@ -128,7 +129,7 @@ export async function getTvShowDetails(tvId: number): Promise<TVShowDetails> {
     throw new Error('TMDB_API_KEY is not set.');
   }
 
-  const url = `/api/tmdb/3/tv/${tvId}?api_key=${TMDB_API_KEY}&append_to_response=credits,videos,keywords,watch/providers,similar`;
+  const url = `/api/tmdb/3/tv/${tvId}?api_key=${TMDB_API_KEY}&append_to_response=credits,videos,keywords,watch/providers,similar,external_ids`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -260,4 +261,8 @@ export function getPosterUrl(path: string | null) {
 
 export function getBackdropUrl(path: string | null) {
   return path ? `${TMDB_IMAGE_BASE_URL_BACKDROP}${path}` : null;
+}
+
+export function getLogoUrl(path: string | null) {
+    return path ? `${TMDB_IMAGE_BASE_URL_LOGO}${path}` : null;
 }
