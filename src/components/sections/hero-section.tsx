@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Info, PlayCircle } from "lucide-react";
 import Image from 'next/image';
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
-import { searchMovies, getMovieVideos } from "@/lib/tmdb.client";
+import { getPopularMovies, getMovieVideos } from "@/lib/tmdb.client";
 import { Movie } from "@/lib/tmdb";
 import { Skeleton } from "../ui/skeleton";
 import { getBackdropUrl } from "@/lib/tmdb.client";
@@ -31,30 +31,11 @@ export default function HeroSection() {
     React.useEffect(() => {
         async function fetchHeroMovies() {
             setIsLoading(true);
-            const heroMovieTitles = [
-                "Dune: Part Two",
-                "Godzilla x Kong: The New Empire",
-                "Kung Fu Panda 4",
-                "Furiosa: A Mad Max Saga",
-                "The Fall Guy",
-                "Inside Out 2",
-                "Kingdom of the Planet of the Apes",
-                "Bad Boys: Ride or Die",
-                "A Quiet Place: Day One",
-                "Civil War",
-                "The Garfield Movie",
-                "IF",
-                "Challengers",
-                "The Beekeeper"
-            ];
             try {
-                const searchPromises = heroMovieTitles.map(async (title) => {
-                    const results = await searchMovies(title);
-                    return results.length > 0 ? results[0] : null;
-                });
-                const searchResults = (await Promise.all(searchPromises)).filter((m): m is Movie => m !== null);
+                const popularMovies = await getPopularMovies();
+                const topMovies = popularMovies.slice(0, 15);
 
-                const moviesDataPromises = searchResults.map(async (movie) => {
+                const moviesDataPromises = topMovies.map(async (movie) => {
                     const videos = await getMovieVideos(movie.id);
                     const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
                     return {
