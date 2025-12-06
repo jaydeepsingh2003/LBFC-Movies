@@ -2,16 +2,24 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { Input } from "./ui/input"
-import { Loader2, Search, X } from "lucide-react"
+import { Loader2, Search, X, Film, Tv } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { searchMovies } from "@/ai/flows/ai-powered-movie-search"
-import type { SearchMoviesOutput } from "@/ai/flows/ai-powered-movie-search"
+import { searchMovies as searchTmdbMovies, searchTvShows as searchTmdbTvShows } from "@/lib/tmdb.client"
 import { useToast } from "@/hooks/use-toast"
+import Link from "next/link"
+import { Separator } from "./ui/separator"
+
+interface SearchResult {
+  id: number;
+  title: string;
+  type: 'movie' | 'tv';
+}
 
 export function MovieSearch() {
   const [query, setQuery] = useState("")
   const [debouncedQuery, setDebouncedQuery] = useState("")
-  const [results, setResults] = useState<SearchMoviesOutput["results"]>([])
+  const [results, setResults] = useState<SearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const { toast } = useToast()
@@ -19,7 +27,7 @@ export function MovieSearch() {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedQuery(query)
-    }, 500)
+    }, 300)
 
     return () => {
       clearTimeout(handler)
@@ -36,10 +44,20 @@ export function MovieSearch() {
     setIsLoading(true)
     setIsOpen(true)
     try {
-      const response = await searchMovies({ query: debouncedQuery })
-      setResults(response.results)
+      const [movieResults, tvResults] = await Promise.all([
+        searchTmdbMovies(debouncedQuery),
+        searchTmdbTvShows(debouncedQuery),
+      ]);
+      
+      const combinedResults: SearchResult[] = [
+        ...movieResults.slice(0, 5).map(m => ({ id: m.id, title: m.title, type: 'movie' as const })),
+        ...tvResults.slice(0, 5).map(tv => ({ id: tv.id, title: tv.name, type: 'tv' as const })),
+      ];
+
+      setResults(combinedResults);
+
     } catch (error) {
-      console.error("AI Search Error:", error)
+      console.error("TMDB Search Error:", error)
       toast({
         variant: "destructive",
         title: "Search Failed",
@@ -61,7 +79,7 @@ export function MovieSearch() {
         <div className="relative w-full max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
-            placeholder="Search for movies, actors, genres..."
+            placeholder="Search movies & TV shows..."
             className="pl-10"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -88,15 +106,18 @@ export function MovieSearch() {
             <div className="p-4 text-center text-sm text-muted-foreground">No results found for "{debouncedQuery}".</div>
           )}
           {results.length > 0 && (
-            <div className="max-h-80 overflow-y-auto">
-              <p className="p-2 text-xs text-muted-foreground">Results for "{debouncedQuery}"</p>
-              <ul>
-                {results.map((result, index) => (
-                  <li key={index} className="px-4 py-2 hover:bg-accent cursor-pointer text-sm">
-                    {result}
-                  </li>
-                ))}
-              </ul>
+            <div className="max-h-96 overflow-y-auto">
+              {results.map((result, index) => (
+                <Link key={`${result.type}-${result.id}`} href={`/${result.type}/${result.id}`} passHref>
+                    <div 
+                      className="px-4 py-3 hover:bg-accent cursor-pointer text-sm flex items-center gap-3"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {result.type === 'movie' ? <Film className="w-4 h-4 text-muted-foreground"/> : <Tv className="w-4 h-4 text-muted-foreground" />}
+                      <span>{result.title}</span>
+                    </div>
+                </Link>
+              ))}
             </div>
           )}
         </div>

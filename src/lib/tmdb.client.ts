@@ -112,7 +112,7 @@ export async function getTvShowDetails(tvId: number): Promise<TVShowDetails> {
     if (!response.ok) {
       throw new Error(`TMDB API request failed: ${response.statusText}`);
     }
-    return response.json();
+    return await response.json();
   } catch (error) {
     console.error('Error fetching TV show details from TMDB API via proxy:', error);
     throw error;
