@@ -10,5 +10,4 @@ export const navItems = [
     { href: "/playlists", label: "Playlists", icon: ListVideo },
     { href: "/watch-parties", label: "Parties", icon: Tv },
     { href: "/social", label: "Social", icon: Users },
-    { href: "/news", label: "News", icon: Newspaper },
 ];
