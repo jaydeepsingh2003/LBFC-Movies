@@ -71,7 +71,9 @@ service cloud.firestore {
 
       // MESSAGES sub-collection (Chat)
       match /messages/{messageId} {
+        // For public parties, anyone can read. For private, only members (future). For now, all public logic.
         allow read: if true;
+        // Only authenticated users can send messages.
         allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       }
     }
