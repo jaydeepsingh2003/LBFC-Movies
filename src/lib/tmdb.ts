@@ -95,6 +95,8 @@ export interface TVShowDetails extends TVShow {
     number_of_seasons: number;
     number_of_episodes: number;
     tagline: string;
+    in_production: boolean;
+    last_air_date: string | null;
     credits: {
         cast: CastMember[];
         crew: CrewMember[];
@@ -214,3 +216,5 @@ export function getPosterUrl(path: string | null) {
 export function getBackdropUrl(path: string | null) {
     return path ? `${TMDB_IMAGE_BASE_URL_BACKDROP}${path}` : null;
 }
+
+    

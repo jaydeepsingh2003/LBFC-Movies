@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
 import { Button } from '@/components/ui/button';
+import { TVShowCard } from '@/components/tv-show-card';
 
 interface TVShowDetailsWithMedia extends TVShowDetails {
   posterUrl: string | null;
@@ -193,7 +194,7 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
                 <span className="hidden md:inline">&#8226;</span>
                 <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    <span>{show.first_air_date ? new Date(show.first_air_date).getFullYear() : ''} - {show.last_air_date ? new Date(show.last_air_date).getFullYear() : 'Present'}</span>
+                    <span>{show.first_air_date ? new Date(show.first_air_date).getFullYear() : ''} - {show.in_production ? 'Present' : (show.last_air_date ? new Date(show.last_air_date).getFullYear() : '')}</span>
                 </div>
                 <span className="hidden md:inline">&#8226;</span>
                 <div className="flex items-center gap-2">
@@ -226,17 +227,9 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
                     <h2 className="font-headline text-2xl font-bold tracking-tight text-foreground">You Might Also Like</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                         {similarShows.map((s) => (
-                           <Link key={s.id} href={`/tv/${s.id}`}>
-                                <Card className="overflow-hidden border-none group bg-card">
-                                    <CardContent className="p-0 relative w-full aspect-[2/3]">
-                                        {s.posterUrl ? <Image src={s.posterUrl} alt={s.title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" /> : null}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                                        <div className="absolute bottom-0 left-0 p-2">
-                                            <h3 className="font-semibold text-sm text-white shadow-md ">{s.title}</h3>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </Link>
+                           s.id ? (
+                            <TVShowCard key={s.id} id={s.id} title={s.title} posterUrl={s.posterUrl} />
+                           ) : null
                         ))}
                     </div>
                 </div>
@@ -246,3 +239,5 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
     </AppLayout>
   );
 }
+
+    
