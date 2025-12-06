@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
 import { getPersonDetails, getPosterUrl } from '@/lib/tmdb.client';
 import type { PersonDetails, Movie as FilmographyMovie } from '@/lib/tmdb';
-import { Loader2, Birthday, MapPin, Film, Clapperboard } from 'lucide-react';
+import { Loader2, Cake, MapPin, Film, Clapperboard } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MovieCard } from '@/components/movie-card';
 import { Separator } from '@/components/ui/separator';
@@ -95,7 +95,7 @@ export default function PersonPage(props: { params: { id: string } }) {
                 </div>
                 {person.birthday && (
                     <div className="flex items-center gap-2">
-                        <Birthday className="w-4 h-4" />
+                        <Cake className="w-4 h-4" />
                         <span>
                             {new Date(person.birthday).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                             {!person.deathday && ` (age ${getAge(person.birthday, null)})`}
