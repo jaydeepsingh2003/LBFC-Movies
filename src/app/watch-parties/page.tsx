@@ -16,17 +16,14 @@ import type { WatchParty } from '@/firebase/firestore/watch-parties';
 export default function WatchPartiesPage() {
   const { user, isLoading: userLoading } = useUser();
   const firestore = useFirestore();
-  const { toast } = useToast();
 
   const partiesQuery = useMemo(() => {
     if (!firestore) return null;
-    
     // Query for upcoming parties, ordered by the scheduled time.
-    // The 'isPublic' filter is removed to avoid needing a composite index.
-    // We will filter on the client side.
+    // We will filter for 'isPublic' on the client side to avoid needing a composite index.
     return query(
       collection(firestore, 'watch-parties'), 
-      where('scheduledAt', '>=', Timestamp.now()), 
+      where('scheduledAt', '>=', Timestamp.now()),
       orderBy('scheduledAt', 'asc')
     );
   }, [firestore]);
@@ -34,9 +31,10 @@ export default function WatchPartiesPage() {
   const [partiesSnapshot, loading, error] = useCollection(partiesQuery);
 
   const publicParties = useMemo(() => {
-    return partiesSnapshot?.docs
+    if (!partiesSnapshot) return [];
+    return partiesSnapshot.docs
       .map(doc => ({ id: doc.id, ...doc.data() } as WatchParty & { id: string }))
-      .filter(party => party.isPublic);
+      .filter(party => party.isPublic); // Client-side filtering
   }, [partiesSnapshot]);
 
 
@@ -53,7 +51,7 @@ export default function WatchPartiesPage() {
         return <p className="text-destructive text-center">Error: {error.message}</p>
     }
 
-    if (!publicParties || publicParties.length === 0) {
+    if (publicParties.length === 0) {
       return (
         <div className="text-center py-16 border-2 border-dashed border-secondary rounded-lg">
           <h3 className="text-lg font-semibold text-foreground">No Upcoming Parties</h3>
