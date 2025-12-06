@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import { useUser } from '@/firebase/auth/auth-client';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-import { AppLayout } from '@/components/layout/app-layout';
 import HeroSection from '@/components/sections/hero-section';
 import ForYouSection from '@/components/sections/for-you-section';
 import MoodSection from '@/components/sections/mood-section';
@@ -22,10 +21,14 @@ import UpcomingSection from '@/components/sections/upcoming-section';
 import EnglishTvSection from '@/components/sections/english-tv-section';
 import HindiTvSection from '@/components/sections/hindi-tv-section';
 import KannadaTvSection from '@/components/sections/kannada-tv-section';
+import { Header } from '@/components/layout/header';
+import { BottomNav } from '@/components/layout/bottom-nav';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function DashboardPage() {
   const { user, isLoading } = useUser();
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -35,17 +38,16 @@ export default function DashboardPage() {
 
   if (isLoading || !user) {
     return (
-      <AppLayout>
-        <div className="flex justify-center items-center h-screen bg-background">
-          <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        </div>
-      </AppLayout>
+      <div className="flex justify-center items-center h-screen bg-background">
+        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+      </div>
     );
   }
 
   return (
-    <AppLayout>
-      <div className="flex flex-col">
+    <div>
+      <Header />
+      <main>
         <HeroSection />
         <div className="space-y-12 py-8 px-4 md:px-8">
             <NowPlayingSection />
@@ -64,7 +66,8 @@ export default function DashboardPage() {
             <LanguagePicksSection />
             <MovieMatchmakerSection />
         </div>
-      </div>
-    </AppLayout>
+      </main>
+      {isMobile && <BottomNav />}
+    </div>
   );
 }
