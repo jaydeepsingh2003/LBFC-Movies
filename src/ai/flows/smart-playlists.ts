@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Creates dynamic playlists based on mood, genre, actors, or any combination thereof, automatically curated using AI.
@@ -16,7 +17,7 @@ const SmartPlaylistInputSchema = z.object({
   actors: z.string().optional().describe('A comma-separated list of actors to include.'),
   directors: z.string().optional().describe('A comma-separated list of directors to include.'),
   description: z.string().optional().describe('Any additional description.'),
-  playlistLength: z.number().min(5).max(20).default(10).describe('The desired number of movies in the playlist.'),
+  playlistLength: z.number().min(5).max(20).default(12).describe('The desired number of movies in the playlist.'),
 });
 export type SmartPlaylistInput = z.infer<typeof SmartPlaylistInputSchema>;
 

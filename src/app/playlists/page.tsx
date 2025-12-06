@@ -42,7 +42,7 @@ export default function PlaylistsPage() {
     setIsGenerating(true);
     setPlaylist(null);
     try {
-      const result = await generateSmartPlaylist({ ...criteria, playlistLength: 12 });
+      const result = await generateSmartPlaylist({ ...criteria, playlistLength: 10 });
       setPlaylist(result);
     } catch (error) {
       console.error(error);
@@ -80,8 +80,8 @@ export default function PlaylistsPage() {
 
     if (loading) {
       return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-          {[...Array(6)].map((_, i) => <div key={i} className="aspect-[2/3] w-full bg-secondary rounded-lg animate-pulse"></div>)}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {[...Array(5)].map((_, i) => <div key={i} className="aspect-[2/3] w-full bg-secondary rounded-lg animate-pulse"></div>)}
         </div>
       );
     }
@@ -101,7 +101,7 @@ export default function PlaylistsPage() {
     }
 
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {savedMoviesSnapshot?.docs.map(doc => {
           const movie = doc.data();
           return (
@@ -121,7 +121,7 @@ export default function PlaylistsPage() {
 
   return (
     <AppLayout>
-      <div className="space-y-8 px-4 py-8 md:px-8">
+      <div className="space-y-8 py-8">
         <header className="space-y-2">
           <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">My Playlist</h1>
           <p className="text-muted-foreground">All your saved movies in one place.</p>
@@ -181,7 +181,7 @@ export default function PlaylistsPage() {
                         <CardDescription>{playlist.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                             {playlist.movieTitles.map((title, index) => (
                                 <div key={index} className="text-foreground p-2 bg-secondary rounded-md text-center">{title}</div>
                             ))}

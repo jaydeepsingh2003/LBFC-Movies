@@ -40,7 +40,7 @@ export default function PeoplePage() {
 
   return (
     <AppLayout>
-      <div className="px-4 py-8 md:px-8">
+      <div className="py-8">
         <header className="space-y-4 mb-8">
           <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">
             {debouncedSearchQuery ? 'Search Results' : 'Popular People'}
@@ -64,7 +64,7 @@ export default function PeoplePage() {
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
           </div>
         ) : people.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
             {people.map(person => (
               <PersonCard key={person.id} person={person} />
             ))}
