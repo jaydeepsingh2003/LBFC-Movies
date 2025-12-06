@@ -12,6 +12,8 @@ export interface Movie {
   overview: string;
   backdrop_path: string | null;
   trailerUrl?: string;
+  release_date: string;
+  vote_average: number;
 }
 
 export interface CastMember {
@@ -68,6 +70,24 @@ export interface MovieDetails extends Movie {
                 buy?: WatchProvider[];
             }
         }
+    };
+}
+
+export interface PersonDetails {
+    id: number;
+    name: string;
+    biography: string;
+    profile_path: string | null;
+    birthday: string | null;
+    deathday: string | null;
+    place_of_birth: string | null;
+    known_for_department: string;
+    images: {
+        profiles: { file_path: string }[];
+    };
+    movie_credits: {
+        cast: Movie[];
+        crew: Movie[];
     };
 }
 

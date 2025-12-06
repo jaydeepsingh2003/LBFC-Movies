@@ -8,6 +8,7 @@ import { getMovieTrivia } from '@/ai/flows/movie-trivia';
 import { getExternalRatings } from '@/ai/flows/get-external-ratings';
 import { AppLayout } from '@/components/layout/app-layout';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Loader2, PlayCircle, Star, MessageSquareQuote, Bookmark } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -182,17 +183,19 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
   const renderCreditList = (items: (CastMember | CrewMember)[], maxItems = 12) => (
      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
       {items.slice(0, maxItems).map(item => (
-        <Card key={item.id} className="bg-card/50">
-          <CardContent className="p-3 flex items-center gap-3">
-            <Avatar>
-              <AvatarImage src={item.profile_path ? getPosterUrl(item.profile_path) : undefined} />
-              <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="font-semibold text-sm">{item.name}</p>
-              <p className="text-xs text-muted-foreground">{'character' in item ? item.character : item.job}</p>
-            </div>
-          </CardContent>
+        <Card key={item.id} className="bg-card/50 transition-colors hover:bg-secondary">
+          <Link href={`/person/${item.id}`} className="block h-full">
+            <CardContent className="p-3 flex items-center gap-3 h-full">
+              <Avatar>
+                <AvatarImage src={item.profile_path ? getPosterUrl(item.profile_path) : undefined} />
+                <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="font-semibold text-sm">{item.name}</p>
+                <p className="text-xs text-muted-foreground">{'character' in item ? item.character : item.job}</p>
+              </div>
+            </CardContent>
+          </Link>
         </Card>
       ))}
     </div>

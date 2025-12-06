@@ -1,6 +1,6 @@
 'use client';
 
-import { Movie, MovieDetails } from "./tmdb";
+import { Movie, MovieDetails, PersonDetails } from "./tmdb";
 
 const TMDB_API_KEY = "2dc0bd12c7bd63b2c691d3a64f3a3db7";
 const TMDB_IMAGE_BASE_URL_POSTER = 'https://image.tmdb.org/t/p/w500';
@@ -77,6 +77,24 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetails> {
     console.error('Error fetching movie details from TMDB API via proxy:', error);
     throw error;
   }
+}
+
+export async function getPersonDetails(personId: number): Promise<PersonDetails> {
+    if (!TMDB_API_KEY) {
+        throw new Error('TMDB_API_KEY is not set.');
+    }
+
+    const url = `/api/tmdb/3/person/${personId}?api_key=${TMDB_API_KEY}&append_to_response=movie_credits,images`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`TMDB API request failed: ${response.statusText}`);
+        }
+        return response.json();
+    } catch (error) {
+        console.error('Error fetching person details from TMDB API via proxy:', error);
+        throw error;
+    }
 }
 
 export function getPosterUrl(path: string | null) {
