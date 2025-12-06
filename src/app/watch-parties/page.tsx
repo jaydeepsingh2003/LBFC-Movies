@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useUser } from '@/firebase/auth/auth-client';
 import { useFirestore } from '@/firebase';
 import { useCollection } from 'react-firebase-hooks/firestore';
-import { collection, query, where, Timestamp } from 'firebase/firestore';
+import { collection, query, where, Timestamp, orderBy } from 'firebase/firestore';
 import { Loader2, PlusCircle } from 'lucide-react';
 import { WatchPartyCard } from '@/components/watch-party-card';
 import type { WatchParty } from '@/firebase/firestore/watch-parties';
@@ -18,18 +18,22 @@ export default function WatchPartiesPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const partiesCollectionRef = firestore ? collection(firestore, 'watch-parties') : null;
-  const now = Timestamp.now();
+  const partiesQuery = useMemo(() => {
+    if (!firestore) return null;
+    
+    // Query for upcoming public parties, ordered by the scheduled time
+    return query(
+      collection(firestore, 'watch-parties'), 
+      where('scheduledAt', '>=', Timestamp.now()), 
+      where('isPublic', '==', true),
+      orderBy('scheduledAt', 'asc')
+    );
+  }, [firestore]);
 
-  // Query for upcoming parties, ordered by the scheduled time
-  const upcomingQuery = partiesCollectionRef 
-    ? query(partiesCollectionRef, where('scheduledAt', '>=', now), where('isPublic', '==', true))
-    : null;
-
-  const [upcomingPartiesSnapshot, upcomingLoading, upcomingError] = useCollection(upcomingQuery);
+  const [partiesSnapshot, loading, error] = useCollection(partiesQuery);
 
   const renderContent = () => {
-    if (userLoading || upcomingLoading) {
+    if (userLoading || loading) {
       return (
         <div className="flex justify-center items-center h-64">
           <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -37,11 +41,11 @@ export default function WatchPartiesPage() {
       );
     }
     
-    if (upcomingError) {
-        return <p className="text-destructive text-center">Error: {upcomingError.message}</p>
+    if (error) {
+        return <p className="text-destructive text-center">Error: {error.message}</p>
     }
 
-    if (upcomingPartiesSnapshot?.empty) {
+    if (partiesSnapshot?.empty) {
       return (
         <div className="text-center py-16 border-2 border-dashed border-secondary rounded-lg">
           <h3 className="text-lg font-semibold text-foreground">No Upcoming Parties</h3>
@@ -52,7 +56,7 @@ export default function WatchPartiesPage() {
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {upcomingPartiesSnapshot?.docs.map(doc => {
+        {partiesSnapshot?.docs.map(doc => {
           const party = { id: doc.id, ...doc.data() } as WatchParty & { id: string };
           return <WatchPartyCard key={party.id} party={party} />;
         })}
@@ -67,6 +71,7 @@ export default function WatchPartiesPage() {
           <div className="space-y-1">
             <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">Watch Parties</h1>
             <p className="text-muted-foreground">Join a scheduled movie viewing with other fans.</p>
+
           </div>
            {/* The "Create Party" button will be implemented in a future step. */}
            <Button disabled>
