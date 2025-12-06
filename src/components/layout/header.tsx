@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { navItems } from "./sidebar-nav";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 export function DesktopNav() {
     const pathname = usePathname();
@@ -36,6 +37,11 @@ export function DesktopNav() {
 export function Header() {
     const { user, isLoading } = useUser();
     const router = useRouter();
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const handleLogout = async () => {
         await logout();
@@ -55,7 +61,7 @@ export function Header() {
                 <div className="hidden md:block">
                   <MovieSearch />
                 </div>
-                {isLoading ? (
+                {(!isClient || isLoading) ? (
                     <div className="h-10 w-10 rounded-full bg-secondary animate-pulse" />
                 ) : user ? (
                     <DropdownMenu>
