@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
 import { useFirestore } from '@/firebase';
 import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
@@ -30,7 +30,8 @@ interface SavedMovie {
   overview: string;
 }
 
-export default function ProfilePage({ params }: { params: { userId: string } }) {
+export default function ProfilePage(props: { params: { userId: string } }) {
+  const params = React.use(props.params);
   const firestore = useFirestore();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [savedMovies, setSavedMovies] = useState<SavedMovie[]>([]);

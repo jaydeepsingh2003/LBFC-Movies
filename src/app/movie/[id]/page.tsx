@@ -57,7 +57,7 @@ const ImdbIcon = () => (
 
 export default function MovieDetailsPage(props: { params: { id: string } }) {
   const params = React.use(props.params);
-  const id = params.id;
+  const { id } = params;
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -372,5 +372,3 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
     </AppLayout>
   );
 }
-
-    
