@@ -9,7 +9,7 @@ import { MovieSearch } from "../movie-search"
 import { useUser, logout } from "@/firebase/auth/auth-client";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { navItems } from "./sidebar-nav";
+import { desktopNavItems } from "./sidebar-nav";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { AppLayout } from "./app-layout";
@@ -18,7 +18,7 @@ export function DesktopNav() {
     const pathname = usePathname();
     return (
         <nav className="hidden md:flex items-center gap-4 text-sm font-medium text-muted-foreground">
-            {navItems.map((item) => (
+            {desktopNavItems.map((item) => (
                 <Link
                     key={item.href}
                     href={item.href}
