@@ -43,7 +43,7 @@ export default function EnglishTvSection() {
              <div className="space-y-4">
                 <Skeleton className="h-8 w-1/4" />
                 <div className="flex gap-4 overflow-x-auto pb-4">
-                    {[...Array(5)].map((_, i) => (
+                    {[...Array(7)].map((_, i) => (
                         <Skeleton key={i} className="aspect-[2/3] w-48 md:w-56 flex-shrink-0 rounded-lg" />
                     ))}
                 </div>
@@ -63,9 +63,9 @@ export default function EnglishTvSection() {
                 }}
                 className="w-full"
                 >
-                <CarouselContent className="-ml-2">
+                <CarouselContent className="-ml-2 md:-ml-4">
                     {shows.map((show, index) => (
-                    <CarouselItem key={show.id || index} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 pl-2">
+                    <CarouselItem key={show.id || index} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 2xl:basis-1/7 pl-2 md:pl-4">
                         <TVShowCard id={show.id!} title={show.title} posterUrl={show.posterUrl} />
                     </CarouselItem>
                     ))}

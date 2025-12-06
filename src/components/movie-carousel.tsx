@@ -29,9 +29,9 @@ export function MovieCarousel({ title, movies }: MovieCarouselProps) {
           }}
           className="w-full"
         >
-          <CarouselContent className="-ml-2">
+          <CarouselContent className="-ml-2 md:-ml-4">
             {movies.map((movie, index) => (
-              <CarouselItem key={movie.id || index} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 pl-2">
+              <CarouselItem key={movie.id || index} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 2xl:basis-1/7 pl-2 md:pl-4">
                 <MovieCard id={movie.id} title={movie.title} posterUrl={movie.posterUrl} trailerUrl={movie.trailerUrl} />
               </CarouselItem>
             ))}

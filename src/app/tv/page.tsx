@@ -29,7 +29,7 @@ function TvCarousel({ title, shows, isLoading }: TvCarouselProps) {
       <div className="space-y-4">
         <Skeleton className="h-8 w-1/4" />
         <div className="flex gap-4 overflow-x-auto pb-4">
-          {[...Array(5)].map((_, i) => (
+          {[...Array(7)].map((_, i) => (
             <Skeleton key={i} className="aspect-[2/3] w-48 md:w-56 flex-shrink-0 rounded-lg" />
           ))}
         </div>
@@ -49,9 +49,9 @@ function TvCarousel({ title, shows, isLoading }: TvCarouselProps) {
           }}
           className="w-full"
         >
-          <CarouselContent className="-ml-2">
+          <CarouselContent className="-ml-2 md:-ml-4">
             {shows.map((show, index) => (
-              <CarouselItem key={show.id || index} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 pl-2">
+              <CarouselItem key={show.id || index} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 2xl:basis-1/7 pl-2 md:pl-4">
                 <TVShowCard id={show.id!} title={show.title} posterUrl={show.posterUrl} />
               </CarouselItem>
             ))}
@@ -102,7 +102,7 @@ export default function TVPage() {
 
   return (
     <AppLayout>
-      <div className="space-y-12 py-8">
+      <div className="space-y-12 py-8 px-4 md:px-8">
         <header className="space-y-2">
             <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">TV Shows</h1>
             <p className="text-muted-foreground">Browse and discover new TV series.</p>

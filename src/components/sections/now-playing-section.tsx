@@ -52,7 +52,7 @@ export default function NowPlayingSection() {
              <div className="space-y-4">
                 <Skeleton className="h-8 w-1/4" />
                 <div className="flex gap-4 overflow-x-auto pb-4">
-                    {[...Array(5)].map((_, i) => (
+                    {[...Array(7)].map((_, i) => (
                         <Skeleton key={i} className="aspect-[2/3] w-48 md:w-56 flex-shrink-0 rounded-lg" />
                     ))}
                 </div>

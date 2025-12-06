@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -73,7 +74,7 @@ export default function NewsFeedSection() {
         <h2 className="font-headline text-2xl font-bold tracking-tight">Film News Feed</h2>
         <p className="text-muted-foreground">The latest headlines from the world of cinema.</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
         {newsItems.map(item => {
           const image = PlaceHolderImages.find(p => p.id === item.imageId);
           const avatar = PlaceHolderImages.find(p => p.id === item.authorAvatarId);

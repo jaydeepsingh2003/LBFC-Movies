@@ -113,7 +113,7 @@ export default function SocialPage() {
           <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">Discover Users</h1>
           <p className="text-muted-foreground">See who else is using the platform and check out their movie collection.</p>
         </header>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {users.map(user => (
             <Card key={user.uid} className="transition-colors">
               <CardContent className="p-4 flex flex-col items-center text-center gap-4">

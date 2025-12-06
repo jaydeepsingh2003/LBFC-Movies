@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Loader2, Globe } from "lucide-react"
 import { Movie } from "@/lib/tmdb"
 import { getPosterUrl, searchMovies, getMovieVideos } from "@/lib/tmdb.client"
+import { Skeleton } from "../ui/skeleton"
 
 const availableLanguages = ["English", "Spanish", "French", "Japanese", "Korean", "Hindi", "Kannada"];
 
@@ -141,10 +142,13 @@ export default function LanguagePicksSection() {
       </Button>
 
       {isLoading && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {[...Array(6)].map((_, i) => (
-                <div key={i} className="aspect-[2/3] w-full bg-secondary rounded-lg animate-pulse"></div>
-            ))}
+        <div className="space-y-4">
+            <Skeleton className="h-8 w-1/3" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4">
+                {[...Array(7)].map((_, i) => (
+                    <div key={i} className="aspect-[2/3] w-full bg-secondary rounded-lg animate-pulse"></div>
+                ))}
+            </div>
         </div>
       )}
 

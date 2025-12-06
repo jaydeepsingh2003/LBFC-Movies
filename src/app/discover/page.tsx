@@ -103,7 +103,7 @@ export default function DiscoverPage() {
 
   return (
     <AppLayout>
-      <div className="space-y-8">
+      <div className="space-y-8 px-4 md:px-8">
         <header className="space-y-2 pt-8">
           <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">Discover</h1>
           <p className="text-muted-foreground">Use advanced filters to find exactly what you're looking for.</p>
@@ -126,7 +126,7 @@ export default function DiscoverPage() {
               <Loader2 className="h-16 w-16 animate-spin text-primary" />
             </div>
           ) : results.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4">
                   {results.map((item) => (
                     item.type === 'movie' ? (
                       <MovieCard 
