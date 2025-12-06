@@ -199,6 +199,32 @@ export async function getUpcomingMovies(): Promise<Movie[]> {
   }
 }
 
+async function fetchTvShowCategory(category: 'airing_today' | 'on_the_air' | 'popular' | 'top_rated'): Promise<TVShow[]> {
+  if (!TMDB_API_KEY) {
+    console.error('TMDB_API_KEY is not available. API requests will be skipped.');
+    return [];
+  }
+  const url = `/api/tmdb/3/tv/${category}?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`TMDB API request for TV shows failed with status ${response.status}`);
+      return [];
+    }
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error(`Error fetching ${category} TV shows from TMDB API via proxy:`, error);
+    return [];
+  }
+}
+
+export const getAiringTodayTvShows = () => fetchTvShowCategory('airing_today');
+export const getOnTheAirTvShows = () => fetchTvShowCategory('on_the_air');
+export const getPopularTvShows = () => fetchTvShowCategory('popular');
+export const getTopRatedTvShows = () => fetchTvShowCategory('top_rated');
+
+
 export function getPosterUrl(path: string | null) {
   return path ? `${TMDB_IMAGE_BASE_URL_POSTER}${path}` : null;
 }
