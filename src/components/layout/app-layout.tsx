@@ -1,9 +1,24 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { Header } from './header';
+import { useUser } from '@/firebase/auth/auth-client';
+import { BottomNav } from './bottom-nav';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { SidebarProvider } from '../ui/sidebar';
 
-export function AppLayout({ children }: { children: ReactNode }) {
-  // This component is being intentionally left empty to remove previous layout structures.
-  // The layout will be managed by individual page components for now.
-  return <>{children}</>;
+export function AppLayout({ children }: { children: React.ReactNode }) {
+  const { user } = useUser();
+  const isMobile = useIsMobile();
+
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1">
+          {children}
+        </main>
+        {isMobile && <BottomNav />}
+      </div>
+    </SidebarProvider>
+  );
 }

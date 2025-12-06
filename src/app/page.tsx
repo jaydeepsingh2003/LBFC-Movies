@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -21,14 +20,11 @@ import UpcomingSection from '@/components/sections/upcoming-section';
 import EnglishTvSection from '@/components/sections/english-tv-section';
 import HindiTvSection from '@/components/sections/hindi-tv-section';
 import KannadaTvSection from '@/components/sections/kannada-tv-section';
-import { Header } from '@/components/layout/header';
-import { BottomNav } from '@/components/layout/bottom-nav';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { AppLayout } from '@/components/layout/app-layout';
 
 export default function DashboardPage() {
   const { user, isLoading } = useUser();
   const router = useRouter();
-  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -45,29 +41,25 @@ export default function DashboardPage() {
   }
 
   return (
-    <div>
-      <Header />
-      <main>
-        <HeroSection />
-        <div className="space-y-12 py-8 px-4 md:px-8">
-            <NowPlayingSection />
-            <UpcomingSection />
-            <FranchiseFocusSection />
-            <ForYouSection />
-            <TrendingSection />
-            <EnglishTvSection />
-            <HindiTvSection />
-            <KannadaTvSection />
-            <HindiMoviesSection />
-            <KannadaMoviesSection />
-            <TamilMoviesSection />
-            <MoodSection />
-            <FavoriteArtistsSection />
-            <LanguagePicksSection />
-            <MovieMatchmakerSection />
-        </div>
-      </main>
-      {isMobile && <BottomNav />}
-    </div>
+    <AppLayout>
+      <HeroSection />
+      <div className="space-y-12 py-8 px-4 md:px-8">
+          <NowPlayingSection />
+          <UpcomingSection />
+          <FranchiseFocusSection />
+          <ForYouSection />
+          <TrendingSection />
+          <EnglishTvSection />
+          <HindiTvSection />
+          <KannadaTvSection />
+          <HindiMoviesSection />
+          <KannadaMoviesSection />
+          <TamilMoviesSection />
+          <MoodSection />
+          <FavoriteArtistsSection />
+          <LanguagePicksSection />
+          <MovieMatchmakerSection />
+      </div>
+    </AppLayout>
   );
 }
