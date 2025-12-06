@@ -162,7 +162,7 @@ export default function PersonPage(props: { params: { id: string } }) {
         {person.images.profiles.length > 1 && (
             <section>
                 <h2 className="font-headline text-2xl font-bold tracking-tight text-foreground mb-6">Photos</h2>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
                     {person.images.profiles.slice(1, 15).map((image, index) => (
                         <Card key={index} className="overflow-hidden">
                            <CardContent className="p-0 aspect-square relative w-full">

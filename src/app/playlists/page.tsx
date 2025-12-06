@@ -181,7 +181,7 @@ export default function PlaylistsPage() {
                         <CardDescription>{playlist.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
                             {playlist.movieTitles.map((title, index) => (
                                 <div key={index} className="text-foreground p-2 bg-secondary rounded-md text-center text-sm">{title}</div>
                             ))}
