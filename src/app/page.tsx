@@ -35,9 +35,11 @@ export default function DashboardPage() {
 
   if (isLoading || !user) {
     return (
-      <div className="flex justify-center items-center h-screen bg-background">
-        <Loader2 className="h-16 w-16 animate-spin text-primary" />
-      </div>
+      <AppLayout>
+        <div className="flex justify-center items-center h-screen bg-background">
+          <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        </div>
+      </AppLayout>
     );
   }
 
