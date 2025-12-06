@@ -7,13 +7,19 @@ import type { TVShowDetails, CastMember, CrewMember, WatchProvider, TVShow, TVSe
 import { AppLayout } from '@/components/layout/app-layout';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, Calendar, Clapperboard, Tv } from 'lucide-react';
+import { Loader2, PlayCircle, Star, Calendar, Clapperboard, Tv, Bookmark } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
 import { Button } from '@/components/ui/button';
 import { TVShowCard } from '@/components/tv-show-card';
+import { useUser } from '@/firebase/auth/auth-client';
+import { useFirestore } from '@/firebase';
+import { useToast } from '@/hooks/use-toast';
+import { saveTvShowToPlaylist, removeTvShowFromPlaylist } from '@/firebase/firestore/tv-playlists';
+import { doc } from 'firebase/firestore';
+import { useDocumentData } from 'react-firebase-hooks/firestore';
 
 interface TVShowDetailsWithMedia extends TVShowDetails {
   posterUrl: string | null;
@@ -28,9 +34,16 @@ interface TVShowWithPoster extends Partial<TVShow> {
 export default function TVShowDetailsPage(props: { params: { id: string } }) {
   const params = React.use(props.params);
   const { id } = params;
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const { toast } = useToast();
   const [show, setShow] = useState<TVShowDetailsWithMedia | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { setVideoId } = useVideoPlayer();
+
+  const savedShowRef = user && firestore && id ? doc(firestore, `users/${user.uid}/savedTvShows/${id}`) : null;
+  const [savedShowDoc, isSavedShowLoading] = useDocumentData(savedShowRef);
+  const isSaved = !!savedShowDoc;
 
   useEffect(() => {
     async function fetchData() {
@@ -59,6 +72,39 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
     const trailer = show?.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
     if (trailer) {
       setVideoId(trailer.key);
+    }
+  };
+
+  const handleSaveToggle = async () => {
+    if (!user || !firestore || !show) {
+        toast({
+            variant: "destructive",
+            title: "Please log in",
+            description: "You must be logged in to save shows.",
+        });
+        return;
+    }
+
+    try {
+        if (isSaved) {
+            await removeTvShowFromPlaylist(firestore, user.uid, show.id);
+            toast({ title: "Show removed from your playlist." });
+        } else {
+            await saveTvShowToPlaylist(firestore, user.uid, {
+                id: show.id,
+                name: show.name,
+                overview: show.overview,
+                poster_path: show.poster_path,
+            });
+            toast({ title: "Show added to your playlist!" });
+        }
+    } catch (error) {
+        console.error("Error toggling save state:", error);
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Could not update your playlist. Please try again.",
+        });
     }
   };
   
@@ -154,6 +200,11 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
               <Button onClick={handlePlayTrailer} className="w-full" size="lg">
                 <PlayCircle className="mr-2" /> Play Trailer
               </Button>
+              {user && (
+                <Button onClick={handleSaveToggle} variant={isSaved ? "secondary" : "default"} size="lg" disabled={isSavedShowLoading}>
+                  <Bookmark className={isSaved ? "mr-2 fill-current" : "mr-2"} /> {isSaved ? 'Saved' : 'Save'}
+                </Button>
+              )}
             </div>
              {streamingProviders.length > 0 && (
                 <Card className="mt-4 bg-secondary">
@@ -239,5 +290,3 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
     </AppLayout>
   );
 }
-
-    
