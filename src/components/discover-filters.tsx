@@ -10,33 +10,46 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { Loader2, Search } from 'lucide-react';
 
-const genres = [
-  "Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary", 
-  "Drama", "Family", "Fantasy", "History", "Horror", "Music", 
-  "Mystery", "Romance", "Science Fiction", "TV Movie", "Thriller", "War", "Western"
+const movieGenres = [
+  { id: 28, name: "Action" }, { id: 12, name: "Adventure" }, { id: 16, name: "Animation" }, 
+  { id: 35, name: "Comedy" }, { id: 80, name: "Crime" }, { id: 99, name: "Documentary" }, 
+  { id: 18, name: "Drama" }, { id: 10751, name: "Family" }, { id: 14, name: "Fantasy" }, 
+  { id: 36, name: "History" }, { id: 27, name: "Horror" }, { id: 10402, name: "Music" }, 
+  { id: 9648, name: "Mystery" }, { id: 10749, name: "Romance" }, { id: 878, name: "Science Fiction" }, 
+  { id: 10770, name: "TV Movie" }, { id: 53, name: "Thriller" }, { id: 10752, name: "War" }, 
+  { id: 37, name: "Western" }
 ];
+
+const tvGenres = [
+  { id: 10759, name: "Action & Adventure" }, { id: 16, name: "Animation" }, { id: 35, name: "Comedy" },
+  { id: 80, name: "Crime" }, { id: 99, name: "Documentary" }, { id: 18, name: "Drama" },
+  { id: 10751, name: "Family" }, { id: 10762, name: "Kids" }, { id: 9648, name: "Mystery" },
+  { id: 10763, name: "News" }, { id: 10764, name: "Reality" }, { id: 10765, name: "Sci-Fi & Fantasy" },
+  { id: 10766, name: "Soap" }, { id: 10767, name: "Talk" }, { id: 10768, name: "War & Politics" },
+  { id: 37, name: "Western" }
+];
+
 
 const currentYear = new Date().getFullYear();
 
 export interface FilterState {
   genre: string;
-  releaseYear: [number, number];
-  actors: string;
-  directors: string;
+  releaseYear: [number];
+  keywords: string;
   rating: [number, number];
 }
 
 interface DiscoverFiltersProps {
   onSearch: (filters: FilterState) => void;
   isLoading: boolean;
+  searchType: 'movie' | 'tv';
 }
 
-export default function DiscoverFilters({ onSearch, isLoading }: DiscoverFiltersProps) {
+export default function DiscoverFilters({ onSearch, isLoading, searchType }: DiscoverFiltersProps) {
   const [filters, setFilters] = useState<FilterState>({
-    genre: 'any',
-    releaseYear: [1980, currentYear],
-    actors: '',
-    directors: '',
+    genre: '',
+    releaseYear: [currentYear],
+    keywords: '',
     rating: [5, 10],
   });
 
@@ -50,7 +63,7 @@ export default function DiscoverFilters({ onSearch, isLoading }: DiscoverFilters
   };
 
   const handleYearChange = (value: number[]) => {
-    setFilters(prev => ({ ...prev, releaseYear: value as [number, number] }));
+    setFilters(prev => ({ ...prev, releaseYear: value as [number] }));
   };
 
   const handleRatingChange = (value: number[]) => {
@@ -60,11 +73,10 @@ export default function DiscoverFilters({ onSearch, isLoading }: DiscoverFilters
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch({
-        ...filters,
-        genre: filters.genre === 'any' ? '' : filters.genre,
-    });
+    onSearch(filters);
   };
+
+  const genres = searchType === 'movie' ? movieGenres : tvGenres;
 
   return (
     <Card>
@@ -82,29 +94,21 @@ export default function DiscoverFilters({ onSearch, isLoading }: DiscoverFilters
                   <SelectValue placeholder="Any Genre" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="any">Any Genre</SelectItem>
-                  {genres.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
+                  <SelectItem value="">Any Genre</SelectItem>
+                  {genres.map(g => <SelectItem key={g.id} value={g.id.toString()}>{g.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="actors">Actors</Label>
-              <Input id="actors" name="actors" placeholder="e.g., Tom Cruise, Zendaya" value={filters.actors} onChange={handleInputChange} disabled={isLoading} />
+              <Label htmlFor="keywords">Keywords</Label>
+              <Input id="keywords" name="keywords" placeholder="e.g., based on a true story" value={filters.keywords} onChange={handleInputChange} disabled={isLoading} />
             </div>
-
+            
             <div className="space-y-2">
-              <Label htmlFor="directors">Directors</Label>
-              <Input id="directors" name="directors" placeholder="e.g., Denis Villeneuve" value={filters.directors} onChange={handleInputChange} disabled={isLoading} />
-            </div>
-
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-             <div className="space-y-2">
-              <div className="flex justify-between">
-                <Label>Release Year</Label>
-                <span className="text-sm text-muted-foreground">{filters.releaseYear[0]} - {filters.releaseYear[1]}</span>
+               <div className="flex justify-between">
+                <Label>{searchType === 'movie' ? 'Release Year' : 'First Air Year'}</Label>
+                <span className="text-sm text-muted-foreground">{filters.releaseYear[0]}</span>
               </div>
               <Slider
                 value={filters.releaseYear}
@@ -116,14 +120,14 @@ export default function DiscoverFilters({ onSearch, isLoading }: DiscoverFilters
               />
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-2 col-span-1 lg:col-span-3">
                <div className="flex justify-between">
-                <Label>User Rating</Label>
-                <span className="text-sm text-muted-foreground">{filters.rating[0]} - {filters.rating[1]}</span>
+                <Label>Minimum User Rating</Label>
+                <span className="text-sm text-muted-foreground">{filters.rating[0]} / 10</span>
               </div>
               <Slider
-                value={filters.rating}
-                onValueChange={handleRatingChange}
+                value={[filters.rating[0]]}
+                onValueChange={(value) => handleRatingChange([value[0], 10])}
                 min={0}
                 max={10}
                 step={0.5}
@@ -135,7 +139,7 @@ export default function DiscoverFilters({ onSearch, isLoading }: DiscoverFilters
           <div className="pt-4">
             <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
-              Find Movies
+              Find {searchType === 'movie' ? 'Movies' : 'TV Shows'}
             </Button>
           </div>
         </form>
