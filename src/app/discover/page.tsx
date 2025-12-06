@@ -103,7 +103,7 @@ export default function DiscoverPage() {
 
   return (
     <AppLayout>
-      <div className="space-y-8">
+      <div className="space-y-8 p-4 md:p-8">
         <header className="space-y-2">
           <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">Discover</h1>
           <p className="text-muted-foreground">Use advanced filters to find exactly what you're looking for.</p>

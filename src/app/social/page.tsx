@@ -108,7 +108,7 @@ export default function SocialPage() {
 
   return (
     <AppLayout>
-      <div>
+      <div className="p-4 md:p-8">
         <header className="space-y-2 mb-8">
           <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">Discover Users</h1>
           <p className="text-muted-foreground">See who else is using the platform and check out their movie collection.</p>
