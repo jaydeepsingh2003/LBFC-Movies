@@ -59,7 +59,7 @@ export default function DiscoverFilters({ onSearch, isLoading, searchType }: Dis
   };
 
   const handleGenreChange = (value: string) => {
-    setFilters(prev => ({ ...prev, genre: value }));
+    setFilters(prev => ({ ...prev, genre: value === 'any' ? '' : value }));
   };
 
   const handleYearChange = (value: number[]) => {
@@ -89,12 +89,12 @@ export default function DiscoverFilters({ onSearch, isLoading, searchType }: Dis
             
             <div className="space-y-2">
               <Label htmlFor="genre">Genre</Label>
-              <Select name="genre" value={filters.genre} onValueChange={handleGenreChange} disabled={isLoading}>
+              <Select name="genre" value={filters.genre || 'any'} onValueChange={handleGenreChange} disabled={isLoading}>
                 <SelectTrigger id="genre">
                   <SelectValue placeholder="Any Genre" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Any Genre</SelectItem>
+                  <SelectItem value="any">Any Genre</SelectItem>
                   {genres.map(g => <SelectItem key={g.id} value={g.id.toString()}>{g.name}</SelectItem>)}
                 </SelectContent>
               </Select>
