@@ -8,6 +8,9 @@ import type { TVShow } from '@/lib/tmdb';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { TVShowCard } from '@/components/tv-show-card';
 import { Skeleton } from '@/components/ui/skeleton';
+import EnglishTvSection from '@/components/sections/english-tv-section';
+import HindiTvSection from '@/components/sections/hindi-tv-section';
+import KannadaTvSection from '@/components/sections/kannada-tv-section';
 
 interface TVShowWithPoster extends Partial<TVShow> {
     posterUrl: string | null;
@@ -109,6 +112,12 @@ export default function TVPage() {
         <TvCarousel title="Currently On The Air" shows={onTheAir} isLoading={loadingState.onTheAir} />
         <TvCarousel title="Popular TV Shows" shows={popular} isLoading={loadingState.popular} />
         <TvCarousel title="Top Rated TV Shows" shows={topRated} isLoading={loadingState.topRated} />
+
+        <div className="space-y-12">
+            <EnglishTvSection />
+            <HindiTvSection />
+            <KannadaTvSection />
+        </div>
       </div>
     </AppLayout>
   );
