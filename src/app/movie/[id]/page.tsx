@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getMovieDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
-import type { MovieDetails, CastMember, CrewMember, Review, WatchProvider } from '@/lib/tmdb';
+import type { MovieDetails, CastMember, CrewMember, Review, WatchProvider, Movie } from '@/lib/tmdb';
 import { getMovieTrivia } from '@/ai/flows/movie-trivia';
 import { getExternalRatings } from '@/ai/flows/get-external-ratings';
 import { AppLayout } from '@/components/layout/app-layout';
@@ -23,6 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 import { saveMovieToPlaylist, removeMovieFromPlaylist } from '@/firebase/firestore/playlists';
 import { doc } from 'firebase/firestore';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
+import { MovieCarousel } from '@/components/movie-carousel';
 
 interface MovieDetailsWithMedia extends MovieDetails {
   posterUrl: string | null;
@@ -39,6 +40,12 @@ interface ExternalRatings {
     imdb: string;
     rottenTomatoes: string;
 }
+
+interface MovieWithPoster extends Partial<Movie> {
+    posterUrl: string | null;
+    title: string;
+}
+
 
 const RottenTomatoesIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5">
@@ -230,6 +237,10 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
     </div>
   );
 
+  const similarMovies = movie.similar.results
+        .map(m => ({ ...m, posterUrl: getPosterUrl(m.poster_path), title: m.title } as MovieWithPoster))
+        .filter(m => m.posterUrl);
+
   return (
     <AppLayout>
       <div className="relative h-96 md:h-[32rem] w-full">
@@ -368,9 +379,14 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
                     </div>
                 </section>
             )}
-
           </div>
         </div>
+        
+        {similarMovies.length > 0 && (
+            <div className="pt-12">
+                <MovieCarousel title="You Might Also Like" movies={similarMovies} />
+            </div>
+        )}
       </div>
     </AppLayout>
   );

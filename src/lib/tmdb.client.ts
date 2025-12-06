@@ -66,7 +66,7 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetails> {
     throw new Error('TMDB_API_KEY is not set.');
   }
 
-  const url = `/api/tmdb/3/movie/${movieId}?api_key=${TMDB_API_KEY}&append_to_response=credits,videos,keywords,reviews,watch/providers`;
+  const url = `/api/tmdb/3/movie/${movieId}?api_key=${TMDB_API_KEY}&append_to_response=credits,videos,keywords,reviews,watch/providers,similar`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -95,6 +95,46 @@ export async function getPersonDetails(personId: number): Promise<PersonDetails>
         console.error('Error fetching person details from TMDB API via proxy:', error);
         throw error;
     }
+}
+
+export async function getNowPlayingMovies(): Promise<Movie[]> {
+  if (!TMDB_API_KEY) {
+    console.error('TMDB_API_KEY is not available. API requests will be skipped.');
+    return [];
+  }
+  const url = `/api/tmdb/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`TMDB API request failed with status ${response.status}`);
+      return [];
+    }
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error('Error fetching from TMDB API via proxy:', error);
+    return [];
+  }
+}
+
+export async function getUpcomingMovies(): Promise<Movie[]> {
+  if (!TMDB_API_KEY) {
+    console.error('TMDB_API_KEY is not available. API requests will be skipped.');
+    return [];
+  }
+  const url = `/api/tmdb/3/movie/upcoming?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`TMDB API request failed with status ${response.status}`);
+      return [];
+    }
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error('Error fetching from TMDB API via proxy:', error);
+    return [];
+  }
 }
 
 export function getPosterUrl(path: string | null) {

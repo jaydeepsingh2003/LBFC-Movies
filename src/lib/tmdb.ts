@@ -21,6 +21,7 @@ export interface CastMember {
     name: string;
     character: string;
     profile_path: string | null;
+    credit_id: string;
 }
 
 export interface CrewMember {
@@ -28,6 +29,7 @@ export interface CrewMember {
     name: string;
     job: string;
     profile_path: string | null;
+    credit_id: string;
 }
 
 export interface Review {
@@ -71,6 +73,9 @@ export interface MovieDetails extends Movie {
             }
         }
     };
+    similar: {
+        results: Movie[];
+    };
 }
 
 export interface PersonDetails {
@@ -86,8 +91,8 @@ export interface PersonDetails {
         profiles: { file_path: string }[];
     };
     movie_credits: {
-        cast: Movie[];
-        crew: Movie[];
+        cast: (Movie & { credit_id: string })[];
+        crew: (Movie & { credit_id: string })[];
     };
 }
 

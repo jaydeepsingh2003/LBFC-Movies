@@ -17,6 +17,8 @@ import HindiMoviesSection from '@/components/sections/hindi-movies-section';
 import KannadaMoviesSection from '@/components/sections/kannada-movies-section';
 import TamilMoviesSection from '@/components/sections/tamil-movies-section';
 import MovieMatchmakerSection from '@/components/movie-matchmaker-section';
+import NowPlayingSection from '@/components/sections/now-playing-section';
+import UpcomingSection from '@/components/sections/upcoming-section';
 
 export default function DashboardPage() {
   const { user, isLoading } = useUser();
@@ -41,6 +43,8 @@ export default function DashboardPage() {
       <div className="flex flex-col">
         <HeroSection />
         <div className="p-4 sm:p-6 md:p-8 space-y-12">
+            <NowPlayingSection />
+            <UpcomingSection />
             <FranchiseFocusSection />
             <ForYouSection />
             <TrendingSection />
