@@ -12,9 +12,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
 
   return (
-    <div>
-      <div className={`flex flex-col w-full pb-16 md:pb-0`}>
-        <Header />
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <div className={`flex flex-1 flex-col w-full pb-16 md:pb-0`}>
         <main className="flex-1 animate-in fade-in duration-500">
           {children}
         </main>
