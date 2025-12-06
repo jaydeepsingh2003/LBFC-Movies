@@ -10,8 +10,8 @@ import { Clock, Calendar, Users } from 'lucide-react';
 import { getPosterUrl } from '@/lib/tmdb.client';
 import { format } from 'date-fns';
 import type { WatchParty } from '@/firebase/firestore/watch-parties';
-import { useDocumentData, useCollection } from 'react-firebase-hooks/firestore';
-import { doc, collection, type Firestore } from 'firebase/firestore';
+import { useCollection } from 'react-firebase-hooks/firestore';
+import { collection } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 
 interface WatchPartyCardProps {
