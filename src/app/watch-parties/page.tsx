@@ -67,6 +67,16 @@ export default function WatchPartiesPage() {
       </div>
     );
   };
+  
+  if (userLoading || loading) {
+    return (
+      <AppLayout>
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>

@@ -406,5 +406,3 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
     </AppLayout>
   );
 }
-
-    

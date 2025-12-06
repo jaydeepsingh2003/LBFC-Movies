@@ -183,5 +183,3 @@ export default function PersonPage(props: { params: { id: string } }) {
     </AppLayout>
   );
 }
-
-    

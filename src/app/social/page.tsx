@@ -96,6 +96,16 @@ export default function SocialPage() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
       <div className="p-4 sm:p-6 md:p-8">
@@ -103,41 +113,34 @@ export default function SocialPage() {
           <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">Discover Users</h1>
           <p className="text-muted-foreground">See who else is using the platform and check out their movie collection.</p>
         </header>
-
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {users.map(user => (
-              <Card key={user.uid} className="transition-colors">
-                <CardContent className="p-4 flex flex-col items-center text-center gap-4">
-                    <Link href={`/profile/${user.uid}`} passHref>
-                        <Avatar className="h-20 w-20 cursor-pointer">
-                            <AvatarImage src={user.photoURL} alt={user.displayName} />
-                            <AvatarFallback>{user.displayName.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                    </Link>
-                  <div className="overflow-hidden">
-                    <Link href={`/profile/${user.uid}`} passHref>
-                        <p className="font-semibold truncate cursor-pointer hover:underline">{user.displayName}</p>
-                    </Link>
-                    <p className="text-sm text-muted-foreground truncate">{user.email}</p>
-                  </div>
-                  <Button
-                    variant={following.has(user.uid) ? 'secondary' : 'default'}
-                    onClick={() => handleFollowToggle(user.uid)}
-                    className="w-full"
-                  >
-                    {following.has(user.uid) ? <UserCheck className="mr-2 h-4 w-4" /> : <UserPlus className="mr-2 h-4 w-4" />}
-                    {following.has(user.uid) ? 'Following' : 'Follow'}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {users.map(user => (
+            <Card key={user.uid} className="transition-colors">
+              <CardContent className="p-4 flex flex-col items-center text-center gap-4">
+                  <Link href={`/profile/${user.uid}`} passHref>
+                      <Avatar className="h-20 w-20 cursor-pointer">
+                          <AvatarImage src={user.photoURL} alt={user.displayName} />
+                          <AvatarFallback>{user.displayName.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                  </Link>
+                <div className="overflow-hidden">
+                  <Link href={`/profile/${user.uid}`} passHref>
+                      <p className="font-semibold truncate cursor-pointer hover:underline">{user.displayName}</p>
+                  </Link>
+                  <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                </div>
+                <Button
+                  variant={following.has(user.uid) ? 'secondary' : 'default'}
+                  onClick={() => handleFollowToggle(user.uid)}
+                  className="w-full"
+                >
+                  {following.has(user.uid) ? <UserCheck className="mr-2 h-4 w-4" /> : <UserPlus className="mr-2 h-4 w-4" />}
+                  {following.has(user.uid) ? 'Following' : 'Follow'}
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </AppLayout>
   );
