@@ -224,6 +224,35 @@ export const getOnTheAirTvShows = () => fetchTvShowCategory('on_the_air');
 export const getPopularTvShows = () => fetchTvShowCategory('popular');
 export const getTopRatedTvShows = () => fetchTvShowCategory('top_rated');
 
+export async function discoverTvShows(options: { language?: string; sortBy?: string }): Promise<TVShow[]> {
+  if (!TMDB_API_KEY) {
+    console.error('TMDB_API_KEY is not available. API requests will be skipped.');
+    return [];
+  }
+  const params = new URLSearchParams({
+    api_key: TMDB_API_KEY,
+    language: 'en-US',
+    page: '1',
+    sort_by: options.sortBy || 'popularity.desc',
+  });
+  if (options.language) {
+    params.append('with_original_language', options.language);
+  }
+
+  const url = `/api/tmdb/3/discover/tv?${params.toString()}`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`TMDB API request for discover TV failed with status ${response.status}`);
+      return [];
+    }
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error('Error fetching discover TV shows from TMDB API via proxy:', error);
+    return [];
+  }
+}
 
 export function getPosterUrl(path: string | null) {
   return path ? `${TMDB_IMAGE_BASE_URL_POSTER}${path}` : null;

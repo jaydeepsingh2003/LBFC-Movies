@@ -2,12 +2,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getPosterUrl, getTvShowVideos, searchTvShows } from "@/lib/tmdb.client";
+import { getPosterUrl, discoverTvShows } from "@/lib/tmdb.client";
 import { TVShow } from "@/lib/tmdb";
 import { Skeleton } from "../ui/skeleton";
-import Link from "next/link";
-import { Card, CardContent } from "../ui/card";
-import Image from "next/image";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { TVShowCard } from "../tv-show-card";
 
 interface TVShowWithPoster extends Partial<TVShow> {
     posterUrl: string | null;
@@ -21,41 +20,20 @@ export default function HindiTvSection() {
     useEffect(() => {
         const fetchShows = async () => {
             setIsLoading(true);
-            const showTitles = [
-                "Sacred Games",
-                "Mirzapur",
-                "The Family Man",
-                "Paatal Lok",
-                "Scam 1992",
-                "Panchayat",
-                "Aspirants",
-                "Kota Factory",
-                "Delhi Crime",
-                "Gullak"
-            ];
-            
-            const showPromises = showTitles.map(async (title) => {
-                const searchResults = await searchTvShows(title);
-                const show = searchResults.length > 0 ? searchResults[0] : null;
-                if (show) {
-                    const videos = await getTvShowVideos(show.id);
-                    const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-                    show.trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
-                }
-                return show;
-            });
-
-            const fetchedShows = (await Promise.all(showPromises))
-                .filter(show => show !== null)
-                .map((show, index) => ({
-                    id: show!.id,
-                    title: show!.name,
-                    posterUrl: show ? getPosterUrl(show!.poster_path) : null,
-                    trailerUrl: show!.trailerUrl,
+            try {
+                const fetchedShows = await discoverTvShows({ language: 'hi' });
+                const showsWithPosters = fetchedShows.map(show => ({
+                    ...show,
+                    id: show.id,
+                    title: show.name,
+                    posterUrl: getPosterUrl(show.poster_path),
                 }));
-            
-            setShows(fetchedShows);
-            setIsLoading(false);
+                setShows(showsWithPosters);
+            } catch (error) {
+                console.error("Failed to fetch Hindi TV shows:", error);
+            } finally {
+                setIsLoading(false);
+            }
         }
         fetchShows();
     }, []);
@@ -76,21 +54,28 @@ export default function HindiTvSection() {
     return (
          <div className="space-y-4">
             <h2 className="font-headline text-2xl font-bold tracking-tight text-foreground">Popular Hindi TV Shows</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                {shows.map((s) => (
-                   <Link key={s.id} href={`/tv/${s.id}`}>
-                        <Card className="overflow-hidden border-none group bg-card">
-                            <CardContent className="p-0 relative w-full aspect-[2/3]">
-                                {s.posterUrl ? <Image src={s.posterUrl} alt={s.title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" /> : null}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                                <div className="absolute bottom-0 left-0 p-2">
-                                    <h3 className="font-semibold text-sm text-white shadow-md ">{s.title}</h3>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </Link>
-                ))}
-            </div>
+            {shows.length > 0 ? (
+                <Carousel
+                opts={{
+                    align: "start",
+                    loop: false,
+                    dragFree: true,
+                }}
+                className="w-full"
+                >
+                <CarouselContent className="-ml-2">
+                    {shows.map((show, index) => (
+                    <CarouselItem key={show.id || index} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 pl-2">
+                        <TVShowCard id={show.id!} title={show.title} posterUrl={show.posterUrl} />
+                    </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious className="ml-12 bg-background/50 hover:bg-background" />
+                <CarouselNext className="mr-12 bg-background/50 hover:bg-background" />
+                </Carousel>
+            ) : (
+                <p className="text-muted-foreground">No shows to display right now.</p>
+            )}
         </div>
     );
 }
