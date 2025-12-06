@@ -135,9 +135,10 @@
         "scheduledAt": { "type": "string", "format": "date-time", "description": "The scheduled date and time of the watch party." },
         "hostId": { "type": "string", "description": "The UID of the user hosting the party." },
         "hostDisplayName": { "type": "string", "description": "The display name of the host." },
-        "hostPhotoURL": { "type": "string", "format": "uri", "description": "The profile picture URL of the host." }
+        "hostPhotoURL": { "type": "string", "format": "uri", "description": "The profile picture URL of the host." },
+        "isPublic": { "type": "boolean", "description": "Whether the watch party is public or private." }
       },
-      "required": ["movieId", "movieTitle", "scheduledAt", "hostId", "hostDisplayName"]
+      "required": ["movieId", "movieTitle", "scheduledAt", "hostId", "hostDisplayName", "isPublic"]
     },
     "Rsvp": {
       "title": "RSVP",
@@ -184,7 +185,7 @@
       "type": "object",
       "properties": {
         "joinedAt": { "type": "string", "format": "date-time" },
-        "role": { "type": "string", "enum": ["admin", "member"], "description": "The role of the member in the club." }
+        "role": { "type": "string", "enum": ["creator", "admin", "member"], "description": "The role of the member in the club." }
       },
       "required": ["joinedAt", "role"]
     },
@@ -286,5 +287,3 @@
     }
   }
 }
-
-    

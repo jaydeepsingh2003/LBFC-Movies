@@ -19,7 +19,7 @@ service cloud.firestore {
 
     function isClubAdmin(clubId) {
       let memberRole = get(/databases/$(database)/documents/movie-clubs/$(clubId)/members/$(request.auth.uid)).data.role;
-      return memberRole == 'admin';
+      return memberRole == 'admin' || memberRole == 'creator';
     }
 
     // USERS collection
@@ -76,7 +76,7 @@ service cloud.firestore {
 
     // WATCH PARTIES collection
     match /watch-parties/{partyId} {
-      allow read: if true;
+      allow read: if resource.data.isPublic == true;
       allow create: if isSignedIn() && request.resource.data.hostId == request.auth.uid;
       allow update, delete: if isSignedIn() && resource.data.hostId == request.auth.uid;
 
@@ -88,9 +88,7 @@ service cloud.firestore {
 
       // MESSAGES sub-collection (Chat)
       match /messages/{messageId} {
-        // For public parties, anyone can read. For private, only members (future). For now, all public logic.
-        allow read: if true;
-        // Only authenticated users can send messages.
+        allow read: if true; // For public parties, anyone can read.
         allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       }
     }
@@ -105,12 +103,12 @@ service cloud.firestore {
       // MEMBERS sub-collection
       match /members/{userId} {
         allow read: if isClubMember(clubId);
-        // Joining a public club, or being an admin to manage members
-        allow create: if (request.resource.data.role == 'member' && get(/databases/$(database)/documents/movie-clubs/$(clubId)).data.isPublic == true) || isClubAdmin(clubId);
-        // Admins can remove members, users can remove themselves. Creator cannot be removed.
-        allow delete: if (isClubAdmin(clubId) && resource.data.role != 'creator') || isOwner(userId);
-        // Only admins can change roles
-        allow update: if isClubAdmin(clubId);
+        // Allow user to join a public club, or allow admin to add members.
+        allow create: if (request.resource.data.role == 'member' && get(/databases/$(database)/documents/movie-clubs/$(clubId)).data.isPublic == true && isOwner(userId)) || isClubAdmin(clubId);
+        // Admins can remove members (except creator), users can remove themselves.
+        allow delete: if (isClubAdmin(clubId) && get(/databases/$(database)/documents/movie-clubs/$(clubId)/members/$(userId)).data.role != 'creator') || isOwner(userId);
+        // Only admins can change roles, but cannot change creator role.
+        allow update: if isClubAdmin(clubId) && get(/databases/$(database)/documents/movie-clubs/$(clubId)/members/$(userId)).data.role != 'creator';
       }
 
       // POSTS sub-collection
@@ -129,5 +127,3 @@ service cloud.firestore {
     }
   }
 }
-
-    

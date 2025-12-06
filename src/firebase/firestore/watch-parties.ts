@@ -41,6 +41,7 @@ export const createWatchParty = async (
   const watchPartiesRef = collection(firestore, 'watch-parties');
   return addDoc(watchPartiesRef, {
     ...partyData,
+    scheduledAt: Timestamp.fromDate(partyData.scheduledAt),
     createdAt: serverTimestamp(),
   });
 };

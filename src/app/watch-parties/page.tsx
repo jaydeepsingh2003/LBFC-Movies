@@ -20,7 +20,6 @@ export default function WatchPartiesPage() {
   const partiesQuery = useMemo(() => {
     if (!firestore) return null;
     // Query for upcoming parties, ordered by the scheduled time.
-    // We will filter for 'isPublic' on the client side to avoid needing a composite index.
     return query(
       collection(firestore, 'watch-parties'), 
       where('scheduledAt', '>=', Timestamp.now()),
