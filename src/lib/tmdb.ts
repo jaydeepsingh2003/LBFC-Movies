@@ -1,3 +1,4 @@
+
 // src/lib/tmdb.ts
 
 const TMDB_API_KEY = "2dc0bd12c7bd63b2c691d3a64f3a3db7";
@@ -22,6 +23,7 @@ export interface TVShow {
   poster_path: string | null;
   overview: string;
   backdrop_path: string | null;
+  trailerUrl?: string;
   first_air_date: string;
   vote_average: number;
 }

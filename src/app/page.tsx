@@ -19,6 +19,9 @@ import TamilMoviesSection from '@/components/sections/tamil-movies-section';
 import MovieMatchmakerSection from '@/components/movie-matchmaker-section';
 import NowPlayingSection from '@/components/sections/now-playing-section';
 import UpcomingSection from '@/components/sections/upcoming-section';
+import EnglishTvSection from '@/components/sections/english-tv-section';
+import HindiTvSection from '@/components/sections/hindi-tv-section';
+import KannadaTvSection from '@/components/sections/kannada-tv-section';
 
 export default function DashboardPage() {
   const { user, isLoading } = useUser();
@@ -48,6 +51,9 @@ export default function DashboardPage() {
             <FranchiseFocusSection />
             <ForYouSection />
             <TrendingSection />
+            <EnglishTvSection />
+            <HindiTvSection />
+            <KannadaTvSection />
             <HindiMoviesSection />
             <KannadaMoviesSection />
             <TamilMoviesSection />

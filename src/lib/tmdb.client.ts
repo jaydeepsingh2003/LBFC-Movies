@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Movie, MovieDetails, PersonDetails, TVShow, TVShowDetails } from "./tmdb";
@@ -82,6 +83,27 @@ export async function getMovieVideos(movieId: number): Promise<TmdbVideo[]> {
       return [];
     }
   }
+
+export async function getTvShowVideos(tvId: number): Promise<TmdbVideo[]> {
+  if (!TMDB_API_KEY) {
+    console.error('TMDB_API_KEY is not set. API requests will be skipped.');
+    return [];
+  }
+
+  const url = `/api/tmdb/3/tv/${tvId}/videos?api_key=${TMDB_API_KEY}&language=en-US`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`TMDB API request for TV videos failed with status ${response.status}`);
+      return [];
+    }
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error('Error fetching TV show videos from TMDB API via proxy:', error);
+    return [];
+  }
+}
 
 export async function getMovieDetails(movieId: number): Promise<MovieDetails> {
   if (!TMDB_API_KEY) {

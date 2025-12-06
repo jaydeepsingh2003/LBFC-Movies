@@ -13,7 +13,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
 import { Button } from '@/components/ui/button';
-import { MovieCarousel } from '@/components/movie-carousel';
 
 interface TVShowDetailsWithMedia extends TVShowDetails {
   posterUrl: string | null;
@@ -194,7 +193,7 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
                 <span className="hidden md:inline">&#8226;</span>
                 <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    <span>{new Date(show.first_air_date).getFullYear()} - {show.last_air_date ? new Date(show.last_air_date).getFullYear() : 'Present'}</span>
+                    <span>{show.first_air_date ? new Date(show.first_air_date).getFullYear() : ''} - {show.last_air_date ? new Date(show.last_air_date).getFullYear() : 'Present'}</span>
                 </div>
                 <span className="hidden md:inline">&#8226;</span>
                 <div className="flex items-center gap-2">
