@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { getTvShowDetails, getPosterUrl, getBackdropUrl, getLogoUrl } from '@/lib/tmdb.client';
 import type { TVShowDetails, CastMember, CrewMember, WatchProvider, TVShow, TVSeason } from '@/lib/tmdb';
+import { getExternalTvRatings } from '@/ai/flows/get-external-tv-ratings';
 import { AppLayout } from '@/components/layout/app-layout';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -34,6 +35,27 @@ interface TVShowWithPoster extends Partial<TVShow> {
     title: string;
 }
 
+interface ExternalRatings {
+    imdb: string;
+    rottenTomatoes: string;
+}
+
+const RottenTomatoesIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.17 14.83c-.39.39-1.02.39-1.41 0L12 15.41l-1.76 1.42c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41l1.42-1.76-1.42-1.76c-.39-.39-.39-10.2 0-1.41.39-.39 1.02-.39 1.41 0l1.76 1.42 1.76-1.42c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-1.42 1.76 1.42 1.76c.39.39.39 1.02 0 1.41z" fill="#FA320A"/>
+    </svg>
+);
+
+const ImdbIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-auto">
+    <rect width="48" height="24" rx="4" fill="#F5C518"/>
+    <path d="M8 6H11V18H8V6Z" fill="black"/>
+    <path d="M15.2 6H19.4L16.4 13.8L15.2 18H12L14.6 11.4L13.4 6H15.2Z" fill="black"/>
+    <path d="M21.6 6H24.6C26.4 6 27.6 6.9 27.6 9C27.6 10.5 26.7 11.4 25.5 11.7L28.2 18H24.9L22.8 12.3H24V8.4H22.2L21.6 6ZM24 8.4V10.2C25.2 10.2 25.5 9.9 25.5 9C25.5 8.1 25.2 8.4 24 8.4Z" fill="black"/>
+    <path d="M31 6H39V8.1H35.5V18H32.5V8.1H31V6Z" fill="black"/>
+  </svg>
+);
+
 export default function TVShowDetailsPage(props: { params: { id: string } }) {
   const params = React.use(props.params);
   const { id } = params;
@@ -41,6 +63,7 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [show, setShow] = useState<TVShowDetailsWithMedia | null>(null);
+  const [externalRatings, setExternalRatings] = useState<ExternalRatings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { setVideoId } = useVideoPlayer();
 
@@ -61,6 +84,10 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
           backdropUrl: getBackdropUrl(showDetails.backdrop_path),
         };
         setShow(showWithMedia);
+
+        const ratingsResult = await getExternalTvRatings({ tvShowTitle: showDetails.name });
+        setExternalRatings(ratingsResult);
+
 
       } catch (error) {
         console.error("Failed to fetch tv show details", error);
@@ -110,6 +137,17 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
         });
     }
   };
+  
+  const getAverageRating = () => {
+    if (!externalRatings) return null;
+    const imdbScore = parseFloat(externalRatings.imdb.split('/')[0]);
+    const rtScore = parseInt(externalRatings.rottenTomatoes.replace('%', ''));
+
+    if (isNaN(imdbScore) || isNaN(rtScore)) return null;
+
+    const average = (imdbScore * 10 + rtScore) / 2;
+    return `${average.toFixed(0)}%`;
+  }
   
   const usProviders = show?.['watch/providers']?.results?.US;
   const streamingProviders = usProviders?.flatrate || [];
@@ -262,27 +300,36 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
 
             <p className="text-foreground/80 leading-relaxed">{show.overview}</p>
             
-            <div className="flex items-center flex-wrap gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center flex-wrap gap-4 text-sm">
                 <div className="flex items-center gap-2" title="TMDB User Score">
-                    <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                    <Star className="w-5 h-5 text-yellow-400" />
                     <span className="font-bold text-lg">{show.vote_average.toFixed(1)}</span>
                     <span className="text-muted-foreground">/ 10</span>
                 </div>
-                <span className="hidden md:inline">&#8226;</span>
-                <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    <span>{show.first_air_date ? new Date(show.first_air_date).getFullYear() : ''} - {show.in_production ? 'Present' : (show.last_air_date ? new Date(show.last_air_date).getFullYear() : '')}</span>
-                </div>
-                <span className="hidden md:inline">&#8226;</span>
-                <div className="flex items-center gap-2">
-                    <Tv className="w-4 h-4" />
-                    <span>{show.number_of_seasons} Seasons</span>
-                </div>
-                 <span className="hidden md:inline">&#8226;</span>
-                <div className="flex items-center gap-2">
-                    <Clapperboard className="w-4 h-4" />
-                    <span>{show.number_of_episodes} Episodes</span>
-                </div>
+
+                {externalRatings && (
+                    <>
+                        <div className="flex items-center gap-2" title="IMDb Rating">
+                           <ImdbIcon />
+                           <span className="font-bold text-lg">{externalRatings.imdb}</span>
+                        </div>
+                        <div className="flex items-center gap-2" title="Rotten Tomatoes Score">
+                           <RottenTomatoesIcon />
+                           <span className="font-bold text-lg">{externalRatings.rottenTomatoes}</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-2 rounded-md bg-secondary" title="Average Critic Score">
+                            <span className="text-xs font-bold text-muted-foreground">AVG</span>
+                            <span className="font-bold text-lg">{getAverageRating()}</span>
+                        </div>
+                    </>
+                )}
+
+                <span className="text-muted-foreground hidden md:inline">&#8226;</span>
+                <span className="text-muted-foreground">{show.first_air_date ? new Date(show.first_air_date).getFullYear() : ''} - {show.in_production ? 'Present' : (show.last_air_date ? new Date(show.last_air_date).getFullYear() : '')}</span>
+                 <span className="text-muted-foreground">&#8226;</span>
+                <span className="text-muted-foreground">{show.number_of_seasons} Seasons</span>
+                 <span className="text-muted-foreground">&#8226;</span>
+                <span className="text-muted-foreground">{show.number_of_episodes} Episodes</span>
             </div>
 
             <Separator />
