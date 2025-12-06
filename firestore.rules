@@ -53,6 +53,11 @@ service cloud.firestore {
       match /ratings/{movieId} {
         allow read, write: if isOwner(userId);
       }
+      
+      // TV RATINGS sub-collection
+      match /tvRatings/{showId} {
+        allow read, write: if isOwner(userId);
+      }
     }
 
     // MOVIES collection for reviews
@@ -117,3 +122,5 @@ service cloud.firestore {
     }
   }
 }
+
+    

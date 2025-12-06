@@ -80,6 +80,22 @@
       },
       "required": ["rating"]
     },
+    "UserTvShowRating": {
+      "title": "User TV Show Rating",
+      "description": "Represents a rating given by a user to a TV show.",
+      "type": "object",
+      "properties": {
+        "rating": {
+          "type": "number",
+          "description": "The rating given by the user (e.g., 1-10)."
+        },
+        "ratedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["rating"]
+    },
     "UserReview": {
       "title": "User Movie Review",
       "description": "A review for a movie written by a user.",
@@ -214,6 +230,10 @@
       "schema": { "$ref": "#/entities/UserMovieRating" },
       "description": "Sub-collection storing a user's movie ratings."
     },
+    "/users/{userId}/tvRatings/{showId}": {
+      "schema": { "$ref": "#/entities/UserTvShowRating" },
+      "description": "Sub-collection storing a user's TV show ratings."
+    },
     "/movies/{movieId}/reviews/{reviewId}": {
       "schema": { "$ref": "#/entities/UserReview" },
       "description": "Sub-collection storing all user reviews for a specific movie."
@@ -248,3 +268,5 @@
     }
   }
 }
+
+    

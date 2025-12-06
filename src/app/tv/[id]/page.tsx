@@ -20,6 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import { saveTvShowToPlaylist, removeTvShowFromPlaylist } from '@/firebase/firestore/tv-playlists';
 import { doc } from 'firebase/firestore';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
+import { TvShowRating } from '@/components/tv-show-rating';
 
 interface TVShowDetailsWithMedia extends TVShowDetails {
   posterUrl: string | null;
@@ -233,6 +234,13 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
                 {show.genres.map(genre => <Badge key={genre.id} variant="secondary">{genre.name}</Badge>)}
               </div>
             </header>
+            
+            {user && (
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-foreground">Your Rating</h3>
+                <TvShowRating showId={show.id} />
+              </div>
+            )}
 
             <p className="text-foreground/80 leading-relaxed">{show.overview}</p>
             
@@ -290,3 +298,5 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
     </AppLayout>
   );
 }
+
+    
