@@ -12,13 +12,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div>
       <Header />
-      <div className="flex-1 w-full">
-        <main className="flex-1">
-          {children}
-        </main>
-      </div>
+      <main>
+        {children}
+      </main>
       {isMobile && <BottomNav />}
     </div>
   );
