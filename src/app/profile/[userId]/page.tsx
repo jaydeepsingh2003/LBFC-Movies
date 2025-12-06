@@ -14,6 +14,7 @@ import {
   Card,
   CardContent,
 } from '@/components/ui/card';
+import { UserStats } from '@/components/user-stats';
 
 interface UserProfile {
   uid: string;
@@ -122,6 +123,13 @@ export default function ProfilePage({ params }: { params: { userId: string } }) 
             </div>
           </div>
         </header>
+
+        <Separator />
+
+        <section>
+          <h2 className="font-headline text-2xl font-bold tracking-tight text-foreground mb-6">Viewing Stats</h2>
+          <UserStats userId={userId} />
+        </section>
 
         <Separator />
 
