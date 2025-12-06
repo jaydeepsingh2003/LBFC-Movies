@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -8,7 +9,7 @@ import type { MovieDetails } from '@/lib/tmdb';
 import { Bar, BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
-import { ChartTooltipContent } from '@/components/ui/chart';
+import { ChartContainer, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 
 interface UserStatsProps {
   userId: string;
@@ -19,6 +20,17 @@ interface RatedMovie {
   rating: number;
   details?: MovieDetails;
 }
+
+const chartConfig = {
+  count: {
+    label: "Movies",
+    color: "hsl(var(--primary))",
+  },
+  averageRating: {
+    label: "Avg. Rating",
+    color: "hsl(var(--primary))",
+  }
+} satisfies ChartConfig;
 
 export function UserStats({ userId }: UserStatsProps) {
   const firestore = useFirestore();
@@ -141,17 +153,17 @@ export function UserStats({ userId }: UserStatsProps) {
                 <CardTitle>Favorite Genres</CardTitle>
             </CardHeader>
             <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={stats.genreData}>
+                <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                    <BarChart accessibilityLayer data={stats.genreData}>
                         <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                         <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                         <Tooltip
                             cursor={{ fill: 'hsl(var(--secondary))' }}
-                            content={<ChartTooltipContent />}
+                            content={<ChartTooltipContent hideLabel />}
                         />
                         <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                     </BarChart>
-                </ResponsiveContainer>
+                </ChartContainer>
             </CardContent>
         </Card>
 
@@ -160,15 +172,15 @@ export function UserStats({ userId }: UserStatsProps) {
                 <CardTitle>Ratings by Decade</CardTitle>
             </CardHeader>
             <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={stats.decadeData}>
+                 <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                    <LineChart accessibilityLayer data={stats.decadeData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                         <XAxis dataKey="decade" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                         <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} domain={[0, 10]} />
-                        <Tooltip content={<ChartTooltipContent />} />
+                        <Tooltip content={<ChartTooltipContent hideLabel />} />
                         <Line type="monotone" dataKey="averageRating" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4, fill: 'hsl(var(--primary))' }} activeDot={{ r: 8 }} />
                     </LineChart>
-                </ResponsiveContainer>
+                </ChartContainer>
             </CardContent>
         </Card>
 
@@ -177,17 +189,17 @@ export function UserStats({ userId }: UserStatsProps) {
                 <CardTitle>Rating Distribution</CardTitle>
             </CardHeader>
             <CardContent>
-                 <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={stats.ratingData}>
+                 <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                    <BarChart accessibilityLayer data={stats.ratingData}>
                         <XAxis dataKey="rating" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                         <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                         <Tooltip
                             cursor={{ fill: 'hsl(var(--secondary))' }}
-                            content={<ChartTooltipContent />}
+                            content={<ChartTooltipContent hideLabel />}
                         />
                         <Bar dataKey="count" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
                     </BarChart>
-                </ResponsiveContainer>
+                </ChartContainer>
             </CardContent>
         </Card>
     </div>
