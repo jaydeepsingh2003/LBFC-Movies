@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An advanced movie search AI agent that can find music videos.
@@ -59,7 +60,7 @@ const searchYoutube = ai.defineTool(
                 results: data.items.map((item: any) => ({
                     title: item.snippet.title,
                     videoId: item.id.videoId,
-                    thumbnail: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default.url,
+                    thumbnail: item.snippet.thumbnails.maxres?.url || item.snippet.thumbnails.standard?.url || item.snippet.thumbnails.high?.url || item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default.url,
                 })),
             };
         } catch (error) {
