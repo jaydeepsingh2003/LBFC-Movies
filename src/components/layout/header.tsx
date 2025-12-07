@@ -9,15 +9,25 @@ import { MovieSearch } from "../movie-search"
 import { useUser, logout } from "@/firebase/auth/auth-client";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { desktopNavItems } from "./sidebar-nav";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { allNavItems } from "./sidebar-nav";
 
 export function DesktopNav() {
     const pathname = usePathname();
+    const { user } = useUser();
+
+    const items = allNavItems.map(item => {
+        if (item.href === '/profile') {
+            return { ...item, href: user ? `/profile/${user.uid}` : '/login' };
+        }
+        return item;
+    });
+
+
     return (
         <nav className="hidden md:flex items-center gap-4 text-sm font-medium text-muted-foreground">
-            {desktopNavItems.map((item) => (
+            {items.map((item) => (
                 <Link
                     key={item.href}
                     href={item.href}
@@ -59,7 +69,11 @@ export function Header() {
                 <MovieSearch />
             </div>
 
-            <DesktopNav />
+            <div className="hidden md:flex md:flex-1 md:items-center md:justify-center">
+                <div className="w-full max-w-lg">
+                    <DesktopNav />
+                </div>
+            </div>
             
             <div className="ml-auto flex items-center gap-4">
                 <div className="hidden md:block">

@@ -10,6 +10,7 @@ export const allNavItems = [
     { href: "/playlists", label: "Playlists", icon: ListVideo },
     { href: "/people", label: "People", icon: UserSquare},
     { href: "/social", label: "Social", icon: Users },
+    { href: "/profile", label: "Profile", icon: UserIcon },
 ];
 
 export const mobileNavItems = [
