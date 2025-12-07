@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
-import { getPopularPeople, searchPeople } from '@/lib/tmdb.client';
+import { getPopularPeople } from '@/lib/tmdb.client';
 import type { Person } from '@/lib/tmdb';
 import { PersonCard } from '@/components/person-card';
 import { Loader2, Music } from 'lucide-react';
