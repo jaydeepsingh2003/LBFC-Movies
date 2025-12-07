@@ -18,7 +18,7 @@ export const mobileNavItems = [
     { href: "/tv", label: "TV Shows", icon: Tv},
     { href: "/music", label: "Music", icon: Music },
     { href: "/playlists", label: "Playlists", icon: ListVideo },
-    { href: "/profile", label: "Profile", icon: UserIcon },
+    { href: "/people", label: "People", icon: UserSquare },
 ];
 
 export const desktopNavItems = allNavItems;
