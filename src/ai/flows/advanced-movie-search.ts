@@ -76,14 +76,6 @@ export async function advancedMovieSearch(
   return advancedMovieSearchFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'advancedMovieSearchPrompt',
-  input: {schema: AdvancedMovieSearchInputSchema},
-  output: {schema: AdvancedMovieSearchOutputSchema},
-  tools: [searchYoutube],
-  prompt: `You are an expert at finding music videos for movies. Use the YouTube search tool to find relevant music videos for the user's query: {{{query}}}`,
-});
-
 const advancedMovieSearchFlow = ai.defineFlow(
   {
     name: 'advancedMovieSearchFlow',
@@ -91,7 +83,6 @@ const advancedMovieSearchFlow = ai.defineFlow(
     outputSchema: AdvancedMovieSearchOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    return await searchYoutube(input);
   }
 );
