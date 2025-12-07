@@ -64,7 +64,7 @@ const ImdbIcon = () => (
 );
 
 export default function MovieDetailsPage(props: { params: { id: string } }) {
-  const params = props.params;
+  const params = React.use(props.params);
   const { id } = params;
   const { user } = useUser();
   const firestore = useFirestore();
