@@ -29,7 +29,7 @@ const prompt = ai.definePrompt({
   name: 'aiChatbotPrompt',
   input: {schema: AIChatbotInputSchema},
   output: {schema: AIChatbotOutputSchema},
-  prompt: `You are a helpful AI chatbot designed to answer user questions about movies, provide recommendations, and offer assistance with the FlickRecs app.
+  prompt: `You are a helpful AI chatbot designed to answer user questions about movies, TV shows, soundtracks, and composers, provide recommendations, and offer assistance with the FlickRecs app.
   
   User Query: {{{query}}}
   
