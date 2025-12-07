@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useMemo } from 'react';
 import { useFirestore } from '@/firebase';
 import { useUser } from '@/firebase/auth/auth-client';
 import { useCollection } from 'react-firebase-hooks/firestore';
@@ -31,8 +32,9 @@ export function TVUserReviewsSection({ showId }: { showId: number }) {
   const { user } = useUser();
   const { toast } = useToast();
 
-  const reviewsRef = firestore ? collection(firestore, `tv-shows/${showId}/reviews`) : null;
-  const reviewsQuery = reviewsRef ? query(reviewsRef, orderBy('createdAt', 'desc')) : null;
+  const reviewsQuery = useMemo(() => 
+    firestore ? query(collection(firestore, `tv-shows/${showId}/reviews`), orderBy('createdAt', 'desc')) : null
+  , [firestore, showId]);
   const [reviewsSnapshot, loading, error] = useCollection(reviewsQuery);
 
   const handleDelete = async (reviewId: string) => {
@@ -131,5 +133,7 @@ export function TVUserReviewsSection({ showId }: { showId: number }) {
     </section>
   );
 }
+
+    
 
     

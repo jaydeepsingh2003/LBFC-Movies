@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { getTvShowDetails, getPosterUrl, getBackdropUrl, getLogoUrl } from '@/lib/tmdb.client';
 import type { TVShowDetails, CastMember, CrewMember, WatchProvider, TVShow, TVSeason } from '@/lib/tmdb';
 import { getExternalTvRatings } from '@/ai/flows/get-external-tv-ratings';
@@ -57,7 +57,7 @@ const ImdbIcon = () => (
 );
 
 export default function TVShowDetailsPage(props: { params: { id: string } }) {
-  const params = React.use(props.params);
+  const params = props.params;
   const { id } = params;
   const { user } = useUser();
   const firestore = useFirestore();
@@ -67,7 +67,9 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true);
   const { setVideoId } = useVideoPlayer();
 
-  const savedShowRef = user && firestore && id ? doc(firestore, `users/${user.uid}/savedTvShows/${id}`) : null;
+  const savedShowRef = useMemo(() => 
+    user && firestore && id ? doc(firestore, `users/${user.uid}/savedTvShows/${id}`) : null
+  , [firestore, user, id]);
   const [savedShowDoc, isSavedShowLoading] = useDocumentData(savedShowRef);
   const isSaved = !!savedShowDoc;
 
@@ -386,3 +388,5 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
     </AppLayout>
   );
 }
+
+    

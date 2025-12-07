@@ -33,8 +33,10 @@ export function WatchPartyChat({ partyId }: WatchPartyChatProps) {
     const [isSending, setIsSending] = useState(false);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-    const messagesRef = useMemo(() => firestore ? collection(firestore, `watch-parties/${partyId}/messages`) : null, [firestore, partyId]);
-    const messagesQuery = useMemo(() => messagesRef ? query(messagesRef, orderBy('createdAt', 'asc')) : null, [messagesRef]);
+    const messagesQuery = useMemo(() => 
+        firestore ? query(collection(firestore, `watch-parties/${partyId}/messages`), orderBy('createdAt', 'asc')) : null
+    , [firestore, partyId]);
+
     const [messagesSnapshot, messagesLoading, messagesError] = useCollection(messagesQuery);
 
     useEffect(() => {
@@ -128,3 +130,5 @@ export function WatchPartyChat({ partyId }: WatchPartyChatProps) {
         </Card>
     );
 }
+
+    

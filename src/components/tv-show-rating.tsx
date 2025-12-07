@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase/auth/auth-client';
@@ -19,7 +19,9 @@ export function TvShowRating({ showId }: TvShowRatingProps) {
   const firestore = useFirestore();
   const { toast } = useToast();
   
-  const ratingRef = user && firestore ? doc(firestore, `users/${user.uid}/tvRatings/${showId}`) : null;
+  const ratingRef = useMemo(() =>
+    user && firestore ? doc(firestore, `users/${user.uid}/tvRatings/${showId}`) : null
+  , [firestore, user, showId]);
   const [ratingDoc] = useDocumentData(ratingRef);
   
   const [hoverRating, setHoverRating] = useState<number | null>(null);
@@ -77,5 +79,7 @@ export function TvShowRating({ showId }: TvShowRatingProps) {
     </div>
   );
 }
+
+    
 
     

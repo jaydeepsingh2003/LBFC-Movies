@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { getMovieDetails, getPosterUrl, getBackdropUrl, getMovieVideos } from '@/lib/tmdb.client';
 import type { MovieDetails, CastMember, CrewMember, Review, WatchProvider, Movie } from '@/lib/tmdb';
 import { getMovieTrivia } from '@/ai/flows/movie-trivia';
@@ -64,7 +64,7 @@ const ImdbIcon = () => (
 );
 
 export default function MovieDetailsPage(props: { params: { id: string } }) {
-  const params = React.use(props.params);
+  const params = props.params;
   const { id } = params;
   const { user } = useUser();
   const firestore = useFirestore();
@@ -76,7 +76,9 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
   const { setVideoId } = useVideoPlayer();
   const [similarMovies, setSimilarMovies] = useState<MovieWithPoster[]>([]);
 
-  const savedMovieRef = user && firestore && id ? doc(firestore, `users/${user.uid}/savedMovies/${id}`) : null;
+  const savedMovieRef = useMemo(() => 
+    user && firestore && id ? doc(firestore, `users/${user.uid}/savedMovies/${id}`) : null
+  , [firestore, user, id]);
   const [savedMovieDoc, isSavedMovieLoading] = useDocumentData(savedMovieRef);
   const isSaved = !!savedMovieDoc;
 
@@ -406,3 +408,5 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
     </AppLayout>
   );
 }
+
+    

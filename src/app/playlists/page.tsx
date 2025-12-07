@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -30,9 +30,11 @@ export default function PlaylistsPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const [savedMoviesSnapshot, loading, error] = useCollection(
-    user && firestore ? collection(firestore, `users/${user.uid}/savedMovies`) : undefined
-  );
+  const savedMoviesQuery = useMemo(() => 
+    user && firestore ? collection(firestore, `users/${user.uid}/savedMovies`) : null
+  , [firestore, user]);
+  
+  const [savedMoviesSnapshot, loading, error] = useCollection(savedMoviesQuery);
   
   const [criteria, setCriteria] = useState({ genre: 'Sci-Fi', mood: 'Thought-provoking', description: 'movies about AI' });
   const [playlist, setPlaylist] = useState<SmartPlaylistOutput | null>(null);
@@ -195,3 +197,5 @@ export default function PlaylistsPage() {
     </AppLayout>
   );
 }
+
+    

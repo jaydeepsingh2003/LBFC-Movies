@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase/auth/auth-client';
@@ -20,7 +20,10 @@ export function MovieRating({ movieId }: MovieRatingProps) {
   const firestore = useFirestore();
   const { toast } = useToast();
   
-  const ratingRef = user && firestore ? doc(firestore, `users/${user.uid}/ratings/${movieId}`) : null;
+  const ratingRef = useMemo(() => 
+    user && firestore ? doc(firestore, `users/${user.uid}/ratings/${movieId}`) : null
+  , [firestore, user, movieId]);
+
   const [ratingDoc, loading] = useDocumentData(ratingRef);
   
   const [hoverRating, setHoverRating] = useState<number | null>(null);
@@ -74,3 +77,5 @@ export function MovieRating({ movieId }: MovieRatingProps) {
     </div>
   );
 }
+
+    

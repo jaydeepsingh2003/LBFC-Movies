@@ -13,6 +13,7 @@ import type { WatchParty } from '@/firebase/firestore/watch-parties';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { collection } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
+import { useMemo } from 'react';
 
 interface WatchPartyCardProps {
   party: WatchParty & { id: string };
@@ -20,7 +21,9 @@ interface WatchPartyCardProps {
 
 export function WatchPartyCard({ party }: WatchPartyCardProps) {
   const firestore = useFirestore();
-  const rsvpsRef = firestore ? collection(firestore, `watch-parties/${party.id}/rsvps`) : null;
+  const rsvpsRef = useMemo(() => 
+    firestore ? collection(firestore, `watch-parties/${party.id}/rsvps`) : null
+  , [firestore, party.id]);
   const [rsvpsSnapshot] = useCollection(rsvpsRef);
   
   const posterUrl = getPosterUrl(party.moviePosterPath);
@@ -78,3 +81,5 @@ export function WatchPartyCard({ party }: WatchPartyCardProps) {
     </Card>
   );
 }
+
+    

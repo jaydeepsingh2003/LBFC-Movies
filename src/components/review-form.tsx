@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useUser } from '@/firebase/auth/auth-client';
 import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
@@ -23,7 +23,9 @@ export function ReviewForm({ movieId, onReviewSubmit }: ReviewFormProps) {
   const firestore = useFirestore();
   const { toast } = useToast();
   
-  const ratingRef = user && firestore ? doc(firestore, `users/${user.uid}/ratings/${movieId}`) : null;
+  const ratingRef = useMemo(() => 
+    user && firestore ? doc(firestore, `users/${user.uid}/ratings/${movieId}`) : null
+  , [firestore, user, movieId]);
   const [ratingDoc] = useDocumentData(ratingRef);
   
   const [content, setContent] = useState('');
@@ -94,3 +96,5 @@ export function ReviewForm({ movieId, onReviewSubmit }: ReviewFormProps) {
     </form>
   );
 }
+
+    

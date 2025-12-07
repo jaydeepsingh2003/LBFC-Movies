@@ -20,7 +20,7 @@ import { WatchPartyChat } from '@/components/watch-party-chat';
 import { Separator } from '@/components/ui/separator';
 
 export default function WatchPartyDetailPage(props: { params: { id: string } }) {
-  const params = React.use(props.params);
+  const params = props.params;
   const { id: partyId } = params;
   const firestore = useFirestore();
   const { user, isLoading: userLoading } = useUser();
@@ -140,3 +140,5 @@ export default function WatchPartyDetailPage(props: { params: { id: string } }) 
     </AppLayout>
   );
 }
+
+    
