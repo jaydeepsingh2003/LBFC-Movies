@@ -5,6 +5,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { AiChatbotWidget } from '@/components/ai-chatbot-widget';
 import { VideoPlayerProvider } from '@/context/video-provider';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { AppLayout } from '@/components/layout/app-layout';
 
 export const metadata: Metadata = {
   title: 'LBFC',
@@ -29,7 +30,9 @@ export default function RootLayout({
           <FirebaseClientProvider>
             <VideoPlayerProvider>
               <SidebarProvider>
-                  {children}
+                  <AppLayout>
+                    {children}
+                  </AppLayout>
               </SidebarProvider>
               <AiChatbotWidget />
               <Toaster />

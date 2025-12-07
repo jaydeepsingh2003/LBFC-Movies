@@ -12,7 +12,6 @@ import { useRouter, usePathname } from "next/navigation";
 import { desktopNavItems } from "./sidebar-nav";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { AppLayout } from "./app-layout";
 
 export function DesktopNav() {
     const pathname = usePathname();
