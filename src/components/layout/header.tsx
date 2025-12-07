@@ -61,24 +61,25 @@ export function Header() {
     return (
         <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/95 px-4 backdrop-blur-sm md:px-8">
             <div className="flex items-center gap-2">
-                 <Link href="/"><Film className="size-8 text-primary" /></Link>
-                 <h1 className="font-headline text-2xl font-bold text-primary tracking-wider hidden md:block">LBFC</h1>
+                 <Link href="/" className="flex items-center gap-2">
+                    <Film className="size-8 text-primary" />
+                    <h1 className="font-headline text-2xl font-bold text-primary tracking-wider">LBFC</h1>
+                 </Link>
             </div>
             
-            <div className="md:hidden flex-1 px-4">
-                <MovieSearch />
+            <div className="flex-1 flex justify-end md:justify-center">
+                <div className="w-full max-w-md">
+                    <MovieSearch />
+                </div>
             </div>
-
-            <div className="hidden md:flex md:flex-1 md:items-center md:justify-center">
+            
+            <div className="hidden md:flex md:items-center md:justify-center">
                 <div className="w-full max-w-lg">
                     <DesktopNav />
                 </div>
             </div>
             
-            <div className="ml-auto flex items-center gap-4">
-                <div className="hidden md:block">
-                  <MovieSearch />
-                </div>
+            <div className="flex items-center gap-4">
                 {(!isClient || isLoading) ? (
                     <div className="h-10 w-10 rounded-full bg-secondary animate-pulse" />
                 ) : user ? (
