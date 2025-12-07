@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
 import { useFirestore } from '@/firebase';
 import { useUser } from '@/firebase/auth/auth-client';
@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { followUser, unfollowUser } from '@/firebase/firestore/social';
 import { useToast } from '@/hooks/use-toast';
+import { useCollection } from 'react-firebase-hooks/firestore';
 
 interface UserProfile {
   uid: string;
@@ -27,15 +28,14 @@ export default function SocialPage() {
   const { toast } = useToast();
 
   const [users, setUsers] = useState<UserProfile[]>([]);
-  const [following, setFollowing] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchFollowing = useCallback(async () => {
-    if (!firestore || !currentUser) return;
-    const followingSnapshot = await getDocs(collection(firestore, `users/${currentUser.uid}/following`));
-    const followingIds = followingSnapshot.docs.map(doc => doc.id);
-    setFollowing(new Set(followingIds));
-  }, [firestore, currentUser]);
+  const followingQuery = useMemo(() => 
+    firestore && currentUser ? collection(firestore, `users/${currentUser.uid}/following`) : null,
+  [firestore, currentUser]);
+  const [followingSnapshot] = useCollection(followingQuery);
+  const following = useMemo(() => new Set(followingSnapshot?.docs.map(doc => doc.id)), [followingSnapshot]);
+
 
   useEffect(() => {
     async function fetchUsers() {
@@ -49,16 +49,16 @@ export default function SocialPage() {
           .filter(user => user.uid !== currentUser?.uid);
         setUsers(usersList);
         
-        await fetchFollowing();
-
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {
         setIsLoading(false);
       }
     }
-    fetchUsers();
-  }, [firestore, currentUser, fetchFollowing]);
+    if (currentUser) {
+        fetchUsers();
+    }
+  }, [firestore, currentUser]);
 
   const handleFollowToggle = async (targetUserId: string) => {
     if (!currentUser || !firestore) {
@@ -75,15 +75,9 @@ export default function SocialPage() {
     try {
         if (isFollowing) {
             await unfollowUser(firestore, currentUser.uid, targetUserId);
-            setFollowing(prev => {
-                const newSet = new Set(prev);
-                newSet.delete(targetUserId);
-                return newSet;
-            });
             toast({ title: "Unfollowed" });
         } else {
             await followUser(firestore, currentUser.uid, targetUserId);
-            setFollowing(prev => new Set(prev).add(targetUserId));
             toast({ title: "Followed" });
         }
     } catch (error) {
