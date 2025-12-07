@@ -3,13 +3,13 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { getMovieDetails, getPosterUrl, getBackdropUrl, getMovieVideos } from '@/lib/tmdb.client';
-import type { MovieDetails, CastMember, CrewMember, Review, WatchProvider, Movie } from '@/lib/tmdb';
+import type { MovieDetails, CastMember, CrewMember, Review, WatchProvider, Movie, TmdbVideo } from '@/lib/tmdb';
 import { getMovieTrivia } from '@/ai/flows/movie-trivia';
 import { getExternalRatings } from '@/ai/flows/get-external-ratings';
 import { AppLayout } from '@/components/layout/app-layout';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, MessageSquareQuote, Bookmark } from 'lucide-react';
+import { Loader2, PlayCircle, Star, MessageSquareQuote, Bookmark, Music } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -131,11 +131,8 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
     fetchData();
   }, [id]);
 
-  const handlePlayTrailer = () => {
-    const trailer = movie?.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-    if (trailer) {
-      setVideoId(trailer.key);
-    }
+  const handlePlayVideo = (key: string) => {
+    setVideoId(key);
   };
   
   const handleSaveToggle = async () => {
@@ -171,7 +168,6 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
     }
   };
 
-
   const getAverageRating = () => {
     if (!externalRatings) return null;
     const imdbScore = parseFloat(externalRatings.imdb.split('/')[0]);
@@ -185,6 +181,10 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
   
   const usProviders = movie?.['watch/providers']?.results?.US;
   const streamingProviders = usProviders?.flatrate || [];
+  
+  const trailer = movie?.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
+  const musicVideos = movie?.videos.results.filter(v => v.type === 'Music Video' && v.site === 'YouTube');
+
 
   if (isLoading) {
     return (
@@ -275,7 +275,7 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
               </CardContent>
             </Card>
             <div className="flex gap-2 mt-4">
-              <Button onClick={handlePlayTrailer} className="w-full" size="lg">
+              <Button onClick={() => trailer && handlePlayVideo(trailer.key)} disabled={!trailer} className="w-full" size="lg">
                 <PlayCircle className="mr-2" /> Play Trailer
               </Button>
                {user && (
@@ -350,6 +350,27 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
                  <span className="text-muted-foreground">&#8226;</span>
                 <span className="text-muted-foreground">{Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m</span>
             </div>
+            
+            {musicVideos && musicVideos.length > 0 && (
+                <section className="space-y-4 pt-8">
+                    <h2 className="font-headline text-2xl font-bold">Music Videos</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {musicVideos.map(video => (
+                            <Card key={video.id} className="bg-card/50 hover:bg-secondary transition-colors cursor-pointer" onClick={() => handlePlayVideo(video.key)}>
+                                <CardContent className="p-4 flex items-center gap-4">
+                                    <div className="p-3 bg-primary/20 rounded-md">
+                                        <Music className="w-6 h-6 text-primary" />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold line-clamp-1">{video.name}</p>
+                                        <p className="text-xs text-muted-foreground">Music Video</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </section>
+            )}
 
             <section className="space-y-4 pt-8">
               <h2 className="font-headline text-2xl font-bold">Cast</h2>
@@ -408,5 +429,3 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
     </AppLayout>
   );
 }
-
-    

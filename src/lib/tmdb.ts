@@ -174,7 +174,7 @@ export interface PersonDetails {
 }
 
 
-interface TmdbVideo {
+export interface TmdbVideo {
   id: string;
   iso_639_1: string;
   iso_3166_1: string;
