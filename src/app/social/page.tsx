@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
 import { useFirestore } from '@/firebase';
 import { useUser } from '@/firebase/auth/auth-client';
-import { collection, getDocs, doc } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { Loader2, UserPlus, UserCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
