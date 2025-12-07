@@ -1,7 +1,6 @@
-
 "use client"
 
-import { Compass, Home, ListVideo, Newspaper, Users, Tv, UserSquare, User as UserIcon } from "lucide-react";
+import { Compass, Home, ListVideo, Users, Tv, UserSquare, User as UserIcon } from "lucide-react";
 
 export const allNavItems = [
     { href: "/", label: "Home", icon: Home },
@@ -10,7 +9,6 @@ export const allNavItems = [
     { href: "/playlists", label: "Playlists", icon: ListVideo },
     { href: "/people", label: "People", icon: UserSquare},
     { href: "/social", label: "Social", icon: Users },
-    { href: "/news", label: "News", icon: Newspaper },
 ];
 
 export const mobileNavItems = [
