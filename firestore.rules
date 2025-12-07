@@ -73,25 +73,6 @@ service cloud.firestore {
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
-
-    // WATCH PARTIES collection
-    match /watch-parties/{partyId} {
-      allow read: if resource.data.isPublic == true;
-      allow create: if isSignedIn() && request.resource.data.hostId == request.auth.uid;
-      allow update, delete: if isSignedIn() && resource.data.hostId == request.auth.uid;
-
-      // RSVPs sub-collection
-      match /rsvps/{userId} {
-        allow read: if true;
-        allow create, delete: if isOwner(userId);
-      }
-
-      // MESSAGES sub-collection (Chat)
-      match /messages/{messageId} {
-        allow read: if true; // For public parties, anyone can read.
-        allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      }
-    }
     
     // MOVIE CLUBS collection
     match /movie-clubs/{clubId} {

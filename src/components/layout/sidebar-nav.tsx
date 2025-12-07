@@ -8,7 +8,6 @@ export const allNavItems = [
     { href: "/discover", label: "Discover", icon: Compass },
     { href: "/tv", label: "TV Shows", icon: Tv},
     { href: "/playlists", label: "Playlists", icon: ListVideo },
-    { href: "/watch-parties", label: "Parties", icon: Users },
     { href: "/people", label: "People", icon: UserSquare},
     { href: "/social", label: "Social", icon: Users },
     { href: "/news", label: "News", icon: Newspaper },
@@ -19,7 +18,6 @@ export const mobileNavItems = [
     { href: "/discover", label: "Discover", icon: Compass },
     { href: "/tv", label: "TV Shows", icon: Tv},
     { href: "/playlists", label: "Playlists", icon: ListVideo },
-    { href: "/watch-parties", label: "Parties", icon: Users },
     { href: "/profile", label: "Profile", icon: UserIcon },
 ];
 
