@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -34,9 +35,9 @@ const ottPlatforms = [
     movies: ['John Wick', 'The Hunger Games', 'Knives Out'],
   },
   {
-    name: 'Aha',
-    logo: 'https://www.aha.video/aha-logo.db810aeaa42b356b.svg',
-    movies: ['Colour Photo', 'Krack', 'Naandhi'],
+    name: 'Amazon Prime',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Amazon_Prime_Video_logo.svg/2560px-Amazon_Prime_Video_logo.svg.png',
+    movies: ['The Family Man', 'Mirzapur', 'Paatal Lok'],
   },
 ];
 
