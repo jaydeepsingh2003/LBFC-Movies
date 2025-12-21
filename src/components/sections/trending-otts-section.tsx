@@ -1,53 +1,74 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { MovieCarousel } from '../movie-carousel';
 import { getPosterUrl, searchMovies, getMovieVideos } from '@/lib/tmdb.client';
-import { Movie } from '@/lib/tmdb';
+import { Movie, TVShow } from '@/lib/tmdb';
 import { Skeleton } from '../ui/skeleton';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Flame } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem } from '../ui/carousel';
 import { MovieCard } from '../movie-card';
-import { Card, CardContent } from '../ui/card';
+import { TVShowCard } from '../tv-show-card';
 
-interface MovieWithPoster extends Partial<Movie> {
+interface ContentWithPoster extends Partial<Movie>, Partial<TVShow> {
   posterUrl: string | null;
   title: string;
+  type: 'movie' | 'tv';
 }
 
 const ottPlatforms = [
   {
     name: 'Netflix',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/2560px-Netflix_2015_logo.svg.png',
-    movies: ['Stranger Things', 'The Witcher', 'Bridgerton'],
+    content: [
+        { title: 'Stranger Things', type: 'tv' }, 
+        { title: 'The Witcher', type: 'tv' }, 
+        { title: 'Bridgerton', type: 'tv' }
+    ],
   },
   {
     name: 'SonyLIV',
     logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/SonyLIV_logo.svg/1200px-SonyLIV_logo.svg.png',
-    movies: ['Scam 1992', 'Gullak', 'Maharani'],
+    content: [
+        { title: 'Scam 1992', type: 'tv' }, 
+        { title: 'Gullak', type: 'tv' }, 
+        { title: 'Maharani', type: 'tv' }
+    ],
   },
   {
     name: 'Lionsgate Play',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Lionsgate_Play.svg/1200px-Lionsgate_Play.svg.png',
-    movies: ['John Wick', 'The Hunger Games', 'Knives Out'],
+    content: [
+        { title: 'John Wick', type: 'movie' }, 
+        { title: 'The Hunger Games', type: 'movie' }, 
+        { title: 'Knives Out', type: 'movie' }
+    ],
   },
   {
     name: 'Amazon Prime',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Amazon_Prime_Video_logo.svg/2560px-Amazon_Prime_Video_logo.svg.png',
-    movies: ['The Family Man', 'Mirzapur', 'Paatal Lok'],
+    content: [
+        { title: 'The Family Man', type: 'tv' }, 
+        { title: 'Mirzapur', type: 'tv' }, 
+        { title: 'Paatal Lok', type: 'tv' }
+    ],
   },
 ];
 
 export default function TrendingOttsSection() {
   const [activePlatform, setActivePlatform] = useState(ottPlatforms[0].name);
-  const [moviesData, setMoviesData] = useState<MovieWithPoster[]>([]);
+  const [contentData, setContentData] = useState<ContentWithPoster[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const activePlatformLogo = useMemo(() => {
+    return ottPlatforms.find(p => p.name === activePlatform)?.logo;
+  }, [activePlatform]);
+
   useEffect(() => {
-    const fetchMovies = async () => {
+    const fetchContent = async () => {
       setIsLoading(true);
       const platform = ottPlatforms.find((p) => p.name === activePlatform);
       if (!platform) {
@@ -55,33 +76,38 @@ export default function TrendingOttsSection() {
         return;
       }
 
-      const moviePromises = platform.movies.map(async (title) => {
-        const searchResults = await searchMovies(title);
-        const movie = searchResults.length > 0 ? searchResults[0] : null;
-        if (movie) {
-          const videos = await getMovieVideos(movie.id);
+      const contentPromises = platform.content.map(async (item) => {
+        const searchResults = await searchMovies(item.title);
+        const content = searchResults.length > 0 ? searchResults[0] : null;
+        if (content) {
+          const videos = await getMovieVideos(content.id);
           const trailer = videos.find(
             (v) => v.type === 'Trailer' && v.site === 'YouTube' && v.official
           );
-          movie.trailerUrl = trailer
+          content.trailerUrl = trailer
             ? `https://www.youtube.com/watch?v=${trailer.key}`
             : undefined;
         }
-        return movie;
+        return { content, type: item.type };
       });
 
-      const fetchedMovies = (await Promise.all(moviePromises))
-        .filter((movie): movie is Movie => movie !== null)
-        .map((movie) => ({
-          ...movie,
-          posterUrl: getPosterUrl(movie.poster_path),
+      const fetchedContent = await Promise.all(contentPromises);
+        
+      const processedContent: ContentWithPoster[] = fetchedContent
+        .filter((item) => item.content !== null)
+        .map((item) => ({
+          ...item.content,
+          id: item.content!.id,
+          title: item.content!.title || (item.content as TVShow).name,
+          posterUrl: getPosterUrl(item.content!.poster_path),
+          type: item.type as 'movie' | 'tv',
         }));
 
-      setMoviesData(fetchedMovies);
+      setContentData(processedContent);
       setIsLoading(false);
     };
 
-    fetchMovies();
+    fetchContent();
   }, [activePlatform]);
 
   const renderContent = () => {
@@ -107,18 +133,27 @@ export default function TrendingOttsSection() {
         className="w-full"
       >
         <CarouselContent className="-ml-2 md:-ml-4">
-          {moviesData.map((movie, index) => (
+          {contentData.map((item, index) => (
             <CarouselItem
-              key={movie.id || index}
+              key={item.id || index}
               className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 pl-2 md:pl-4"
             >
-              <MovieCard
-                id={movie.id!}
-                title={movie.title!}
-                posterUrl={movie.posterUrl}
-                trailerUrl={movie.trailerUrl}
-                aspect="portrait"
-              />
+              {item.type === 'movie' ? (
+                <MovieCard
+                    id={item.id!}
+                    title={item.title!}
+                    posterUrl={item.posterUrl}
+                    trailerUrl={item.trailerUrl}
+                    aspect="portrait"
+                />
+              ) : (
+                <TVShowCard
+                    id={item.id!}
+                    title={item.title!}
+                    posterUrl={item.posterUrl}
+                />
+              )}
+
             </CarouselItem>
           ))}
         </CarouselContent>
@@ -128,11 +163,20 @@ export default function TrendingOttsSection() {
 
   return (
     <section className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Flame className="text-primary" />
+      <div className="flex items-center gap-4">
         <h2 className="font-headline text-2xl font-bold tracking-tight">
-          Trending Now in {activePlatform}
+          Trending Now on
         </h2>
+        {activePlatformLogo && (
+          <div className="relative h-8 w-28">
+            <Image
+              src={activePlatformLogo}
+              alt={`${activePlatform} logo`}
+              fill
+              className="object-contain"
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex space-x-2 md:space-x-4 overflow-x-auto pb-2">
@@ -160,13 +204,10 @@ export default function TrendingOttsSection() {
         ))}
       </div>
 
-      {renderContent()}
-      <a
-        href="#"
-        className="text-primary font-semibold hover:underline text-center block mt-4"
-      >
-        Explore {activePlatform} &gt;
-      </a>
+      <div className="min-h-[350px]">
+        {renderContent()}
+      </div>
+      
     </section>
   );
 }
