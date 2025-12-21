@@ -15,6 +15,7 @@ export interface Movie {
   trailerUrl?: string;
   release_date: string;
   vote_average: number;
+  status: string;
 }
 
 export interface TVShow {
@@ -243,3 +244,5 @@ export function getPosterUrl(path: string | null) {
 export function getBackdropUrl(path: string | null) {
     return path ? `${TMDB_IMAGE_BASE_URL_BACKDROP}${path}` : null;
 }
+
+    

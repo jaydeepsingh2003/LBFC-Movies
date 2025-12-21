@@ -9,7 +9,7 @@ import { getExternalRatings } from '@/ai/flows/get-external-ratings';
 import { AppLayout } from '@/components/layout/app-layout';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, MessageSquareQuote, Bookmark, Music } from 'lucide-react';
+import { Loader2, PlayCircle, Star, MessageSquareQuote, Bookmark, Music, Ticket } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -81,6 +81,15 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
   , [firestore, user, id]);
   const [savedMovieDoc, isSavedMovieLoading] = useDocumentData(savedMovieRef);
   const isSaved = !!savedMovieDoc;
+
+  const isMovieInTheaters = useMemo(() => {
+    if (!movie?.release_date) return false;
+    const releaseDate = new Date(movie.release_date);
+    const today = new Date();
+    // Assuming movies are in theaters for 90 days after release.
+    const inTheatersUntil = new Date(releaseDate.getTime() + 90 * 24 * 60 * 60 * 1000);
+    return releaseDate <= today && today <= inTheatersUntil && movie.status === 'Released';
+  }, [movie]);
 
 
   useEffect(() => {
@@ -274,13 +283,20 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
                 {movie.posterUrl && <Image src={movie.posterUrl} alt={movie.title} fill className="object-cover" />}
               </CardContent>
             </Card>
-            <div className="flex gap-2 mt-4">
+            <div className="flex flex-col gap-2 mt-4">
               <Button onClick={() => trailer && handlePlayVideo(trailer.key)} disabled={!trailer} className="w-full" size="lg">
                 <PlayCircle className="mr-2" /> Play Trailer
               </Button>
                {user && (
                 <Button onClick={handleSaveToggle} variant={isSaved ? "secondary" : "default"} size="lg" disabled={isSavedMovieLoading}>
                   <Bookmark className={isSaved ? "mr-2 fill-current" : "mr-2"} /> {isSaved ? 'Saved' : 'Save'}
+                </Button>
+              )}
+               {isMovieInTheaters && (
+                <Button asChild size="lg">
+                  <a href="https://www.district.in/movies/" target="_blank" rel="noopener noreferrer">
+                    <Ticket className="mr-2" /> Book Tickets
+                  </a>
                 </Button>
               )}
             </div>
@@ -429,3 +445,5 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
     </AppLayout>
   );
 }
+
+    
