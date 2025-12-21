@@ -2,14 +2,12 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { MovieCarousel } from '../movie-carousel';
-import { getPosterUrl, searchMovies, getMovieVideos } from '@/lib/tmdb.client';
+import { getPosterUrl, searchMovies, getMovieVideos, searchTvShows } from '@/lib/tmdb.client';
 import { Movie, TVShow } from '@/lib/tmdb';
 import { Skeleton } from '../ui/skeleton';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { Flame } from 'lucide-react';
-import { Carousel, CarouselContent, CarouselItem } from '../ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
 import { MovieCard } from '../movie-card';
 import { TVShowCard } from '../tv-show-card';
 
@@ -17,6 +15,7 @@ interface ContentWithPoster extends Partial<Movie>, Partial<TVShow> {
   posterUrl: string | null;
   title: string;
   type: 'movie' | 'tv';
+  id: number;
 }
 
 const ottPlatforms = [
@@ -77,18 +76,20 @@ export default function TrendingOttsSection() {
       }
 
       const contentPromises = platform.content.map(async (item) => {
-        const searchResults = await searchMovies(item.title);
-        const content = searchResults.length > 0 ? searchResults[0] : null;
-        if (content) {
-          const videos = await getMovieVideos(content.id);
+        const searchFunction = item.type === 'movie' ? searchMovies : searchTvShows;
+        const searchResults = await searchFunction(item.title);
+        const contentItem = searchResults.length > 0 ? searchResults[0] : null;
+        
+        if (contentItem) {
+          const videos = await getMovieVideos(contentItem.id);
           const trailer = videos.find(
             (v) => v.type === 'Trailer' && v.site === 'YouTube' && v.official
           );
-          content.trailerUrl = trailer
+          (contentItem as any).trailerUrl = trailer
             ? `https://www.youtube.com/watch?v=${trailer.key}`
             : undefined;
         }
-        return { content, type: item.type };
+        return { content: contentItem, type: item.type };
       });
 
       const fetchedContent = await Promise.all(contentPromises);
@@ -98,7 +99,7 @@ export default function TrendingOttsSection() {
         .map((item) => ({
           ...item.content,
           id: item.content!.id,
-          title: item.content!.title || (item.content as TVShow).name,
+          title: (item.content as Movie).title || (item.content as TVShow).name,
           posterUrl: getPosterUrl(item.content!.poster_path),
           type: item.type as 'movie' | 'tv',
         }));
@@ -133,30 +134,31 @@ export default function TrendingOttsSection() {
         className="w-full"
       >
         <CarouselContent className="-ml-2 md:-ml-4">
-          {contentData.map((item, index) => (
+          {contentData.map((item) => (
             <CarouselItem
-              key={item.id || index}
+              key={item.id}
               className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 pl-2 md:pl-4"
             >
               {item.type === 'movie' ? (
                 <MovieCard
-                    id={item.id!}
-                    title={item.title!}
+                    id={item.id}
+                    title={item.title}
                     posterUrl={item.posterUrl}
                     trailerUrl={item.trailerUrl}
                     aspect="portrait"
                 />
               ) : (
                 <TVShowCard
-                    id={item.id!}
-                    title={item.title!}
+                    id={item.id}
+                    title={item.title}
                     posterUrl={item.posterUrl}
                 />
               )}
-
             </CarouselItem>
           ))}
         </CarouselContent>
+        <CarouselPrevious className="ml-12 bg-background/50 hover:bg-background" />
+        <CarouselNext className="mr-12 bg-background/50 hover:bg-background" />
       </Carousel>
     );
   };
