@@ -66,6 +66,12 @@ const nextConfig: NextConfig = {
         hostname: 'cdn.icon-icons.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.i.haymarketmedia.asia',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
