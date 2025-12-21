@@ -39,7 +39,7 @@ const ottPlatforms = [
   },
   {
     name: 'Lionsgate Play',
-    logo: 'https://i.ibb.co/L88T53j/lionsgateplay.png',
+    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbh8ibZRnfFlrYgGE_44c-lZ9JZvHOxzT7FQ&s',
     content: [
       { title: 'John Wick: Chapter 4', type: 'movie' },
       { title: 'The Hunger Games: The Ballad of Songbirds & Snakes', type: 'movie' },
@@ -181,7 +181,7 @@ export default function TrendingOttsSection() {
               'flex-shrink-0 p-2 md:p-3 rounded-lg transition-all duration-300',
               activePlatform === platform.name
                 ? 'bg-primary/20 border-2 border-primary'
-                : 'bg-secondary'
+                : 'bg-transparent'
             )}
           >
             <div className={cn("relative h-6 w-20 md:h-8 md:w-28")}>
