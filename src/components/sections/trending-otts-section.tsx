@@ -30,7 +30,7 @@ const ottPlatforms = [
   },
   {
     name: 'SonyLIV',
-    logo: 'https://www.sonyliv.com/images/static-images/sonyliv_new_revised_header_logo.png',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/SonyLIV_logo.svg/1200px-SonyLIV_logo.svg.png',
     content: [
         { title: 'Scam 1992', type: 'tv' }, 
         { title: 'Gullak', type: 'tv' }, 
