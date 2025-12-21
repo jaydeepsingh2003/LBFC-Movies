@@ -84,6 +84,12 @@ const nextConfig: NextConfig = {
         hostname: 'yt3.googleusercontent.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.financialexpressdigital.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
