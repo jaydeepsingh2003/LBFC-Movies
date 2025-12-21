@@ -222,6 +222,26 @@ export async function getNowPlayingMovies(): Promise<Movie[]> {
   }
 }
 
+export async function getTrendingMovies(timeWindow: 'day' | 'week' = 'week'): Promise<Movie[]> {
+  if (!TMDB_API_KEY) {
+    console.error('TMDB_API_KEY is not available. API requests will be skipped.');
+    return [];
+  }
+  const url = `/api/tmdb/3/trending/movie/${timeWindow}?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`TMDB API request for trending movies failed with status ${response.status}`);
+      return [];
+    }
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error('Error fetching trending movies from TMDB API via proxy:', error);
+    return [];
+  }
+}
+
 export async function getPopularMovies(): Promise<Movie[]> {
     if (!TMDB_API_KEY) {
       console.error('TMDB_API_KEY is not available. API requests will be skipped.');

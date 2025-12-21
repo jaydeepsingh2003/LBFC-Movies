@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { MovieCarousel } from "../movie-carousel";
-import { getPosterUrl, getMovieVideos, searchMovies } from "@/lib/tmdb.client";
+import { getPosterUrl, getMovieVideos, getTrendingMovies } from "@/lib/tmdb.client";
 import { Movie } from "@/lib/tmdb";
 import { Skeleton } from "../ui/skeleton";
 
@@ -19,43 +19,27 @@ export default function TrendingSection() {
     useEffect(() => {
         const fetchTrending = async () => {
             setIsLoading(true);
-            const trendingMovies = [
-                "Oppenheimer",
-                "Barbie",
-                "Spider-Man: Across the Spider-Verse",
-                "Poor Things",
-                "The Holdovers",
-                "Past Lives",
-                "Killers of the Flower Moon",
-                "Anatomy of a Fall",
-                "Godzilla Minus One",
-                "American Fiction"
-            ];
-            
-            const moviePromises = trendingMovies.map(async (title) => {
-                const searchResults = await searchMovies(title);
-                const movie = searchResults.length > 0 ? searchResults[0] : null;
-                if (movie) {
+            try {
+                const trendingMovies = await getTrendingMovies();
+                
+                const moviePromises = trendingMovies.map(async (movie) => {
                     const videos = await getMovieVideos(movie.id);
                     const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-                    movie.trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
-                }
-                return movie;
-            });
+                    return {
+                        ...movie,
+                        posterUrl: getPosterUrl(movie.poster_path),
+                        trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
+                    };
+                });
 
-            const fetchedMovies = (await Promise.all(moviePromises))
-                .map((movie, index) => ({
-                    id: movie?.id,
-                    title: movie ? movie.title : trendingMovies[index],
-                    poster_path: movie?.poster_path || null,
-                    overview: movie?.overview || '',
-                    backdrop_path: movie?.backdrop_path || null,
-                    posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
-                    trailerUrl: movie?.trailerUrl,
-                }));
-            
-            setMovies(fetchedMovies);
-            setIsLoading(false);
+                const fetchedMovies = await Promise.all(moviePromises);
+                
+                setMovies(fetchedMovies as MovieWithPoster[]);
+            } catch (error) {
+                console.error("Failed to fetch trending movies:", error);
+            } finally {
+                setIsLoading(false);
+            }
         }
 
         fetchTrending();
@@ -65,9 +49,9 @@ export default function TrendingSection() {
          return (
              <div className="space-y-4">
                 <Skeleton className="h-8 w-1/4" />
-                <div className="flex gap-4">
-                    {[...Array(10)].map((_, i) => (
-                        <Skeleton key={i} className="aspect-[2/3] w-1/6 rounded-lg" />
+                <div className="flex gap-4 overflow-x-auto pb-4">
+                    {[...Array(7)].map((_, i) => (
+                        <Skeleton key={i} className="aspect-[2/3] w-48 md:w-56 flex-shrink-0 rounded-lg" />
                     ))}
                 </div>
             </div>
