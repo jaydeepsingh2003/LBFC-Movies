@@ -199,7 +199,6 @@ export default function TrendingOttsSection() {
                 alt={platform.name}
                 fill
                 className="object-contain"
-                style={{ filter: activePlatform !== platform.name ? 'grayscale(100%)' : 'none', opacity: activePlatform !== platform.name ? 0.7 : 1 }}
               />
             </div>
           </button>
