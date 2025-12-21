@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from 'react';
@@ -45,10 +46,10 @@ export default function DashboardPage() {
     <AppLayout>
       <HeroSection />
       <div className="space-y-12 py-8 px-4 md:px-8">
+          <TrendingOttsSection />
           <NowPlayingSection />
           <UpcomingSection />
           <FranchiseFocusSection />
-          <TrendingOttsSection />
           <ForYouSection />
           <TrendingSection />
           <EnglishTvSection />
