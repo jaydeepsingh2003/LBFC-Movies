@@ -72,6 +72,12 @@ const nextConfig: NextConfig = {
         hostname: 'cdn.i.haymarketmedia.asia',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'encrypted-tbn0.gstatic.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
