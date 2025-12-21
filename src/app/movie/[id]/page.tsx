@@ -295,7 +295,7 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
                {isMovieInTheaters && (
                 <Button asChild size="lg">
                   <a href="https://www.district.in/movies/" target="_blank" rel="noopener noreferrer">
-                    <Ticket className="mr-2" /> Book Tickets
+                    Book your tickets in District by Zomato
                   </a>
                 </Button>
               )}
