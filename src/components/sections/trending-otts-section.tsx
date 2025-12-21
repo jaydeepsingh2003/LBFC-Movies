@@ -39,7 +39,7 @@ const ottPlatforms = [
   },
   {
     name: 'Lionsgate Play',
-    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSe7Ylgk8sYgD3HR-E0_N_R9qImOe-PYCCVQ&s',
+    logo: 'https://yt3.googleusercontent.com/JH_qtxOCfwknmaB4U9EEZeS7htIOJjj4M2b8-LeQlWp3K8y69ZT3MjXWchdgdpdt4pepL0DnfA=s900-c-k-c0x00ffffff-no-rj',
     content: [
       { title: 'John Wick: Chapter 4', type: 'movie' },
       { title: 'The Hunger Games: The Ballad of Songbirds & Snakes', type: 'movie' },
