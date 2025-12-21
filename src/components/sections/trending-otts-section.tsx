@@ -37,6 +37,15 @@ const ottPlatforms = [
         { title: 'Paatal Lok', type: 'tv' }
     ],
   },
+  {
+    name: 'Lionsgate Play',
+    logo: 'https://i.ibb.co/b3prd6B/lionsgate-play-logo.png',
+    content: [
+      { title: 'John Wick: Chapter 4', type: 'movie' },
+      { title: 'The Hunger Games: The Ballad of Songbirds & Snakes', type: 'movie' },
+      { title: 'The Continental: From the World of John Wick', type: 'tv' },
+    ],
+  },
 ];
 
 export default function TrendingOttsSection() {
