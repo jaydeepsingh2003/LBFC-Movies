@@ -39,7 +39,7 @@ const ottPlatforms = [
   },
   {
     name: 'Lionsgate Play',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Lionsgate_Play.svg/1200px-Lionsgate_Play.svg.png',
+    logo: 'https://i.ibb.co/7y6w8q4/lionsgate-play.jpg',
     content: [
         { title: 'John Wick', type: 'movie' }, 
         { title: 'The Hunger Games', type: 'movie' }, 
