@@ -29,24 +29,6 @@ const ottPlatforms = [
     ],
   },
   {
-    name: 'SonyLIV',
-    logo: 'https://upload.wikimedia.org/wikipedia/en/d/d3/SonyLIV_logo.svg',
-    content: [
-        { title: 'Scam 1992', type: 'tv' }, 
-        { title: 'Gullak', type: 'tv' }, 
-        { title: 'Maharani', type: 'tv' }
-    ],
-  },
-  {
-    name: 'Lionsgate Play',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Lionsgate_Play_logo.svg/1280px-Lionsgate_Play_logo.svg.png',
-    content: [
-        { title: 'John Wick', type: 'movie' }, 
-        { title: 'The Hunger Games', type: 'movie' }, 
-        { title: 'Knives Out', type: 'movie' }
-    ],
-  },
-  {
     name: 'Amazon Prime',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Amazon_Prime_Video_logo.svg/2560px-Amazon_Prime_Video_logo.svg.png',
     content: [
