@@ -23,10 +23,14 @@ const ottPlatforms = [
     name: 'Netflix',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/2560px-Netflix_2015_logo.svg.png',
     content: [
-        { title: 'Money Heist', type: 'tv' }, 
-        { title: 'Sacred Games', type: 'tv' }, 
-        { title: 'Lust Stories', type: 'movie' },
-        { title: 'Delhi Crime', type: 'tv' },
+        { title: 'The Gray Man', type: 'movie' },
+        { title: 'Stranger Things', type: 'tv' },
+        { title: 'Glass Onion: A Knives Out Mystery', type: 'movie' },
+        { title: 'The Crown', type: 'tv' },
+        { title: 'Bridgerton', type: 'tv' },
+        { title: 'Extraction 2', type: 'movie' },
+        { title: 'The Witcher', type: 'tv' },
+        { title: 'Red Notice', type: 'movie' },
     ],
   },
   {
@@ -37,6 +41,10 @@ const ottPlatforms = [
         { title: 'Reacher', type: 'tv' }, 
         { title: 'The Lord of the Rings: The Rings of Power', type: 'tv' },
         { title: 'Shershaah', type: 'movie'},
+        { title: 'The Marvelous Mrs. Maisel', type: 'tv' },
+        { title: 'The Tomorrow War', type: 'movie' },
+        { title: 'Fleabag', type: 'tv' },
+        { title: 'Sound of Metal', type: 'movie' },
     ],
   },
   {
@@ -47,6 +55,10 @@ const ottPlatforms = [
       { title: 'La La Land', type: 'movie' },
       { title: 'Normal People', type: 'tv' },
       { title: 'Gangs of New York', type: 'movie'},
+      { title: 'John Wick: Chapter 3 - Parabellum', type: 'movie' },
+      { title: 'The Hunger Games: The Ballad of Songbirds & Snakes', type: 'movie' },
+      { title: 'Spartacus', type: 'tv' },
+      { title: 'About My Father', type: 'movie' },
     ],
   },
 ];
@@ -109,7 +121,7 @@ export default function TrendingOttsSection() {
     if (isLoading) {
       return (
         <div className="flex gap-4 overflow-x-auto pb-4">
-          {[...Array(3)].map((_, i) => (
+          {[...Array(4)].map((_, i) => (
             <Skeleton
               key={i}
               className="aspect-[2/3] w-40 md:w-48 flex-shrink-0 rounded-lg"
@@ -184,7 +196,7 @@ export default function TrendingOttsSection() {
               'flex-shrink-0 p-2 md:p-3 rounded-lg transition-all duration-300',
               activePlatform === platform.name
                 ? 'bg-primary/20 border-2 border-primary'
-                : 'bg-transparent'
+                : 'bg-secondary'
             )}
           >
             <div className={cn("relative h-6 w-20 md:h-8 md:w-28")}>
