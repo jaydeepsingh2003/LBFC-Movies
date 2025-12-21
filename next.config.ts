@@ -60,6 +60,12 @@ const nextConfig: NextConfig = {
         hostname: 'www.aha.video',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.sonyliv.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
