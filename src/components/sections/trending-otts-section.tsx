@@ -20,9 +20,9 @@ interface MovieWithPoster extends Partial<Movie> {
 
 const ottPlatforms = [
   {
-    name: 'JioHotstar',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/JioCinema_logo.svg',
-    movies: ['Superman', 'The Great Shamsuddin Family', 'Dies Irae'],
+    name: 'Netflix',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/2560px-Netflix_2015_logo.svg.png',
+    movies: ['Stranger Things', 'The Witcher', 'Bridgerton'],
   },
   {
     name: 'SonyLIV',
