@@ -23,27 +23,30 @@ const ottPlatforms = [
     name: 'Netflix',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/2560px-Netflix_2015_logo.svg.png',
     content: [
-        { title: 'Stranger Things', type: 'tv' }, 
-        { title: 'The Witcher', type: 'tv' }, 
-        { title: 'Bridgerton', type: 'tv' }
+        { title: 'Money Heist', type: 'tv' }, 
+        { title: 'Sacred Games', type: 'tv' }, 
+        { title: 'Lust Stories', type: 'movie' },
+        { title: 'Delhi Crime', type: 'tv' },
     ],
   },
   {
     name: 'Amazon Prime',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Amazon_Prime_Video_logo.svg/2560px-Amazon_Prime_Video_logo.svg.png',
     content: [
-        { title: 'The Family Man', type: 'tv' }, 
-        { title: 'Mirzapur', type: 'tv' }, 
-        { title: 'Paatal Lok', type: 'tv' }
+        { title: 'The Boys', type: 'tv' }, 
+        { title: 'Reacher', type: 'tv' }, 
+        { title: 'The Lord of the Rings: The Rings of Power', type: 'tv' },
+        { title: 'Shershaah', type: 'movie'},
     ],
   },
   {
     name: 'Lionsgate Play',
     logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbh8ibZRnfFlrYgGE_44c-lZ9JZvHOxzT7FQ&s',
     content: [
-      { title: 'John Wick: Chapter 4', type: 'movie' },
-      { title: 'The Hunger Games: The Ballad of Songbirds & Snakes', type: 'movie' },
-      { title: 'The Continental: From the World of John Wick', type: 'tv' },
+      { title: 'Knives Out', type: 'movie' },
+      { title: 'La La Land', type: 'movie' },
+      { title: 'Normal People', type: 'tv' },
+      { title: 'Gangs of New York', type: 'movie'},
     ],
   },
 ];
