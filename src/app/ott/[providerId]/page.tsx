@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AppLayout } from '@/components/layout/app-layout';
 import { discoverMovies, discoverTvShows, getPosterUrl, getMovieVideos, getTvShowVideos } from '@/lib/tmdb.client';
@@ -35,49 +35,50 @@ export default function OttContentPage(props: { params: { providerId: string } }
   const [activeTab, setActiveTab] = useState<'movies' | 'tv'>('movies');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
 
-  useEffect(() => {
+  const fetchContent = useCallback(async () => {
     if (!providerId) return;
 
-    async function fetchContent() {
-      setIsLoading(true);
-      setMovies([]);
-      setTvShows([]);
-      try {
-        const discoverOptions: any = { 
-            with_watch_providers: providerId, 
-            watch_region: 'IN'
-        };
-        if (selectedLanguage) {
-            discoverOptions.with_original_language = selectedLanguage;
-        }
+    setIsLoading(true);
+    setMovies([]);
+    setTvShows([]);
 
-        const [movieResults, tvShowResults] = await Promise.all([
-          discoverMovies(discoverOptions, 3),
-          discoverTvShows(discoverOptions, 3),
-        ]);
-
-        const moviesWithTrailers = await Promise.all(
-          movieResults.map(async (movie) => {
-            const videos = await getMovieVideos(movie.id);
-            const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-            return {
-              ...movie,
-              trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
-            };
-          })
-        );
-        setMovies(moviesWithTrailers);
-        setTvShows(tvShowResults);
-
-      } catch (error) {
-        console.error(`Error fetching content for provider ${providerId}:`, error);
-      } finally {
-        setIsLoading(false);
+    try {
+      const discoverOptions: any = { 
+          with_watch_providers: providerId, 
+          watch_region: 'IN'
+      };
+      if (selectedLanguage) {
+          discoverOptions.with_original_language = selectedLanguage;
       }
-    }
 
-    fetchContent();
+      const [movieResults, tvShowResults] = await Promise.all([
+        discoverMovies(discoverOptions),
+        discoverTvShows(discoverOptions),
+      ]);
+
+      const moviesWithTrailers = await Promise.all(
+        movieResults.map(async (movie) => {
+          const videos = await getMovieVideos(movie.id);
+          const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
+          return {
+            ...movie,
+            trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
+          };
+        })
+      );
+      setMovies(moviesWithTrailers);
+      setTvShows(tvShowResults);
+
+    } catch (error) {
+      console.error(`Error fetching content for provider ${providerId}:`, error);
+    } finally {
+      setIsLoading(false);
+    }
   }, [providerId, selectedLanguage]);
+
+  useEffect(() => {
+    fetchContent();
+  }, [fetchContent]);
   
   return (
     <AppLayout>
