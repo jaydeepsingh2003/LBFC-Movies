@@ -83,3 +83,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .my-otts-text {
+    @apply bg-gradient-to-r from-red-500 via-green-500 to-blue-500 bg-clip-text text-transparent;
+  }
+  .my-otts-nav-item:hover .my-otts-text {
+    @apply text-foreground;
+  }
+}

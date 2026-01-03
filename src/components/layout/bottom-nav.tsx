@@ -29,11 +29,12 @@ export function BottomNav() {
               'flex flex-col items-center justify-center gap-1 text-xs font-medium transition-colors',
               pathname === item.href
                 ? 'text-primary'
-                : 'text-muted-foreground hover:text-foreground'
+                : 'text-muted-foreground hover:text-foreground',
+               item.href === '/my-otts' && pathname !== item.href ? 'my-otts-nav-item' : ''
             )}
           >
             <item.icon className="h-5 w-5" />
-            <span className="truncate">{item.label}</span>
+            <span className={cn("truncate", item.href === '/my-otts' && 'my-otts-text')}>{item.label}</span>
           </Link>
         ))}
       </div>

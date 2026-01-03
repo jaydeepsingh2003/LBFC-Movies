@@ -33,7 +33,8 @@ export function DesktopNav() {
                     href={item.href}
                     className={cn(
                         "transition-colors hover:text-foreground",
-                        pathname === item.href && "text-foreground font-semibold"
+                        pathname === item.href && "text-foreground font-semibold",
+                        item.href === '/my-otts' && pathname !== item.href && 'my-otts-text'
                     )}
                 >
                     {item.label}
