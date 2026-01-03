@@ -96,6 +96,12 @@ const nextConfig: NextConfig = {
         hostname: 'play-lh.googleusercontent.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.livemint.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
