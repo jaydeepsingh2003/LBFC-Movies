@@ -29,7 +29,12 @@ export default function HindiMoviesSection() {
                 "Gangs of Wasseypur",
                 "Taare Zameen Par",
                 "Andhadhun",
-                "Barfi!"
+                "Barfi!",
+                "Pathaan",
+                "Jawan",
+                "Animal",
+                "Gadar 2",
+                "Rocky Aur Rani Kii Prem Kahaani"
             ];
             
             const moviePromises = hindiMovies.map(async (title) => {

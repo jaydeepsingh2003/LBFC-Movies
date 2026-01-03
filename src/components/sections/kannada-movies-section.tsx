@@ -29,7 +29,12 @@ export default function KannadaMoviesSection() {
                 "Thithi",
                 "Rangitaranga",
                 "Garuda Gamana Vrishabha Vahana",
-                "777 Charlie"
+                "777 Charlie",
+                "K.G.F: Chapter 2",
+                "Sapta Sagaradaache Ello - Side A",
+                "Hostel Hudugaru Bekagiddare",
+                "Kaatera",
+                "Sapta Sagaradaache Ello - Side B"
             ];
             
             const moviePromises = kannadaMovies.map(async (title) => {
