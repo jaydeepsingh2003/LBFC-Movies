@@ -57,7 +57,7 @@ export default function OttContentPage(props: { params: { providerId: string } }
         ]);
 
         const moviesWithTrailers = await Promise.all(
-          movieResults.slice(0, 50).map(async (movie) => {
+          movieResults.map(async (movie) => {
             const videos = await getMovieVideos(movie.id);
             const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
             return {
@@ -67,7 +67,7 @@ export default function OttContentPage(props: { params: { providerId: string } }
           })
         );
         setMovies(moviesWithTrailers);
-        setTvShows(tvShowResults.slice(0, 50));
+        setTvShows(tvShowResults);
 
       } catch (error) {
         console.error(`Error fetching content for provider ${providerId}:`, error);
