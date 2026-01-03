@@ -21,9 +21,9 @@ export default function NowPlayingSection() {
             setIsLoading(true);
             try {
                 const [enMovies, hiMovies, knMovies] = await Promise.all([
-                    getNowPlayingMovies('en'),
-                    getNowPlayingMovies('hi'),
-                    getNowPlayingMovies('kn')
+                    getNowPlayingMovies('en-US'),
+                    getNowPlayingMovies('hi-IN'),
+                    getNowPlayingMovies('kn-IN')
                 ]);
 
                 const combined = [...enMovies.slice(0,10), ...hiMovies.slice(0,5), ...knMovies.slice(0,5)];
