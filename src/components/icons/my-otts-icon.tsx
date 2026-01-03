@@ -23,7 +23,7 @@ export function MyOttsIcon({ className, ...props }: React.SVGProps<SVGSVGElement
           <stop offset="100%" style={{stopColor: 'rgb(0,0,255)', stopOpacity: 1}} />
         </linearGradient>
       </defs>
-      <polygon points="12 2 2 7 12 12 22 7 12 2" fill="url(#my-otts-gradient)" stroke="url(#my-otts-gradient)"/>
+      <polygon points="12 2 2 7 12 12 22 7 12 2" stroke="url(#my-otts-gradient)" fill="transparent"/>
       <polyline points="2 17 12 22 22 17"  stroke="url(#my-otts-gradient)"/>
       <polyline points="2 12 12 17 22 12"  stroke="url(#my-otts-gradient)"/>
     </svg>
