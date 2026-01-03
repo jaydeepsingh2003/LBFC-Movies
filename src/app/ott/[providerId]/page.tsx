@@ -52,8 +52,8 @@ export default function OttContentPage(props: { params: { providerId: string } }
       }
 
       const [movieResults, tvShowResults] = await Promise.all([
-        discoverMovies(discoverOptions, 5),
-        discoverTvShows(discoverOptions, 5),
+        discoverMovies(discoverOptions, 10), // 10 pages * 20 results/page = 200
+        discoverTvShows(discoverOptions, 10), // 10 pages * 20 results/page = 200
       ]);
 
       const moviesWithTrailers = await Promise.all(

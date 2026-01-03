@@ -24,6 +24,7 @@ import HindiTvSection from '@/components/sections/hindi-tv-section';
 import KannadaTvSection from '@/components/sections/kannada-tv-section';
 import { AppLayout } from '@/components/layout/app-layout';
 import TrendingOttsSection from '@/components/sections/trending-otts-section';
+import TamilTvSection from '@/components/sections/tamil-tv-section';
 
 export default function DashboardPage() {
   const { user, isLoading } = useUser();
@@ -56,6 +57,7 @@ export default function DashboardPage() {
           <EnglishTvSection />
           <HindiTvSection />
           <KannadaTvSection />
+          <TamilTvSection />
           <HindiMoviesSection />
           <KannadaMoviesSection />
           <TamilMoviesSection />
