@@ -315,52 +315,59 @@ export async function discoverTvShows(options: {
   keywords?: string;
   with_watch_providers?: string;
   watch_region?: string;
-}): Promise<TVShow[]> {
+}, totalPages: number = 1): Promise<TVShow[]> {
   if (!TMDB_API_KEY) {
     console.error('TMDB_API_KEY is not available. API requests will be skipped.');
     return [];
   }
-  const params = new URLSearchParams({
-    api_key: TMDB_API_KEY,
-    language: 'en-US',
-    page: '1',
-    sort_by: options.sortBy || 'popularity.desc',
-  });
-  if (options.language) {
-    params.append('with_original_language', options.language);
-  }
-  if (options.genreId) {
-    params.append('with_genres', options.genreId.toString());
-  }
-  if (options.voteAverageGte) {
-    params.append('vote_average.gte', options.voteAverageGte.toString());
-  }
-  if (options.firstAirDateYear) {
-    params.append('first_air_date_year', options.firstAirDateYear.toString());
-  }
-  if (options.keywords) {
-    params.append('with_keywords', options.keywords);
-  }
-  if (options.with_watch_providers) {
-    params.append('with_watch_providers', options.with_watch_providers);
-  }
-  if (options.watch_region) {
-    params.append('watch_region', options.watch_region);
-  }
-
-  const url = `/api/tmdb/3/discover/tv?${params.toString()}`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      console.error(`TMDB API request for discover TV failed with status ${response.status}`);
-      return [];
+  
+  let allTvShows: TVShow[] = [];
+  
+  for (let page = 1; page <= totalPages; page++) {
+    const params = new URLSearchParams({
+      api_key: TMDB_API_KEY,
+      language: 'en-US',
+      page: page.toString(),
+      sort_by: options.sortBy || 'popularity.desc',
+    });
+    if (options.language) {
+      params.append('with_original_language', options.language);
     }
-    const data = await response.json();
-    return data.results;
-  } catch (error) {
-    console.error('Error fetching discover TV shows from TMDB API via proxy:', error);
-    return [];
+    if (options.genreId) {
+      params.append('with_genres', options.genreId.toString());
+    }
+    if (options.voteAverageGte) {
+      params.append('vote_average.gte', options.voteAverageGte.toString());
+    }
+    if (options.firstAirDateYear) {
+      params.append('first_air_date_year', options.firstAirDateYear.toString());
+    }
+    if (options.keywords) {
+      params.append('with_keywords', options.keywords);
+    }
+    if (options.with_watch_providers) {
+      params.append('with_watch_providers', options.with_watch_providers);
+    }
+    if (options.watch_region) {
+      params.append('watch_region', options.watch_region);
+    }
+  
+    const url = `/api/tmdb/3/discover/tv?${params.toString()}`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error(`TMDB API request for discover TV failed with status ${response.status}`);
+        break; 
+      }
+      const data = await response.json();
+      allTvShows = allTvShows.concat(data.results);
+    } catch (error) {
+      console.error('Error fetching discover TV shows from TMDB API via proxy:', error);
+      break;
+    }
   }
+  
+  return allTvShows;
 }
 
 export async function discoverMovies(options: {
@@ -370,45 +377,51 @@ export async function discoverMovies(options: {
   keywords?: string;
   with_watch_providers?: string;
   watch_region?: string;
-}): Promise<Movie[]> {
+}, totalPages: number = 1): Promise<Movie[]> {
   if (!TMDB_API_KEY) {
     console.error('TMDB_API_KEY is not available. API requests will be skipped.');
     return [];
   }
 
-  const params = new URLSearchParams({
-    api_key: TMDB_API_KEY,
-    language: 'en-US',
-    page: '1',
-    sort_by: 'popularity.desc',
-    include_adult: 'false',
-    include_video: 'false',
-  });
+  let allMovies: Movie[] = [];
 
-  if (options.genreId) params.append('with_genres', options.genreId.toString());
-  if (options.primaryReleaseYear) params.append('primary_release_year', options.primaryReleaseYear.toString());
-  if (options.voteAverageGte) params.append('vote_average.gte', options.voteAverageGte.toString());
-  if (options.keywords) params.append('with_keywords', options.keywords);
-  if (options.with_watch_providers) {
-    params.append('with_watch_providers', options.with_watch_providers);
-  }
-  if (options.watch_region) {
-    params.append('watch_region', options.watch_region);
-  }
+  for (let page = 1; page <= totalPages; page++) {
+    const params = new URLSearchParams({
+      api_key: TMDB_API_KEY,
+      language: 'en-US',
+      page: page.toString(),
+      sort_by: 'popularity.desc',
+      include_adult: 'false',
+      include_video: 'false',
+    });
 
-  const url = `/api/tmdb/3/discover/movie?${params.toString()}`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      console.error(`TMDB API request for discover movies failed with status ${response.status}`);
-      return [];
+    if (options.genreId) params.append('with_genres', options.genreId.toString());
+    if (options.primaryReleaseYear) params.append('primary_release_year', options.primaryReleaseYear.toString());
+    if (options.voteAverageGte) params.append('vote_average.gte', options.voteAverageGte.toString());
+    if (options.keywords) params.append('with_keywords', options.keywords);
+    if (options.with_watch_providers) {
+      params.append('with_watch_providers', options.with_watch_providers);
     }
-    const data = await response.json();
-    return data.results;
-  } catch (error) {
-    console.error('Error fetching discover movies from TMDB API via proxy:', error);
-    return [];
+    if (options.watch_region) {
+      params.append('watch_region', options.watch_region);
+    }
+
+    const url = `/api/tmdb/3/discover/movie?${params.toString()}`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error(`TMDB API request for discover movies failed with status ${response.status}`);
+        break;
+      }
+      const data = await response.json();
+      allMovies = allMovies.concat(data.results);
+    } catch (error) {
+      console.error('Error fetching discover movies from TMDB API via proxy:', error);
+      break;
+    }
   }
+
+  return allMovies;
 }
 
 export async function getWatchProviders(): Promise<WatchProvider[]> {

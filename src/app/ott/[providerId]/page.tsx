@@ -30,12 +30,12 @@ export default function OttContentPage(props: { params: { providerId: string } }
       setIsLoading(true);
       try {
         const [movieResults, tvShowResults] = await Promise.all([
-          discoverMovies({ with_watch_providers: providerId, watch_region: 'IN' }),
-          discoverTvShows({ with_watch_providers: providerId, watch_region: 'IN' }),
+          discoverMovies({ with_watch_providers: providerId, watch_region: 'IN' }, 3),
+          discoverTvShows({ with_watch_providers: providerId, watch_region: 'IN' }, 3),
         ]);
 
         const moviesWithTrailers = await Promise.all(
-          movieResults.map(async (movie) => {
+          movieResults.slice(0, 50).map(async (movie) => {
             const videos = await getMovieVideos(movie.id);
             const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
             return {
@@ -45,7 +45,7 @@ export default function OttContentPage(props: { params: { providerId: string } }
           })
         );
         setMovies(moviesWithTrailers);
-        setTvShows(tvShowResults);
+        setTvShows(tvShowResults.slice(0, 50));
 
       } catch (error) {
         console.error(`Error fetching content for provider ${providerId}:`, error);
