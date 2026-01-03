@@ -11,17 +11,6 @@ import { MovieCard } from '@/components/movie-card';
 import { TVShowCard } from '@/components/tv-show-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Film, Tv } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-
-const languages = [
-  { name: 'All', code: '' },
-  { name: 'English', code: 'en' },
-  { name: 'Hindi', code: 'hi' },
-  { name: 'Kannada', code: 'kn' },
-  { name: 'Tamil', code: 'ta' },
-  { name: 'Telugu', code: 'te' },
-];
 
 export default function OttContentPage(props: { params: { providerId: string } }) {
   const params = React.use(props.params);
@@ -33,7 +22,6 @@ export default function OttContentPage(props: { params: { providerId: string } }
   const [tvShows, setTvShows] = useState<TVShow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'movies' | 'tv'>('movies');
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('');
 
   const fetchContent = useCallback(async () => {
     if (!providerId) return;
@@ -47,9 +35,6 @@ export default function OttContentPage(props: { params: { providerId: string } }
           with_watch_providers: providerId, 
           watch_region: 'IN'
       };
-      if (selectedLanguage) {
-          discoverOptions.with_original_language = selectedLanguage;
-      }
 
       const [movieResults, tvShowResults] = await Promise.all([
         discoverMovies(discoverOptions, 10), // 10 pages * 20 results/page = 200
@@ -74,7 +59,7 @@ export default function OttContentPage(props: { params: { providerId: string } }
     } finally {
       setIsLoading(false);
     }
-  }, [providerId, selectedLanguage]);
+  }, [providerId]);
 
   useEffect(() => {
     fetchContent();
@@ -89,18 +74,6 @@ export default function OttContentPage(props: { params: { providerId: string } }
           </h1>
           <p className="text-muted-foreground">Browse movies and TV shows available on this platform.</p>
         </header>
-
-        <div className="flex flex-wrap gap-2">
-            {languages.map((lang) => (
-                <Button 
-                    key={lang.code}
-                    variant={selectedLanguage === lang.code ? 'default' : 'outline'}
-                    onClick={() => setSelectedLanguage(lang.code)}
-                >
-                    {lang.name}
-                </Button>
-            ))}
-        </div>
 
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
@@ -130,7 +103,7 @@ export default function OttContentPage(props: { params: { providerId: string } }
               ) : (
                 <div className="text-center py-16">
                   <h3 className="text-lg font-semibold text-foreground">No Movies Found</h3>
-                  <p className="text-muted-foreground mt-2">No movies found for this provider and language in your region.</p>
+                  <p className="text-muted-foreground mt-2">No movies found for this provider in your region.</p>
                 </div>
               )}
             </TabsContent>
@@ -149,7 +122,7 @@ export default function OttContentPage(props: { params: { providerId: string } }
               ) : (
                 <div className="text-center py-16">
                   <h3 className="text-lg font-semibold text-foreground">No TV Shows Found</h3>
-                  <p className="text-muted-foreground mt-2">No TV shows found for this provider and language in your region.</p>
+                  <p className="text-muted-foreground mt-2">No TV shows found for this provider in your region.</p>
                 </div>
               )}
             </TabsContent>
