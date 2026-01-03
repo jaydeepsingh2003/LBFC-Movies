@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -25,6 +26,11 @@ export function AiChatbotWidget() {
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -65,6 +71,10 @@ export function AiChatbotWidget() {
         setIsLoading(false);
     }
   };
+  
+  if (!isClient) {
+    return null;
+  }
   
   return (
     <>
