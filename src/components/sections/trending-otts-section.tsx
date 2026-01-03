@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { getPosterUrl, searchMovies, getMovieVideos, searchTvShows } from '@/lib/tmdb.client';
+import { getPosterUrl, searchMovies, getMovieVideos, searchTvShows, discoverMovies, discoverTvShows } from '@/lib/tmdb.client';
 import { Movie, TVShow } from '@/lib/tmdb';
 import { Skeleton } from '../ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -22,44 +22,17 @@ const ottPlatforms = [
   {
     name: 'Netflix',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/2560px-Netflix_2015_logo.svg.png',
-    content: [
-        { title: 'The Gray Man', type: 'movie' },
-        { title: 'Stranger Things', type: 'tv' },
-        { title: 'Glass Onion: A Knives Out Mystery', type: 'movie' },
-        { title: 'The Crown', type: 'tv' },
-        { title: 'Bridgerton', type: 'tv' },
-        { title: 'Extraction 2', type: 'movie' },
-        { title: 'The Witcher', type: 'tv' },
-        { title: 'Red Notice', type: 'movie' },
-    ],
+    provider_id: 8,
   },
   {
     name: 'Amazon Prime',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Amazon_Prime_Video_logo.svg/2560px-Amazon_Prime_Video_logo.svg.png',
-    content: [
-        { title: 'The Boys', type: 'tv' }, 
-        { title: 'Reacher', type: 'tv' }, 
-        { title: 'The Lord of the Rings: The Rings of Power', type: 'tv' },
-        { title: 'Shershaah', type: 'movie'},
-        { title: 'The Marvelous Mrs. Maisel', type: 'tv' },
-        { title: 'The Tomorrow War', type: 'movie' },
-        { title: 'Fleabag', type: 'tv' },
-        { title: 'Sound of Metal', type: 'movie' },
-    ],
+    provider_id: 119,
   },
   {
     name: 'Lionsgate Play',
     logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbh8ibZRnfFlrYgGE_44c-lZ9JZvHOxzT7FQ&s',
-    content: [
-      { title: 'Knives Out', type: 'movie' },
-      { title: 'La La Land', type: 'movie' },
-      { title: 'Normal People', type: 'tv' },
-      { title: 'Gangs of New York', type: 'movie'},
-      { title: 'John Wick: Chapter 3 - Parabellum', type: 'movie' },
-      { title: 'The Hunger Games: The Ballad of Songbirds & Snakes', type: 'movie' },
-      { title: 'Spartacus', type: 'tv' },
-      { title: 'About My Father', type: 'movie' },
-    ],
+    provider_id: 257,
   },
 ];
 
@@ -81,36 +54,31 @@ export default function TrendingOttsSection() {
         return;
       }
 
-      const contentPromises = platform.content.map(async (item) => {
-        const searchFunction = item.type === 'movie' ? searchMovies : searchTvShows;
-        const searchResults = await searchFunction(item.title);
-        const contentItem = searchResults.length > 0 ? searchResults[0] : null;
-        
-        if (contentItem) {
-          const videos = await getMovieVideos(contentItem.id);
-          const trailer = videos.find(
-            (v) => v.type === 'Trailer' && v.site === 'YouTube' && v.official
-          );
-          (contentItem as any).trailerUrl = trailer
-            ? `https://www.youtube.com/watch?v=${trailer.key}`
-            : undefined;
-        }
-        return { content: contentItem, type: item.type };
-      });
+      const [movieResults, tvShowResults] = await Promise.all([
+        discoverMovies({ with_watch_providers: platform.provider_id.toString(), watch_region: 'IN' }),
+        discoverTvShows({ with_watch_providers: platform.provider_id.toString(), watch_region: 'IN' }),
+      ]);
+      
+      const moviesWithTrailers = await Promise.all(
+        movieResults.map(async (movie) => {
+          const videos = await getMovieVideos(movie.id);
+          const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
+          return {
+            ...movie,
+            trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
+          };
+        })
+      );
+      
+      const combinedContent: ContentWithPoster[] = [
+        ...moviesWithTrailers.map(item => ({...item, type: 'movie' as const, title: item.title, posterUrl: getPosterUrl(item.poster_path)})),
+        ...tvShowResults.map(item => ({...item, type: 'tv' as const, title: item.name, posterUrl: getPosterUrl(item.poster_path)}))
+      ];
 
-      const fetchedContent = await Promise.all(contentPromises);
-        
-      const processedContent: ContentWithPoster[] = fetchedContent
-        .filter((item) => item.content !== null)
-        .map((item) => ({
-          ...item.content,
-          id: item.content!.id,
-          title: (item.content as Movie).title || (item.content as TVShow).name,
-          posterUrl: getPosterUrl(item.content!.poster_path),
-          type: item.type as 'movie' | 'tv',
-        }));
-
-      setContentData(processedContent);
+      // Sort by popularity
+      combinedContent.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+      
+      setContentData(combinedContent.slice(0, 20)); // Limit to top 20
       setIsLoading(false);
     };
 
@@ -121,7 +89,7 @@ export default function TrendingOttsSection() {
     if (isLoading) {
       return (
         <div className="flex gap-4 overflow-x-auto pb-4">
-          {[...Array(4)].map((_, i) => (
+          {[...Array(7)].map((_, i) => (
             <Skeleton
               key={i}
               className="aspect-[2/3] w-40 md:w-48 flex-shrink-0 rounded-lg"
@@ -142,7 +110,7 @@ export default function TrendingOttsSection() {
         <CarouselContent className="-ml-2 md:-ml-4">
           {contentData.map((item) => (
             <CarouselItem
-              key={item.id}
+              key={`${item.type}-${item.id}`}
               className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 pl-2 md:pl-4"
             >
               {item.type === 'movie' ? (

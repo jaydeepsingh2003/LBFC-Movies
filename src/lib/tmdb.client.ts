@@ -313,6 +313,8 @@ export async function discoverTvShows(options: {
   voteAverageGte?: number;
   firstAirDateYear?: number;
   keywords?: string;
+  with_watch_providers?: string;
+  watch_region?: string;
 }): Promise<TVShow[]> {
   if (!TMDB_API_KEY) {
     console.error('TMDB_API_KEY is not available. API requests will be skipped.');
@@ -339,6 +341,12 @@ export async function discoverTvShows(options: {
   if (options.keywords) {
     params.append('with_keywords', options.keywords);
   }
+  if (options.with_watch_providers) {
+    params.append('with_watch_providers', options.with_watch_providers);
+  }
+  if (options.watch_region) {
+    params.append('watch_region', options.watch_region);
+  }
 
   const url = `/api/tmdb/3/discover/tv?${params.toString()}`;
   try {
@@ -360,6 +368,8 @@ export async function discoverMovies(options: {
   primaryReleaseYear?: number;
   voteAverageGte?: number;
   keywords?: string;
+  with_watch_providers?: string;
+  watch_region?: string;
 }): Promise<Movie[]> {
   if (!TMDB_API_KEY) {
     console.error('TMDB_API_KEY is not available. API requests will be skipped.');
@@ -379,6 +389,12 @@ export async function discoverMovies(options: {
   if (options.primaryReleaseYear) params.append('primary_release_year', options.primaryReleaseYear.toString());
   if (options.voteAverageGte) params.append('vote_average.gte', options.voteAverageGte.toString());
   if (options.keywords) params.append('with_keywords', options.keywords);
+  if (options.with_watch_providers) {
+    params.append('with_watch_providers', options.with_watch_providers);
+  }
+  if (options.watch_region) {
+    params.append('watch_region', options.watch_region);
+  }
 
   const url = `/api/tmdb/3/discover/movie?${params.toString()}`;
   try {
