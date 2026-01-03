@@ -21,7 +21,7 @@ export default function EnglishTvSection() {
         const fetchShows = async () => {
             setIsLoading(true);
             try {
-                const fetchedShows = await discoverTvShows({ language: 'en' });
+                const fetchedShows = await discoverTvShows({ with_original_language: 'en' });
                 const showsWithPosters = fetchedShows.map(show => ({
                     ...show,
                     id: show.id,

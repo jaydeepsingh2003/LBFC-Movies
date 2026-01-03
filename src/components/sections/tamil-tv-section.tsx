@@ -21,7 +21,7 @@ export default function TamilTvSection() {
         const fetchShows = async () => {
             setIsLoading(true);
             try {
-                const fetchedShows = await discoverTvShows({ language: 'ta' });
+                const fetchedShows = await discoverTvShows({ with_original_language: 'ta' });
                 const showsWithPosters = fetchedShows.map(show => ({
                     ...show,
                     id: show.id,

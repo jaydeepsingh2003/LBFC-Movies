@@ -21,7 +21,7 @@ export default function KannadaTvSection() {
         const fetchShows = async () => {
             setIsLoading(true);
             try {
-                const fetchedShows = await discoverTvShows({ language: 'kn' });
+                const fetchedShows = await discoverTvShows({ with_original_language: 'kn' });
                 const showsWithPosters = fetchedShows.map(show => ({
                     ...show,
                     id: show.id,

@@ -21,7 +21,7 @@ export default function HindiTvSection() {
         const fetchShows = async () => {
             setIsLoading(true);
             try {
-                const fetchedShows = await discoverTvShows({ language: 'hi' });
+                const fetchedShows = await discoverTvShows({ with_original_language: 'hi' });
                 const showsWithPosters = fetchedShows.map(show => ({
                     ...show,
                     id: show.id,
