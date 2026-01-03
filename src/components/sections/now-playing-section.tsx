@@ -20,16 +20,10 @@ export default function NowPlayingSection() {
         const fetchNowPlaying = async () => {
             setIsLoading(true);
             try {
-                const [enMovies, hiMovies, knMovies] = await Promise.all([
-                    getNowPlayingMovies('en-US'),
-                    getNowPlayingMovies('hi-IN'),
-                    getNowPlayingMovies('kn-IN')
-                ]);
-
-                const combined = [...enMovies.slice(0,10), ...hiMovies.slice(0,5), ...knMovies.slice(0,5)];
-                const shuffled = combined.sort(() => 0.5 - Math.random());
+                // Fetch Hindi movies currently in theaters in India
+                const hiMovies = await getNowPlayingMovies('hi-IN', 'IN');
                 
-                const moviePromises = shuffled.map(async (movie) => {
+                const moviePromises = hiMovies.map(async (movie) => {
                     const videos = await getMovieVideos(movie.id);
                     const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
                     return {

@@ -201,12 +201,15 @@ export async function searchPeople(query: string): Promise<Person[]> {
 }
 
 
-export async function getNowPlayingMovies(language: string = 'en-US'): Promise<Movie[]> {
+export async function getNowPlayingMovies(language: string = 'en-US', region?: string): Promise<Movie[]> {
   if (!TMDB_API_KEY) {
     console.error('TMDB_API_KEY is not available. API requests will be skipped.');
     return [];
   }
-  const url = `/api/tmdb/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=${language}&page=1`;
+  let url = `/api/tmdb/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=${language}&page=1`;
+  if (region) {
+    url += `&region=${region}`;
+  }
   try {
     const response = await fetch(url);
     if (!response.ok) {
