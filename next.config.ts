@@ -90,6 +90,12 @@ const nextConfig: NextConfig = {
         hostname: 'images.financialexpressdigital.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'play-lh.googleusercontent.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
