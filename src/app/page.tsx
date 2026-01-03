@@ -15,6 +15,7 @@ import FranchiseFocusSection from '@/components/sections/franchise-focus-section
 import HindiMoviesSection from '@/components/sections/hindi-movies-section';
 import KannadaMoviesSection from '@/components/sections/kannada-movies-section';
 import TamilMoviesSection from '@/components/sections/tamil-movies-section';
+import TeluguMoviesSection from '@/components/sections/telugu-movies-section';
 import MovieMatchmakerSection from '@/components/movie-matchmaker-section';
 import NowPlayingSection from '@/components/sections/now-playing-section';
 import UpcomingSection from '@/components/sections/upcoming-section';
@@ -58,6 +59,7 @@ export default function DashboardPage() {
           <HindiMoviesSection />
           <KannadaMoviesSection />
           <TamilMoviesSection />
+          <TeluguMoviesSection />
           <MoodSection />
           <FavoriteArtistsSection />
           <LanguagePicksSection />
