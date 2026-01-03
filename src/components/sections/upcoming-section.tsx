@@ -20,23 +20,28 @@ export default function UpcomingSection() {
         const fetchUpcoming = async () => {
             setIsLoading(true);
             try {
-                const upcomingMovies = await getUpcomingMovies();
+                const [enMovies, hiMovies, knMovies] = await Promise.all([
+                    getUpcomingMovies('en'),
+                    getUpcomingMovies('hi'),
+                    getUpcomingMovies('kn')
+                ]);
 
-                const moviePromises = upcomingMovies.map(async (movie) => {
+                const combined = [...enMovies.slice(0,10), ...hiMovies.slice(0,5), ...knMovies.slice(0,5)];
+                const shuffled = combined.sort(() => 0.5 - Math.random());
+
+                const moviePromises = shuffled.map(async (movie) => {
                     const videos = await getMovieVideos(movie.id);
                     const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-                    movie.trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
-                    return movie;
+                    return {
+                        ...movie,
+                        posterUrl: getPosterUrl(movie.poster_path),
+                        trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
+                    };
                 });
                 
                 const moviesWithTrailers = await Promise.all(moviePromises);
 
-                const moviesWithPosters = moviesWithTrailers.map(movie => ({
-                    ...movie,
-                    posterUrl: getPosterUrl(movie.poster_path),
-                }));
-
-                setMovies(moviesWithPosters);
+                setMovies(moviesWithTrailers as MovieWithPoster[]);
             } catch (error) {
                 console.error("Failed to fetch upcoming movies:", error);
             } finally {

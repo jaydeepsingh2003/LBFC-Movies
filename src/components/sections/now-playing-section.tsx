@@ -20,23 +20,28 @@ export default function NowPlayingSection() {
         const fetchNowPlaying = async () => {
             setIsLoading(true);
             try {
-                const nowPlayingMovies = await getNowPlayingMovies();
+                const [enMovies, hiMovies, knMovies] = await Promise.all([
+                    getNowPlayingMovies('en'),
+                    getNowPlayingMovies('hi'),
+                    getNowPlayingMovies('kn')
+                ]);
+
+                const combined = [...enMovies.slice(0,10), ...hiMovies.slice(0,5), ...knMovies.slice(0,5)];
+                const shuffled = combined.sort(() => 0.5 - Math.random());
                 
-                const moviePromises = nowPlayingMovies.map(async (movie) => {
+                const moviePromises = shuffled.map(async (movie) => {
                     const videos = await getMovieVideos(movie.id);
                     const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-                    movie.trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
-                    return movie;
+                    return {
+                        ...movie,
+                        posterUrl: getPosterUrl(movie.poster_path),
+                        trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
+                    };
                 });
 
-                const moviesWithTrailers = await Promise.all(moviePromises);
+                const moviesWithDetails = await Promise.all(moviePromises);
                 
-                const moviesWithPosters = moviesWithTrailers.map(movie => ({
-                    ...movie,
-                    posterUrl: getPosterUrl(movie.poster_path),
-                }));
-                
-                setMovies(moviesWithPosters);
+                setMovies(moviesWithDetails as MovieWithPoster[]);
             } catch (error) {
                 console.error("Failed to fetch now playing movies:", error);
             } finally {

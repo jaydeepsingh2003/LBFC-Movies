@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { MovieCarousel } from "../movie-carousel";
-import { searchMovies, getPosterUrl, getMovieVideos } from "@/lib/tmdb.client";
+import { getPosterUrl, getMovieVideos, discoverMovies } from "@/lib/tmdb.client";
 import { Movie } from "@/lib/tmdb";
 import { Skeleton } from "../ui/skeleton";
 
@@ -19,49 +19,33 @@ export default function ForYouSection() {
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
-            const forYouMovies = [
-                "The Shawshank Redemption",
-                "The Dark Knight",
-                "Forrest Gump",
-                "Spirited Away",
-                "The Lord of the Rings: The Return of the King",
-                "Interstellar",
-                "Pulp Fiction",
-                "The Godfather",
-                "Schindler's List",
-                "Inception"
-            ];
-
-            let fetchedMoviesData: MovieWithPoster[] = [];
             try {
-                const searchPromises = forYouMovies.map(async (title) => {
-                    const searchResults = await searchMovies(title);
-                    const movie = searchResults.length > 0 ? searchResults[0] : null;
-                    if (movie) {
-                        const videos = await getMovieVideos(movie.id);
-                        const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-                        movie.trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
-                    }
-                    return movie;
-                });
+                const results = await Promise.all([
+                    discoverMovies({ with_original_language: 'en', sort_by: 'popularity.desc' }, 1),
+                    discoverMovies({ with_original_language: 'hi', sort_by: 'popularity.desc' }, 1),
+                    discoverMovies({ with_original_language: 'kn', sort_by: 'popularity.desc' }, 1),
+                ]);
 
-                const resolvedMovies = await Promise.all(searchPromises);
+                const combined = [...results[0].slice(0, 4), ...results[1].slice(0, 3), ...results[2].slice(0, 3)];
+                const shuffled = combined.sort(() => 0.5 - Math.random());
 
-                fetchedMoviesData = resolvedMovies.map((movie, index) => {
+                const moviePromises = shuffled.map(async (movie) => {
+                    const videos = await getMovieVideos(movie.id);
+                    const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
                     return {
-                        id: movie?.id,
-                        title: movie ? movie.title : forYouMovies[index],
-                        posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
-                        overview: movie?.overview || '',
-                        trailerUrl: movie?.trailerUrl,
+                        ...movie,
+                        posterUrl: getPosterUrl(movie.poster_path),
+                        trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
                     };
                 });
+
+                const fetchedMoviesData = await Promise.all(moviePromises);
+                setMoviesData(fetchedMoviesData as MovieWithPoster[]);
 
             } catch (error) {
                 console.error("Failed to fetch 'For You' movies:", error);
             }
             
-            setMoviesData(fetchedMoviesData);
             setIsLoading(false);
         }
         fetchData();
@@ -71,9 +55,9 @@ export default function ForYouSection() {
         return (
              <div className="space-y-4">
                 <Skeleton className="h-8 w-1/4" />
-                <div className="flex gap-4">
-                    {[...Array(10)].map((_, i) => (
-                        <Skeleton key={i} className="aspect-[2/3] w-1/6 rounded-lg" />
+                <div className="flex gap-4 overflow-x-auto pb-4">
+                    {[...Array(7)].map((_, i) => (
+                        <Skeleton key={i} className="aspect-[2/3] w-48 md:w-56 flex-shrink-0 rounded-lg" />
                     ))}
                 </div>
             </div>

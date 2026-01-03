@@ -201,12 +201,12 @@ export async function searchPeople(query: string): Promise<Person[]> {
 }
 
 
-export async function getNowPlayingMovies(): Promise<Movie[]> {
+export async function getNowPlayingMovies(language: string = 'en-US'): Promise<Movie[]> {
   if (!TMDB_API_KEY) {
     console.error('TMDB_API_KEY is not available. API requests will be skipped.');
     return [];
   }
-  const url = `/api/tmdb/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+  const url = `/api/tmdb/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=${language}&page=1`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -261,12 +261,12 @@ export async function getPopularMovies(): Promise<Movie[]> {
     }
   }
 
-export async function getUpcomingMovies(): Promise<Movie[]> {
+export async function getUpcomingMovies(language: string = 'en-US'): Promise<Movie[]> {
   if (!TMDB_API_KEY) {
     console.error('TMDB_API_KEY is not available. API requests will be skipped.');
     return [];
   }
-  const url = `/api/tmdb/3/movie/upcoming?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+  const url = `/api/tmdb/3/movie/upcoming?api_key=${TMDB_API_KEY}&language=${language}&page=1`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -315,6 +315,7 @@ export async function discoverTvShows(options: {
   keywords?: string;
   with_watch_providers?: string;
   watch_region?: string;
+  with_original_language?: string;
 }, totalPages: number = 1): Promise<TVShow[]> {
   if (!TMDB_API_KEY) {
     console.error('TMDB_API_KEY is not available. API requests will be skipped.');
@@ -330,8 +331,8 @@ export async function discoverTvShows(options: {
       page: page.toString(),
       sort_by: options.sortBy || 'popularity.desc',
     });
-    if (options.language) {
-      params.append('with_original_language', options.language);
+    if (options.with_original_language) {
+      params.append('with_original_language', options.with_original_language);
     }
     if (options.genreId) {
       params.append('with_genres', options.genreId.toString());
@@ -377,6 +378,8 @@ export async function discoverMovies(options: {
   keywords?: string;
   with_watch_providers?: string;
   watch_region?: string;
+  with_original_language?: string;
+  sort_by?: string;
 }, totalPages: number = 1): Promise<Movie[]> {
   if (!TMDB_API_KEY) {
     console.error('TMDB_API_KEY is not available. API requests will be skipped.');
@@ -390,7 +393,7 @@ export async function discoverMovies(options: {
       api_key: TMDB_API_KEY,
       language: 'en-US',
       page: page.toString(),
-      sort_by: 'popularity.desc',
+      sort_by: options.sort_by || 'popularity.desc',
       include_adult: 'false',
       include_video: 'false',
     });
@@ -404,6 +407,9 @@ export async function discoverMovies(options: {
     }
     if (options.watch_region) {
       params.append('watch_region', options.watch_region);
+    }
+     if (options.with_original_language) {
+      params.append('with_original_language', options.with_original_language);
     }
 
     const url = `/api/tmdb/3/discover/movie?${params.toString()}`;
