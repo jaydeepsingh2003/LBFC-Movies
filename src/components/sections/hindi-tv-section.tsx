@@ -22,12 +22,14 @@ export default function HindiTvSection() {
             setIsLoading(true);
             try {
                 const fetchedShows = await discoverTvShows({ with_original_language: 'hi' });
-                const showsWithPosters = fetchedShows.map(show => ({
-                    ...show,
-                    id: show.id,
-                    title: show.name,
-                    posterUrl: getPosterUrl(show.poster_path),
-                }));
+                const showsWithPosters = fetchedShows
+                    .filter(show => show.name.toLowerCase() !== 'charmsukh')
+                    .map(show => ({
+                        ...show,
+                        id: show.id,
+                        title: show.name,
+                        posterUrl: getPosterUrl(show.poster_path),
+                    }));
                 setShows(showsWithPosters);
             } catch (error) {
                 console.error("Failed to fetch Hindi TV shows:", error);
