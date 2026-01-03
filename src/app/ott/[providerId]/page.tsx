@@ -40,13 +40,14 @@ export default function OttContentPage(props: { params: { providerId: string } }
 
     async function fetchContent() {
       setIsLoading(true);
+      setMovies([]);
+      setTvShows([]);
       try {
         const discoverOptions: any = { 
             with_watch_providers: providerId, 
             watch_region: 'IN'
         };
         if (selectedLanguage) {
-            discoverOptions.language = selectedLanguage;
             discoverOptions.with_original_language = selectedLanguage;
         }
 
