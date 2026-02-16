@@ -3,11 +3,10 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { getTvShowDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
-import type { TVShowDetails, TVShow } from '@/lib/tmdb';
-import { getExternalTvRatings } from '@/ai/flows/get-external-tv-ratings';
+import type { TVShowDetails } from '@/lib/tmdb';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Info, Calendar, Sparkles, TrendingUp, Layers } from 'lucide-react';
+import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
@@ -28,34 +27,12 @@ interface TVShowDetailsWithMedia extends TVShowDetails {
   backdropUrl: string | null;
 }
 
-interface ExternalRatings {
-    imdb: string;
-    rottenTomatoes: string;
-}
-
-const RottenTomatoesIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.17 14.83c-.39.39-1.02.39-1.41 0L12 15.41l-1.76 1.42c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41l1.42-1.76-1.42-1.76c-.39-.39-.39-10.2 0-1.41.39-.39 1.02-.39 1.41 0l1.76 1.42 1.76-1.42c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-1.42 1.76 1.42 1.76c.39.39.39 1.02 0 1.41z" fill="#FA320A"/>
-    </svg>
-);
-
-const ImdbIcon = () => (
-  <svg width="36" height="18" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="48" height="24" rx="4" fill="#F5C518"/>
-    <path d="M8 6H11V18H8V6Z" fill="black"/>
-    <path d="M15.2 6H19.4L16.4 13.8L15.2 18H12L14.6 11.4L13.4 6H15.2Z" fill="black"/>
-    <path d="M21.6 6H24.6C26.4 6 27.6 6.9 27.6 9C27.6 10.5 26.7 11.4 25.5 11.7L28.2 18H24.9L22.8 12.3H24V8.4H22.2L21.6 6ZM24 8.4V10.2C25.2 10.2 25.5 9.9 25.5 9C25.5 8.1 25.2 8.4 24 8.4Z" fill="black"/>
-    <path d="M31 6H39V8.1H35.5V18H32.5V8.1H31V6Z" fill="black"/>
-  </svg>
-);
-
 export default function TVShowDetailsPage(props: { params: Promise<{ id: string }> }) {
   const { id } = React.use(props.params);
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [show, setShow] = useState<TVShowDetailsWithMedia | null>(null);
-  const [externalRatings, setExternalRatings] = useState<ExternalRatings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { setVideoId } = useVideoPlayer();
 
@@ -79,14 +56,6 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
           backdropUrl: getBackdropUrl(showDetails.backdrop_path),
         };
         setShow(showWithMedia);
-
-        // Fetch AI External Ratings gracefully
-        try {
-            const ratingsResult = await getExternalTvRatings({ tvShowTitle: showDetails.name });
-            setExternalRatings(ratingsResult);
-        } catch (aiError) {
-            console.warn("AI Ratings fetch skipped or failed", aiError);
-        }
 
       } catch (error) {
         console.error("Failed to fetch tv show details", error);
@@ -241,19 +210,6 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
             <div className="space-y-8">
                 <header className="space-y-6">
                     <div className="flex flex-wrap items-center gap-4 text-sm font-bold">
-                        {externalRatings && (
-                            <div className="flex items-center gap-3 bg-white/5 px-5 py-2.5 rounded-2xl border border-white/5 backdrop-blur-md">
-                                <div className="flex items-center gap-2 border-r border-white/10 pr-3">
-                                   <ImdbIcon />
-                                   <span className="text-white">{externalRatings.imdb}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                   <RottenTomatoesIcon />
-                                   <span className="text-white">{externalRatings.rottenTomatoes}</span>
-                                </div>
-                            </div>
-                        )}
-
                         <div className="flex items-center gap-6 bg-white/5 px-6 py-2.5 rounded-2xl border border-white/5 backdrop-blur-md text-muted-foreground">
                             <div className="flex items-center gap-2">
                                 <Calendar className="size-4 text-primary" />
@@ -323,7 +279,7 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                 </section>
             </div>
 
-            {/* Seasons Grid: Netflix-style horizontal/vertical grid */}
+            {/* Seasons Grid */}
             <section className="space-y-10 pt-16 border-t border-white/5">
                 <div className="flex items-center justify-between">
                     <h2 className="section-title text-3xl font-black tracking-tighter">Seasons</h2>

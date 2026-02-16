@@ -4,11 +4,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { getMovieDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
 import type { MovieDetails, Movie } from '@/lib/tmdb';
-import { getMovieTrivia } from '@/ai/flows/movie-trivia';
-import { getExternalRatings } from '@/ai/flows/get-external-ratings';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, Info, Sparkles, TrendingUp, Trophy } from 'lucide-react';
+import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, Info, TrendingUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
@@ -30,38 +28,11 @@ interface MovieDetailsWithMedia extends MovieDetails {
   backdropUrl: string | null;
 }
 
-interface Trivia {
-    behindTheScenes: string[];
-    trivia: string[];
-    goofs: string[];
-}
-
-interface ExternalRatings {
-    imdb: string;
-    rottenTomatoes: string;
-}
-
 interface MovieWithPoster extends Partial<Movie> {
     posterUrl: string | null;
     title: string;
     id: number;
 }
-
-const RottenTomatoesIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.17 14.83c-.39.39-1.02.39-1.41 0L12 15.41l-1.76 1.42c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41l1.42-1.76-1.42-1.76c-.39-.39-.39-10.2 0-1.41.39-.39 1.02-.39 1.41 0l1.76 1.42 1.76-1.42c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-1.42 1.76 1.42 1.76c.39.39.39 1.02 0 1.41z" fill="#FA320A"/>
-    </svg>
-);
-
-const ImdbIcon = () => (
-  <svg width="36" height="18" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="48" height="24" rx="4" fill="#F5C518"/>
-    <path d="M8 6H11V18H8V6Z" fill="black"/>
-    <path d="M15.2 6H19.4L16.4 13.8L15.2 18H12L14.6 11.4L13.4 6H15.2Z" fill="black"/>
-    <path d="M21.6 6H24.6C26.4 6 27.6 6.9 27.6 9C27.6 10.5 26.7 11.4 25.5 11.7L28.2 18H24.9L22.8 12.3H24V8.4H22.2L21.6 6ZM24 8.4V10.2C25.2 10.2 25.5 9.9 25.5 9C25.5 8.1 25.2 8.4 24 8.4Z" fill="black"/>
-    <path d="M31 6H39V8.1H35.5V18H32.5V8.1H31V6Z" fill="black"/>
-  </svg>
-);
 
 export default function MovieDetailsPage(props: { params: Promise<{ id: string }> }) {
   const { id } = React.use(props.params);
@@ -69,8 +40,6 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
   const firestore = useFirestore();
   const { toast } = useToast();
   const [movie, setMovie] = useState<MovieDetailsWithMedia | null>(null);
-  const [trivia, setTrivia] = useState<Trivia | null>(null);
-  const [externalRatings, setExternalRatings] = useState<ExternalRatings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { setVideoId } = useVideoPlayer();
   const [similarMovies, setSimilarMovies] = useState<MovieWithPoster[]>([]);
@@ -104,21 +73,8 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
             } as MovieWithPoster;
         });
 
-        Promise.all(similarMoviesPromises).then(movies => {
-            setSimilarMovies(movies.filter(m => m.posterUrl));
-        });
-
-        // Dynamic fetching of AI metadata
-        try {
-            const [triviaResult, ratingsResult] = await Promise.all([
-                getMovieTrivia({ movieTitle: movieDetails.title }),
-                getExternalRatings({ movieTitle: movieDetails.title })
-            ]);
-            setTrivia(triviaResult);
-            setExternalRatings(ratingsResult);
-        } catch (aiError) {
-            console.warn("AI Metadata retrieval skipped or failed", aiError);
-        }
+        const resolvedSimilar = await Promise.all(similarMoviesPromises);
+        setSimilarMovies(resolvedSimilar.filter(m => m.posterUrl));
 
       } catch (error) {
         console.error("Failed to fetch movie details", error);
@@ -258,19 +214,6 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
             <div className="space-y-8">
                 <header className="space-y-6">
                     <div className="flex flex-wrap items-center gap-4 text-sm font-bold">
-                        {externalRatings && (
-                            <div className="flex items-center gap-3 bg-white/5 px-5 py-2.5 rounded-2xl border border-white/5 backdrop-blur-md">
-                                <div className="flex items-center gap-2 border-r border-white/10 pr-3">
-                                   <ImdbIcon />
-                                   <span className="text-white">{externalRatings.imdb}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                   <RottenTomatoesIcon />
-                                   <span className="text-white">{externalRatings.rottenTomatoes}</span>
-                                </div>
-                            </div>
-                        )}
-
                         <div className="flex items-center gap-6 bg-white/5 px-6 py-2.5 rounded-2xl border border-white/5 backdrop-blur-md text-muted-foreground">
                             <div className="flex items-center gap-2">
                                 <Calendar className="size-4 text-primary" />
@@ -304,60 +247,6 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                     </p>
                 </div>
             </div>
-
-            {/* AI Trivia & Director's Cut Section */}
-            {trivia && (
-                <section className="space-y-10 bg-gradient-to-br from-secondary/40 to-background border border-white/5 rounded-[3rem] p-10 md:p-16 shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Sparkles className="size-24 text-primary animate-pulse" />
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-primary/10 rounded-2xl">
-                            <Sparkles className="size-8 text-primary" />
-                        </div>
-                        <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight text-white">AI Director's Cut</h2>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                        {trivia.trivia.length > 0 && (
-                            <div className="space-y-6">
-                                <h3 className="font-black text-primary uppercase text-xs tracking-[0.3em] flex items-center gap-2">
-                                    <Trophy className="size-4" /> Fun Facts
-                                </h3>
-                                <ul className="space-y-6">
-                                    {trivia.trivia.slice(0, 3).map((item, i) => (
-                                        <li key={i} className="text-base text-muted-foreground font-medium leading-relaxed border-l-2 border-white/5 pl-4 hover:border-primary transition-colors">{item}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                        {trivia.behindTheScenes.length > 0 && (
-                            <div className="space-y-6">
-                                <h3 className="font-black text-primary uppercase text-xs tracking-[0.3em] flex items-center gap-2">
-                                    <Info className="size-4" /> The Production
-                                </h3>
-                                <ul className="space-y-6">
-                                    {trivia.behindTheScenes.slice(0, 3).map((item, i) => (
-                                        <li key={i} className="text-base text-muted-foreground font-medium leading-relaxed border-l-2 border-white/5 pl-4 hover:border-primary transition-colors">{item}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                        {trivia.goofs.length > 0 && (
-                            <div className="space-y-6">
-                                <h3 className="font-black text-primary uppercase text-xs tracking-[0.3em] flex items-center gap-2">
-                                    <TrendingUp className="size-4" /> Cinema Goofs
-                                </h3>
-                                <ul className="space-y-6">
-                                    {trivia.goofs.slice(0, 3).map((item, i) => (
-                                        <li key={i} className="text-base text-muted-foreground font-medium leading-relaxed border-l-2 border-white/5 pl-4 hover:border-primary transition-colors">{item}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
-                </section>
-            )}
 
             {/* Director & Cast Sub-section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16 pt-12">
