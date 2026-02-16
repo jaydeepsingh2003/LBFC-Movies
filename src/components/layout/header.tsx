@@ -24,13 +24,13 @@ export function DesktopNav() {
     });
 
     return (
-        <nav className="flex items-center gap-8 h-full">
+        <nav className="flex items-center gap-6 h-full">
             {items.map((item) => (
                 <Link
                     key={item.href}
                     href={item.href}
                     className={cn(
-                        "transition-all duration-300 text-sm font-bold uppercase tracking-widest hover:text-primary relative group flex items-center h-full",
+                        "transition-all duration-300 text-[11px] font-black uppercase tracking-[0.15em] hover:text-primary relative group flex items-center h-full whitespace-nowrap",
                         pathname === item.href ? "text-primary" : "text-muted-foreground"
                     )}
                 >
@@ -55,7 +55,7 @@ export function Header() {
 
     useEffect(() => {
         setIsClient(true);
-        const handleScroll = () => setScrolled(window.scrollY > 20);
+        const handleScroll = () => setScrolled(window.scrollY > 10);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
@@ -67,44 +67,44 @@ export function Header() {
 
     return (
         <header className={cn(
-            "fixed top-0 z-50 w-full transition-all duration-500 h-20 md:h-24",
-            scrolled ? "bg-background/95 backdrop-blur-xl border-b" : "bg-black/40 backdrop-blur-sm border-b border-white/5"
+            "fixed top-0 z-50 w-full transition-all duration-500 h-16 md:h-18",
+            scrolled ? "bg-background/95 backdrop-blur-xl border-b shadow-2xl" : "bg-black/40 backdrop-blur-sm border-b border-white/5"
         )}>
-            <div className="content-container flex items-center justify-between gap-8 h-full">
+            <div className="content-container flex items-center justify-between gap-6 h-full">
                 {/* Logo Section */}
                 <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
-                    <div className="p-2 bg-primary rounded-lg group-hover:scale-110 transition-transform duration-300">
-                        <Film className="size-6 text-white" />
+                    <div className="p-1.5 bg-primary rounded-lg group-hover:scale-110 transition-transform duration-300">
+                        <Film className="size-5 text-white" />
                     </div>
-                    <h1 className="font-headline text-3xl font-black text-primary tracking-tighter hidden sm:block">LBFC</h1>
+                    <h1 className="font-headline text-2xl font-black text-primary tracking-tighter hidden sm:block">LBFC</h1>
                 </Link>
                 
                 {/* Search & Navigation Middle */}
-                <div className="flex-1 flex items-center gap-8 h-full">
-                    <div className="hidden lg:block h-full">
+                <div className="flex-1 flex items-center justify-center gap-6 h-full">
+                    <div className="hidden xl:block h-full">
                         <DesktopNav />
                     </div>
-                    <div className="flex-1 max-w-xl">
+                    <div className="flex-1 max-w-[280px] lg:max-w-[350px]">
                         <MovieSearch />
                     </div>
                 </div>
                 
                 {/* Actions Section */}
-                <div className="flex items-center gap-4 flex-shrink-0">
-                    <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-white hidden md:flex">
-                        <Bell className="size-5" />
+                <div className="flex items-center gap-3 flex-shrink-0">
+                    <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-white hidden md:flex h-9 w-9">
+                        <Bell className="size-4" />
                     </Button>
 
                     {(!isClient || isLoading) ? (
-                        <div className="h-10 w-10 rounded-full bg-secondary animate-pulse" />
+                        <div className="h-9 w-9 rounded-full bg-secondary animate-pulse" />
                     ) : user ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="relative h-10 w-10 rounded-full focus-visible:ring-primary p-0 ring-2 ring-primary/20 hover:ring-primary transition-all">
+                                <Button variant="ghost" className="relative h-9 w-9 rounded-full focus-visible:ring-primary p-0 ring-2 ring-primary/20 hover:ring-primary transition-all">
                                     <Avatar className="h-full w-full">
                                         {user.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
-                                        <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                                            {user.displayName?.charAt(0) || <User size={20}/>}
+                                        <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
+                                            {user.displayName?.charAt(0) || <User size={16}/>}
                                         </AvatarFallback>
                                     </Avatar>
                                 </Button>
@@ -139,8 +139,8 @@ export function Header() {
                             </DropdownMenuContent>
                         </DropdownMenu>
                     ) : (
-                        <Button asChild size="sm" className="font-bold rounded-full px-6 shadow-lg shadow-primary/20">
-                            <Link href="/login">Join Now</Link>
+                        <Button asChild size="sm" className="font-bold rounded-full px-5 h-9 shadow-lg shadow-primary/20 text-xs">
+                            <Link href="/login">Join</Link>
                         </Button>
                     )}
                 </div>
