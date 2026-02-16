@@ -5,7 +5,7 @@ import { getTvShowDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.clien
 import type { TVShowDetails } from '@/lib/tmdb';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Info } from 'lucide-react';
+import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
@@ -245,23 +245,26 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                 </div>
             </div>
 
-            {/* Created By & Cast Sub-section */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-20 pt-12">
+            {/* Cast & Crew Section Overhaul */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-16 pt-12">
                 <section className="space-y-10">
-                    <div className="flex items-center gap-4">
-                        <Tv className="size-6 text-primary" />
-                        <h2 className="section-title text-4xl font-black tracking-tighter mb-0">Cast & Crew</h2>
+                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                        <div className="flex items-center gap-4">
+                            <Users className="size-6 text-primary" />
+                            <h2 className="font-headline text-3xl font-black tracking-tighter uppercase mb-0">Cast & Crew</h2>
+                        </div>
+                        <Badge variant="outline" className="rounded-full border-white/20 text-muted-foreground text-[10px] font-black uppercase">Top Credits</Badge>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {show.credits.cast.slice(0, 8).map(person => (
-                            <Link href={`/person/${person.id}`} key={person.credit_id} className="flex items-center gap-5 p-5 glass-panel rounded-3xl hover:bg-white/10 hover:scale-[1.02] transition-all group border-white/10 shadow-xl">
-                                <Avatar className="size-20 border-4 border-white/10 group-hover:border-primary transition-all shadow-2xl">
+                            <Link href={`/person/${person.id}`} key={person.credit_id} className="flex items-center gap-4 p-4 glass-panel rounded-2xl hover:bg-white/10 transition-all border border-white/5 group shadow-xl">
+                                <Avatar className="size-16 border-2 border-white/10 group-hover:border-primary transition-all">
                                     <AvatarImage src={getPosterUrl(person.profile_path)!} />
-                                    <AvatarFallback className="bg-secondary text-primary font-black text-xl">{person.name.charAt(0)}</AvatarFallback>
+                                    <AvatarFallback className="bg-secondary text-primary font-black">{person.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="overflow-hidden">
-                                    <p className="font-black text-lg truncate group-hover:text-primary transition-colors text-white">{person.name}</p>
-                                    <p className="text-xs text-muted-foreground truncate uppercase font-bold tracking-[0.15em] mt-1">{person.character}</p>
+                                    <p className="font-black text-white group-hover:text-primary transition-colors leading-none truncate">{person.name}</p>
+                                    <p className="text-[10px] text-muted-foreground truncate uppercase font-bold tracking-widest mt-1.5">{person.character}</p>
                                 </div>
                             </Link>
                         ))}
@@ -269,57 +272,93 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                 </section>
 
                 <section className="space-y-10">
-                    <div className="flex items-center gap-4">
-                        <Star className="size-6 text-primary fill-primary" />
-                        <h2 className="section-title text-4xl font-black tracking-tighter mb-0">Critical Hub</h2>
+                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                        <div className="flex items-center gap-4">
+                            <Star className="size-6 text-primary fill-primary" />
+                            <h2 className="font-headline text-3xl font-black tracking-tighter uppercase mb-0">Critical Hub</h2>
+                        </div>
+                        <Badge className="bg-secondary text-white font-black text-[10px] px-3 py-1 rounded-sm uppercase tracking-widest border border-white/10">Community Hub</Badge>
                     </div>
-                    <div className="glass-panel rounded-[3rem] p-12 space-y-12 border-white/10 bg-secondary/30 shadow-[0_40px_80px_rgba(0,0,0,0.5)] backdrop-blur-3xl relative overflow-hidden">
+                    <div className="glass-panel rounded-[3rem] p-10 space-y-10 border-white/10 bg-secondary/30 shadow-[0_40px_80px_rgba(0,0,0,0.5)] backdrop-blur-3xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -mr-32 -mt-32" />
                         
-                        <div className="space-y-6 relative z-10">
-                            <p className="text-xs font-black uppercase tracking-[0.4em] text-muted-foreground text-center">Architect your rating</p>
-                            <div className="flex justify-center py-4 scale-150">
-                                <TvShowRating showId={show.id} />
+                        <div className="space-y-8 relative z-10">
+                            <div className="text-center space-y-2">
+                                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Architect your verdict</p>
+                                <div className="flex justify-center py-4 scale-150 transform transition-transform hover:scale-[1.6]">
+                                    <TvShowRating showId={show.id} />
+                                </div>
                             </div>
-                        </div>
-                        <Separator className="bg-white/10" />
-                        <div className="relative z-10">
-                            <TVUserReviewsSection showId={show.id} />
+                            <Separator className="bg-white/10" />
+                            <div className="relative z-10 min-h-[300px]">
+                                <TVUserReviewsSection showId={show.id} />
+                            </div>
                         </div>
                     </div>
                 </section>
             </div>
 
-            {/* Seasons Grid */}
+            {/* Episode Guide Section Overhaul */}
             <section className="space-y-12 pt-20 border-t border-white/10">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between border-b border-white/10 pb-6">
                     <div className="flex items-center gap-4">
                         <Layers className="size-6 text-primary" />
-                        <h2 className="section-title text-4xl font-black tracking-tighter mb-0">Episode Guide</h2>
+                        <h2 className="font-headline text-3xl font-black tracking-tighter uppercase mb-0">Episode Guide</h2>
                     </div>
-                    <Badge variant="outline" className="rounded-full px-6 py-1.5 border-white/20 text-muted-foreground uppercase font-black text-[10px] tracking-widest backdrop-blur-md">{show.number_of_episodes} Total Episodes</Badge>
+                    <div className="flex items-center gap-3">
+                        <Badge variant="outline" className="rounded-full px-6 py-1.5 border-white/20 text-muted-foreground uppercase font-black text-[10px] tracking-widest backdrop-blur-md">
+                            {show.number_of_episodes} Total Episodes
+                        </Badge>
+                    </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <div className="grid grid-cols-1 gap-8">
                     {show.seasons.filter(s => s.season_number > 0).map(season => (
-                        <div key={season.id} className="flex flex-col gap-6 p-8 glass-panel rounded-[2.5rem] overflow-hidden group hover:bg-white/5 transition-all border-white/10 shadow-2xl relative">
-                            <div className="flex gap-8 relative z-10">
-                                <div className="w-32 aspect-[2/3] relative flex-shrink-0 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+                        <div key={season.id} className="group glass-panel rounded-[2.5rem] overflow-hidden border border-white/5 hover:border-primary/20 transition-all duration-500 shadow-2xl relative">
+                            <div className="flex flex-col md:flex-row gap-8 p-8 relative z-10">
+                                <div className="w-full md:w-48 aspect-[2/3] relative flex-shrink-0 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
                                     {season.poster_path ? (
-                                        <Image src={getPosterUrl(season.poster_path)!} alt={season.name} fill className="object-cover transition-transform group-hover:scale-110 duration-500" />
+                                        <Image src={getPosterUrl(season.poster_path)!} alt={season.name} fill className="object-cover transition-transform group-hover:scale-110 duration-700" />
                                     ) : (
                                         <div className="w-full h-full bg-secondary flex items-center justify-center">
                                             <Tv className="size-12 text-white/10" />
                                         </div>
                                     )}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </div>
-                                <div className="flex-1 space-y-4">
-                                    <div className="space-y-1.5">
-                                        <h3 className="font-black text-2xl group-hover:text-primary transition-colors leading-tight text-white">{season.name}</h3>
-                                        <p className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">{season.air_date ? new Date(season.air_date).getFullYear() : 'TBA'} • {season.episode_count} Episodes</p>
+                                
+                                <div className="flex-1 space-y-6">
+                                    <div className="flex items-start justify-between">
+                                        <div className="space-y-2">
+                                            <h3 className="font-black text-3xl group-hover:text-primary transition-colors leading-none text-white tracking-tighter uppercase">
+                                                {season.name}
+                                            </h3>
+                                            <div className="flex items-center gap-4">
+                                                <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">
+                                                    {season.air_date ? new Date(season.air_date).getFullYear() : 'TBA'} Sequence
+                                                </span>
+                                                <Separator orientation="vertical" className="h-3 bg-white/10" />
+                                                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.25em]">
+                                                    {season.episode_count} Episodes
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <Badge className="bg-primary/10 text-primary border-primary/20 font-black uppercase text-[9px] px-3 py-1">Ready to Stream</Badge>
                                     </div>
-                                    <p className="text-sm text-muted-foreground line-clamp-4 leading-relaxed font-medium">{season.overview || "Production details for this cycle are currently classified."}</p>
+                                    
+                                    <p className="text-lg text-muted-foreground/90 leading-relaxed font-medium line-clamp-3">
+                                        {season.overview || "Production details for this cycle are currently classified. Access will be granted upon transmission."}
+                                    </p>
+                                    
+                                    <div className="flex items-center gap-4 pt-4">
+                                        <Button variant="secondary" className="rounded-xl h-12 px-8 font-black uppercase text-xs tracking-widest bg-white/5 border border-white/10 hover:bg-primary hover:text-white transition-all">
+                                            View Details
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
+                            {/* Ambient background effect for the season card */}
+                            <div className="absolute top-0 right-0 w-[50%] h-full bg-gradient-to-l from-primary/5 to-transparent pointer-events-none" />
                         </div>
                     ))}
                 </div>

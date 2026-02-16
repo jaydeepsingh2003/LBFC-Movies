@@ -5,7 +5,7 @@ import { getMovieDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client
 import type { MovieDetails, Movie } from '@/lib/tmdb';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, Info, TrendingUp, Sparkles } from 'lucide-react';
+import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, TrendingUp, Sparkles, User, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
@@ -120,6 +120,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
 
   const trailer = movie.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official) || movie.videos.results[0];
   const streamingProviders = movie['watch/providers']?.results?.IN?.flatrate || [];
+  const directors = movie.credits.crew.filter(person => person.job === 'Director');
 
   return (
     <div className="relative min-h-screen bg-background">
@@ -249,46 +250,86 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                 </div>
             </div>
 
-            {/* Director & Cast Sub-section */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-20 pt-12">
+            {/* Cast & Crew Section Overhaul */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-16 pt-12">
                 <section className="space-y-10">
-                    <div className="flex items-center gap-4">
-                        <Sparkles className="size-6 text-primary" />
-                        <h2 className="section-title text-4xl font-black tracking-tighter mb-0">Director & Cast</h2>
+                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                        <div className="flex items-center gap-4">
+                            <Users className="size-6 text-primary" />
+                            <h2 className="font-headline text-3xl font-black tracking-tighter uppercase mb-0">Cast & Crew</h2>
+                        </div>
+                        <Badge variant="outline" className="rounded-full border-white/20 text-muted-foreground text-[10px] font-black uppercase">Top Credits</Badge>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        {movie.credits.cast.slice(0, 8).map(person => (
-                            <Link href={`/person/${person.id}`} key={person.credit_id} className="flex items-center gap-5 p-5 glass-panel rounded-3xl hover:bg-white/10 hover:scale-[1.02] transition-all group border-white/10 shadow-xl">
-                                <Avatar className="size-20 border-4 border-white/10 group-hover:border-primary transition-all shadow-2xl">
-                                    <AvatarImage src={getPosterUrl(person.profile_path)!} />
-                                    <AvatarFallback className="bg-secondary text-primary font-black text-xl">{person.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div className="overflow-hidden">
-                                    <p className="font-black text-lg truncate group-hover:text-primary transition-colors text-white">{person.name}</p>
-                                    <p className="text-xs text-muted-foreground truncate uppercase font-bold tracking-[0.15em] mt-1">{person.character}</p>
+
+                    <div className="space-y-8">
+                        {/* Director Spotlight */}
+                        {directors.length > 0 && (
+                            <div className="space-y-4">
+                                <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Director</p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {directors.slice(0, 2).map(director => (
+                                        <Link href={`/person/${director.id}`} key={director.credit_id} className="flex items-center gap-4 p-4 glass-panel rounded-2xl hover:bg-white/10 transition-all border border-white/5 group">
+                                            <Avatar className="size-14 border-2 border-primary/50 group-hover:border-primary transition-all">
+                                                <AvatarImage src={getPosterUrl(director.profile_path)!} />
+                                                <AvatarFallback className="bg-secondary text-primary font-bold">{director.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <p className="font-black text-white group-hover:text-primary transition-colors leading-none">{director.name}</p>
+                                                <p className="text-[10px] text-muted-foreground uppercase font-bold mt-1.5">Production Lead</p>
+                                            </div>
+                                        </Link>
+                                    ))}
                                 </div>
-                            </Link>
-                        ))}
+                            </div>
+                        )}
+
+                        {/* Cast Grid */}
+                        <div className="space-y-4">
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">Featured Cast</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {movie.credits.cast.slice(0, 6).map(person => (
+                                    <Link href={`/person/${person.id}`} key={person.credit_id} className="flex items-center gap-4 p-4 glass-panel rounded-2xl hover:bg-white/10 transition-all border border-white/5 group">
+                                        <Avatar className="size-14 border-2 border-white/10 group-hover:border-primary transition-all">
+                                            <AvatarImage src={getPosterUrl(person.profile_path)!} />
+                                            <AvatarFallback className="bg-secondary text-primary font-bold">{person.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div className="overflow-hidden">
+                                            <p className="font-black text-white group-hover:text-primary transition-colors leading-none truncate">{person.name}</p>
+                                            <p className="text-[10px] text-muted-foreground uppercase font-bold mt-1.5 truncate tracking-wider">{person.character}</p>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </section>
 
+                {/* Critical Hub Section Overhaul */}
                 <section className="space-y-10">
-                    <div className="flex items-center gap-4">
-                        <Star className="size-6 text-primary fill-primary" />
-                        <h2 className="section-title text-4xl font-black tracking-tighter mb-0">Community Hub</h2>
+                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                        <div className="flex items-center gap-4">
+                            <Star className="size-6 text-primary fill-primary" />
+                            <h2 className="font-headline text-3xl font-black tracking-tighter uppercase mb-0">Critical Hub</h2>
+                        </div>
+                        <Badge className="bg-secondary text-white font-black text-[10px] px-3 py-1 rounded-sm uppercase tracking-widest border border-white/10">Community Hub</Badge>
                     </div>
-                    <div className="glass-panel rounded-[3rem] p-12 space-y-12 border-white/10 bg-secondary/30 shadow-[0_40px_80px_rgba(0,0,0,0.5)] backdrop-blur-3xl relative overflow-hidden">
+
+                    <div className="glass-panel rounded-[3rem] p-10 space-y-10 border-white/10 bg-secondary/30 shadow-[0_40px_80px_rgba(0,0,0,0.5)] backdrop-blur-3xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -mr-32 -mt-32" />
                         
-                        <div className="space-y-6 relative z-10">
-                            <p className="text-xs font-black uppercase tracking-[0.4em] text-muted-foreground text-center">Architect your rating</p>
-                            <div className="flex justify-center py-4 scale-150">
-                                <MovieRating movieId={movie.id} />
+                        <div className="space-y-8 relative z-10">
+                            <div className="text-center space-y-2">
+                                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Architect your verdict</p>
+                                <div className="flex justify-center py-4 scale-150 transform transition-transform hover:scale-[1.6]">
+                                    <MovieRating movieId={movie.id} />
+                                </div>
                             </div>
-                        </div>
-                        <Separator className="bg-white/10" />
-                        <div className="relative z-10">
-                            <UserReviewsSection movieId={movie.id} />
+                            
+                            <Separator className="bg-white/10" />
+                            
+                            <div className="relative z-10 min-h-[300px]">
+                                <UserReviewsSection movieId={movie.id} />
+                            </div>
                         </div>
                     </div>
                 </section>
