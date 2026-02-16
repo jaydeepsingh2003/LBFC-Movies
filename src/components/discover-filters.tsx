@@ -1,14 +1,12 @@
-
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Loader2, Search } from 'lucide-react';
+import { Loader2, Search, SlidersHorizontal } from 'lucide-react';
 
 const movieGenres = [
   { id: 28, name: "Action" }, { id: 12, name: "Adventure" }, { id: 16, name: "Animation" }, 
@@ -28,7 +26,6 @@ const tvGenres = [
   { id: 10766, name: "Soap" }, { id: 10767, name: "Talk" }, { id: 10768, name: "War & Politics" },
   { id: 37, name: "Western" }
 ];
-
 
 const currentYear = new Date().getFullYear();
 
@@ -70,7 +67,6 @@ export default function DiscoverFilters({ onSearch, isLoading, searchType }: Dis
     setFilters(prev => ({ ...prev, rating: value as [number, number] }));
   };
 
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(filters);
@@ -79,71 +75,92 @@ export default function DiscoverFilters({ onSearch, isLoading, searchType }: Dis
   const genres = searchType === 'movie' ? movieGenres : tvGenres;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Filter Options</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
-            <div className="space-y-2">
-              <Label htmlFor="genre">Genre</Label>
-              <Select name="genre" value={filters.genre || 'any'} onValueChange={handleGenreChange} disabled={isLoading}>
-                <SelectTrigger id="genre">
-                  <SelectValue placeholder="Any Genre" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="any">Any Genre</SelectItem>
-                  {genres.map(g => <SelectItem key={g.id} value={g.id.toString()}>{g.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
+    <form onSubmit={handleSubmit} className="space-y-8">
+      <div className="flex items-center gap-2 text-primary mb-2">
+        <SlidersHorizontal className="size-5" />
+        <span className="text-sm font-bold uppercase tracking-widest">Search Parameters</span>
+      </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="keywords">Keywords</Label>
-              <Input id="keywords" name="keywords" placeholder="e.g., based on a true story" value={filters.keywords} onChange={handleInputChange} disabled={isLoading} />
-            </div>
-            
-            <div className="space-y-2">
-               <div className="flex justify-between">
-                <Label>{searchType === 'movie' ? 'Release Year' : 'First Air Year'}</Label>
-                <span className="text-sm text-muted-foreground">{filters.releaseYear[0]}</span>
-              </div>
-              <Slider
-                value={filters.releaseYear}
-                onValueChange={handleYearChange}
-                min={1920}
-                max={currentYear}
-                step={1}
-                disabled={isLoading}
-              />
-            </div>
-            
-            <div className="space-y-2 col-span-1 lg:col-span-3">
-               <div className="flex justify-between">
-                <Label>Minimum User Rating</Label>
-                <span className="text-sm text-muted-foreground">{filters.rating[0]} / 10</span>
-              </div>
-              <Slider
-                value={[filters.rating[0]]}
-                onValueChange={(value) => handleRatingChange([value[0], 10])}
-                min={0}
-                max={10}
-                step={0.5}
-                disabled={isLoading}
-              />
-            </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        
+        <div className="space-y-3">
+          <Label htmlFor="genre" className="text-foreground/70 font-semibold">Category</Label>
+          <Select name="genre" value={filters.genre || 'any'} onValueChange={handleGenreChange} disabled={isLoading}>
+            <SelectTrigger id="genre" className="bg-background/50 border-white/10 h-12">
+              <SelectValue placeholder="All Genres" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any">All Genres</SelectItem>
+              {genres.map(g => <SelectItem key={g.id} value={g.id.toString()}>{g.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-3">
+          <Label htmlFor="keywords" className="text-foreground/70 font-semibold">Keywords</Label>
+          <Input 
+            id="keywords" 
+            name="keywords" 
+            placeholder="e.g., Space travel, biopic..." 
+            value={filters.keywords} 
+            onChange={handleInputChange} 
+            disabled={isLoading}
+            className="bg-background/50 border-white/10 h-12 placeholder:text-muted-foreground/50"
+          />
+        </div>
+        
+        <div className="space-y-3">
+           <div className="flex justify-between items-center">
+            <Label className="text-foreground/70 font-semibold">{searchType === 'movie' ? 'Release Year' : 'Air Year'}</Label>
+            <span className="text-xs font-mono bg-primary/20 text-primary px-2 py-0.5 rounded-full">{filters.releaseYear[0]}</span>
           </div>
-          
-          <div className="pt-4">
-            <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
-              Find {searchType === 'movie' ? 'Movies' : 'TV Shows'}
-            </Button>
+          <div className="pt-2">
+            <Slider
+              value={filters.releaseYear}
+              onValueChange={handleYearChange}
+              min={1920}
+              max={currentYear}
+              step={1}
+              disabled={isLoading}
+              className="py-4"
+            />
           </div>
-        </form>
-      </CardContent>
-    </Card>
+        </div>
+        
+        <div className="space-y-3">
+           <div className="flex justify-between items-center">
+            <Label className="text-foreground/70 font-semibold">Minimum Rating</Label>
+            <span className="text-xs font-mono bg-accent/20 text-accent px-2 py-0.5 rounded-full">{filters.rating[0].toFixed(1)} / 10</span>
+          </div>
+          <div className="pt-2">
+            <Slider
+              value={[filters.rating[0]]}
+              onValueChange={(value) => handleRatingChange([value[0], 10])}
+              min={0}
+              max={10}
+              step={0.5}
+              disabled={isLoading}
+              className="py-4"
+            />
+          </div>
+        </div>
+      </div>
+      
+      <div className="pt-4 flex justify-center md:justify-start">
+        <Button 
+          type="submit" 
+          disabled={isLoading} 
+          size="lg"
+          className="w-full md:w-auto px-12 h-14 rounded-full font-bold text-lg shadow-xl shadow-primary/20 hover:scale-105 transition-transform"
+        >
+          {isLoading ? (
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+          ) : (
+            <Search className="mr-2 h-5 w-5" />
+          )}
+          Find {searchType === 'movie' ? 'Movies' : 'TV Shows'}
+        </Button>
+      </div>
+    </form>
   );
 }

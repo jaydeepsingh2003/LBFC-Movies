@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { MovieCard } from '@/components/movie-card';
 import { TVShowCard } from '@/components/tv-show-card';
 import { discoverMovies, discoverTvShows, getPosterUrl, getMovieVideos, getTvShowVideos } from '@/lib/tmdb.client';
-import { Loader2, Film, Tv } from 'lucide-react';
+import { Loader2, Search, Clapperboard, Monitor } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface DiscoverResult {
@@ -53,7 +53,7 @@ export default function DiscoverPage() {
         });
         fetchedItems = await Promise.all(moviePromises);
 
-      } else { // TV Show Search
+      } else { 
         const tvShows = await discoverTvShows({
           genreId: filters.genre ? parseInt(filters.genre) : undefined,
           firstAirDateYear: filters.releaseYear[0] !== 1920 ? filters.releaseYear[0] : undefined,
@@ -91,7 +91,7 @@ export default function DiscoverPage() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Failed to get recommendations. Please try again.',
+        description: 'Failed to search catalog. Please try again.',
       });
     } finally {
       setIsLoading(false);
@@ -99,30 +99,41 @@ export default function DiscoverPage() {
   }, [toast, activeTab]);
 
   return (
-    <div className="space-y-8 px-4 md:px-8 py-8">
-      <header className="space-y-2">
-        <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">Discover</h1>
-        <p className="text-muted-foreground">Use advanced filters to find exactly what you're looking for.</p>
+    <div className="space-y-12 px-4 md:px-8 py-12 max-w-[2000px] mx-auto">
+      <header className="space-y-4 text-center md:text-left">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tight text-foreground">Discover</h1>
+            <p className="text-muted-foreground text-lg max-w-2xl">
+              Explore our vast library. Use precision filters to find your next favorite watch.
+            </p>
+          </div>
+          
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'movie' | 'tv')} className="w-full md:w-auto">
+            <TabsList className="grid w-full grid-cols-2 max-w-[300px] mx-auto md:mx-0 bg-secondary/50 p-1 rounded-xl">
+                <TabsTrigger value="movie" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white">
+                  <Clapperboard className="mr-2 size-4"/>Movies
+                </TabsTrigger>
+                <TabsTrigger value="tv" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white">
+                  <Monitor className="mr-2 size-4"/>TV Shows
+                </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
       </header>
-      
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'movie' | 'tv')} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 max-w-sm mx-auto">
-            <TabsTrigger value="movie"><Film className="mr-2"/>Movies</TabsTrigger>
-            <TabsTrigger value="tv"><Tv className="mr-2"/>TV Shows</TabsTrigger>
-        </TabsList>
-      </Tabs>
 
-      <div className="">
+      <div className="bg-gradient-to-br from-secondary/30 to-background border border-white/5 rounded-2xl p-6 md:p-8 shadow-2xl">
         <DiscoverFilters onSearch={handleSearch} isLoading={isLoading} searchType={activeTab} />
       </div>
 
-      <div className="mt-8 pb-8">
+      <main className="min-h-[400px]">
         {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+          <div className="flex flex-col justify-center items-center h-96 gap-4">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <p className="text-muted-foreground animate-pulse font-medium">Searching catalog...</p>
           </div>
         ) : results.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-6">
                 {results.map((item) => (
                   item.type === 'movie' ? (
                     <MovieCard 
@@ -145,12 +156,13 @@ export default function DiscoverPage() {
                 ))}
             </div>
         ) : (
-          <div className="text-center py-16">
-            <h3 className="text-lg font-semibold text-foreground">No results to show</h3>
-            <p className="text-muted-foreground mt-2">Adjust your filters and start a new search.</p>
+          <div className="text-center py-32 bg-secondary/10 rounded-3xl border-2 border-dashed border-white/5">
+            <Search className="mx-auto h-16 w-16 text-muted-foreground/20 mb-4" />
+            <h3 className="text-2xl font-bold text-foreground">Ready to explore?</h3>
+            <p className="text-muted-foreground mt-2 text-lg">Adjust your filters and click search to begin.</p>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
