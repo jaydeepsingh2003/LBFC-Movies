@@ -1,8 +1,6 @@
-
 "use client";
 
 import Image from 'next/image';
-import { Card, CardContent } from './ui/card';
 import { cn } from '@/lib/utils';
 import { Tv } from 'lucide-react';
 import Link from 'next/link';
@@ -16,28 +14,34 @@ interface TVShowCardProps {
 
 export function TVShowCard({ id, title, posterUrl, className }: TVShowCardProps) {
   return (
-    <Link href={`/tv/${id}`} passHref>
-      <Card className={cn("overflow-hidden border-none group bg-card", className)}>
-        <CardContent className="p-0 relative w-full aspect-[2/3]">
-          {posterUrl ? (
-            <Image
-              src={posterUrl}
-              alt={title}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-          ) : (
-            <div className="w-full h-full bg-secondary flex items-center justify-center">
-              <Tv className="w-12 h-12 text-muted-foreground" />
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-          
-          <div className="absolute bottom-0 left-0 p-3 w-full">
-            <h3 className="font-headline text-base font-bold text-white shadow-md line-clamp-2">{title}</h3>
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
+    <div className={cn("relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-secondary transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/20 group", className)}>
+      {/* Base Content */}
+      {posterUrl ? (
+        <Image
+          src={posterUrl}
+          alt={title}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 15vw"
+        />
+      ) : (
+        <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
+          <Tv className="w-12 h-12 text-muted-foreground/30 mb-2" />
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{title}</span>
+        </div>
+      )}
+
+      {/* Main Click Area */}
+      <Link href={`/tv/${id}`} className="absolute inset-0 z-0" aria-label={title} />
+
+      {/* Visual Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none z-10">
+        <div className="absolute bottom-0 left-0 p-4 w-full">
+          <h3 className="font-headline text-base font-bold text-white shadow-md line-clamp-2 leading-tight group-hover:text-primary transition-colors">
+            {title}
+          </h3>
+        </div>
+      </div>
+    </div>
   );
 }
