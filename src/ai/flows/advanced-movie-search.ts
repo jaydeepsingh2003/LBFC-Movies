@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An advanced movie search AI agent that can find music videos.
@@ -46,7 +45,8 @@ const searchYoutube = ai.defineTool(
             throw new Error('YouTube API key is not configured.');
         }
 
-        const url = `${YOUTUBE_API_URL}?part=snippet&maxResults=10&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}&type=video`;
+        // Increased maxResults to 24 for a richer gallery
+        const url = `${YOUTUBE_API_URL}?part=snippet&maxResults=24&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}&type=video`;
 
         try {
             const response = await fetch(url);
