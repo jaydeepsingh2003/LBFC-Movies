@@ -57,7 +57,7 @@ export default function MoodSection() {
           toast({
               variant: "destructive",
               title: "No matches found",
-              description: "We couldn't find TMDB data for these recommendations.",
+              description: "We couldn't find matching movies for this mood.",
           });
       }
 
@@ -79,7 +79,7 @@ export default function MoodSection() {
     <section className="space-y-6">
       <div className="space-y-2">
         <h2 className="font-headline text-2xl font-bold tracking-tight">What's Your Mood?</h2>
-        <p className="text-muted-foreground">Select a mood to get instant recommendations from TMDB.</p>
+        <p className="text-muted-foreground">Select a mood to get instant recommendations.</p>
       </div>
       <div className="flex flex-wrap gap-2">
         {moods.map((mood) => (

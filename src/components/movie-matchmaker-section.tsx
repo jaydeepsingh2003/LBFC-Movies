@@ -58,7 +58,7 @@ export default function MovieMatchmakerSection() {
         toast({
             variant: "destructive",
             title: "Could not find movie",
-            description: `AI suggested "${aiResult.recommendation}", but we couldn't find it on TMDB.`
+            description: `AI suggested "${aiResult.recommendation}", but we couldn't find details for it.`
         });
       }
     } catch (error) {
@@ -80,13 +80,13 @@ export default function MovieMatchmakerSection() {
             <Sparkles className="text-primary size-6" />
             Movie Matchmaker
         </h2>
-        <p className="text-muted-foreground">Find the perfect movie that sits between two of your favorites, fetched from TMDB.</p>
+        <p className="text-muted-foreground">Find the perfect movie that sits between two of your favorites.</p>
       </div>
 
       <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
         <CardHeader>
           <CardTitle>Find a Cinematic Bridge</CardTitle>
-          <CardDescription>Enter two movies and let AI find the connection through the TMDB database.</CardDescription>
+          <CardDescription>Enter two movies and let AI find the connection.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

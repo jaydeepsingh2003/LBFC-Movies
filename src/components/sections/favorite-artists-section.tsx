@@ -70,7 +70,7 @@ export default function FavoriteArtistsSection() {
           toast({
               variant: "destructive",
               title: "No data found",
-              description: "Could not fetch movie details from TMDB.",
+              description: "Could not fetch movie details for these artists.",
           });
       }
 
@@ -79,7 +79,7 @@ export default function FavoriteArtistsSection() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to get recommendations from TMDB. Please try again.",
+        description: "Failed to get recommendations. Please try again.",
       });
     } finally {
       setIsLoading(false);
@@ -93,13 +93,13 @@ export default function FavoriteArtistsSection() {
             <Users className="text-primary size-6" />
             From Your Favorites
         </h2>
-        <p className="text-muted-foreground">Get recommendations from the TMDB catalog based on actors and directors you love.</p>
+        <p className="text-muted-foreground">Get recommendations based on actors and directors you love.</p>
       </div>
       
       <Card className="border-white/5 bg-secondary/20">
         <CardHeader>
           <CardTitle>Find Movies by Artists</CardTitle>
-          <CardDescription>Enter your favorite stars or directors to discover their work on TMDB.</CardDescription>
+          <CardDescription>Enter your favorite stars or directors to discover their work.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -128,7 +128,7 @@ export default function FavoriteArtistsSection() {
           </div>
           <Button onClick={handleGetRecommendations} disabled={isLoading} className="rounded-full px-8">
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Film className="mr-2 h-4 w-4" />}
-            Get TMDB Recommendations
+            Get Recommendations
           </Button>
         </CardContent>
       </Card>

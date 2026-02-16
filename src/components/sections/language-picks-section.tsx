@@ -77,7 +77,7 @@ export default function LanguagePicksSection() {
           toast({
               variant: "destructive",
               title: "Search failed",
-              description: "Could not find these movies on TMDB.",
+              description: "Could not find movies matching these languages.",
           });
       }
 
@@ -97,7 +97,7 @@ export default function LanguagePicksSection() {
     <section className="space-y-6">
       <div className="space-y-2">
         <h2 className="font-headline text-2xl font-bold tracking-tight">Picks In Your Language</h2>
-        <p className="text-muted-foreground">Discover top-rated movies on TMDB in the languages you prefer.</p>
+        <p className="text-muted-foreground">Discover top-rated movies in the languages you prefer.</p>
       </div>
       <div className="flex flex-wrap gap-4 items-center bg-secondary/30 p-4 rounded-xl border border-white/5">
         {availableLanguages.map(lang => (
