@@ -17,7 +17,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-background selection:bg-primary/30">
       {isClient && !isMobile && <Header />}
-      <main className="flex-1 w-full max-w-[2000px] mx-auto pb-20 md:pb-8">
+      <main className="flex-1 w-full max-w-[2000px] mx-auto pt-24 md:pt-28 pb-24 md:pb-12">
         {children}
       </main>
       {isClient && isMobile && <BottomNav />}

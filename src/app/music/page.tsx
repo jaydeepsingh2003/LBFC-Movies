@@ -141,7 +141,7 @@ export default function MusicPage() {
   };
 
   return (
-    <div className="min-h-screen py-12 px-4 md:px-8 lg:px-12 w-full max-w-[2400px] mx-auto space-y-12">
+    <div className="min-h-screen py-6 px-4 md:px-8 lg:px-12 w-full max-w-[2400px] mx-auto space-y-12">
       {/* Header Section */}
       <header className="space-y-10">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">

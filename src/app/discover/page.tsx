@@ -27,14 +27,14 @@ const QUICK_FILTERS = [
   { label: 'Blockbusters', sortBy: 'revenue.desc' },
 ];
 
-const currentYear = new Date().getFullYear();
-
 export default function DiscoverPage() {
   const [results, setResults] = useState<DiscoverResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'movie' | 'tv'>('movie');
   const [totalCount, setTotalCount] = useState(0);
+  
+  const currentYear = new Date().getFullYear();
 
   const handleSearch = useCallback(async (filters: FilterState) => {
     setIsLoading(true);
@@ -119,7 +119,7 @@ export default function DiscoverPage() {
   }, [toast, activeTab]);
 
   return (
-    <div className="space-y-12 px-4 md:px-8 lg:px-12 py-12 max-w-[2000px] mx-auto min-h-screen">
+    <div className="space-y-12 px-4 md:px-8 lg:px-12 py-6 max-w-[2000px] mx-auto min-h-screen">
       
       {/* Header Tier */}
       <header className="space-y-8">

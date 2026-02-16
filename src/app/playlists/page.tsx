@@ -119,7 +119,7 @@ export default function PlaylistsPage() {
   }
 
   return (
-    <div className="space-y-8 py-8 px-4 md:px-8">
+    <div className="space-y-8 py-6 px-4 md:px-8">
       <header className="space-y-2">
         <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">My Playlist</h1>
         <p className="text-muted-foreground">All your saved movies in one place.</p>

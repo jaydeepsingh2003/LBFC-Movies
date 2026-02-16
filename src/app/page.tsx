@@ -39,7 +39,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col w-full overflow-x-hidden">
+    <div className="flex flex-col w-full overflow-x-hidden -mt-24 md:-mt-28">
       <HeroSection />
       <div className="space-y-16 py-12 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto w-full">
           <TrendingOttsSection />

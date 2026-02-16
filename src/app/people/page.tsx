@@ -37,7 +37,7 @@ export default function PeoplePage() {
   }, [fetchPeople]);
 
   return (
-    <div className="py-8 px-4 md:px-8">
+    <div className="py-6 px-4 md:px-8">
       <header className="space-y-4 mb-8">
         <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">
           {debouncedSearchQuery ? 'Search Results' : 'Popular People'}
