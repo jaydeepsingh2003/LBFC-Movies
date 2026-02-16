@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { getPosterUrl, getMovieVideos, discoverMovies, discoverTvShows } from '@/lib/tmdb.client';
+import { getPosterUrl, discoverMovies, discoverTvShows } from '@/lib/tmdb.client';
 import { Movie, TVShow } from '@/lib/tmdb';
 import { Skeleton } from '../ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -32,11 +32,6 @@ const ottPlatforms = [
     name: 'Disney+',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Disney%2B_logo.svg/2560px-Disney%2B_logo.svg.png',
     provider_id: 337,
-  },
-  {
-    name: 'JioCinema',
-    logo: 'https://play-lh.googleusercontent.com/Ag_Pw_Id_df_vPh_Wh_vXIB9_it_sh_vto_Z_v_Wh_vXIB9_it_sh_vto_Z_v',
-    provider_id: 220,
   }
 ];
 

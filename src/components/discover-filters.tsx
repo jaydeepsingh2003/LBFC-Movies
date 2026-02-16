@@ -43,7 +43,6 @@ const ottProviders = [
   { id: '8', name: 'Netflix' },
   { id: '119', name: 'Amazon Prime' },
   { id: '337', name: 'Disney+' },
-  { id: '220', name: 'JioCinema' },
   { id: '122', name: 'Lionsgate Play' },
 ];
 
