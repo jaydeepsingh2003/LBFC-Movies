@@ -11,47 +11,9 @@ import { Loader2, Globe } from "lucide-react"
 import { Movie } from "@/lib/tmdb"
 import { getPosterUrl, searchMovies, getMovieVideos } from "@/lib/tmdb.client"
 import { Skeleton } from "../ui/skeleton"
+import { languageBasedMoviePicks } from "@/ai/flows/language-based-movie-picks"
 
-const availableLanguages = ["English", "Spanish", "French", "Japanese", "Korean", "Hindi", "Kannada"];
-
-const languagePlaylists: Record<string, string[]> = {
-  English: [
-    "The Shawshank Redemption", "The Dark Knight", "Forrest Gump", "Pulp Fiction",
-    "Inception", "The Matrix", "Goodfellas", "The Lord of the Rings: The Fellowship of the Ring",
-    "Fight Club", "Gladiator", "The Godfather", "12 Angry Men", "Schindler's List", "The Green Mile", "Se7en"
-  ],
-  Spanish: [
-    "Pan's Labyrinth", "The Secret in Their Eyes", "Amores perros", "Y tu mamá también",
-    "Roma", "Wild Tales", "The Sea Inside", "All About My Mother",
-    "The Motorcycle Diaries", "The Platform", "The Orphanage", "Biutiful", "Talk to Her", "Open Your Eyes", "REC"
-  ],
-  French: [
-    "Amélie", "The Intouchables", "La Haine", "Portrait of a Lady on Fire",
-    "Blue Is the Warmest Colour", "The 400 Blows", "Breathless", "Le Dîner de Cons",
-    "A Prophet", "Rust and Bone", "Caché", "The Class", "Raw", "Titane", "Les Misérables (2019)"
-  ],
-  Japanese: [
-    "Spirited Away", "Seven Samurai", "Your Name.", "My Neighbor Totoro",
-    "Akira", "Grave of the Fireflies", "Princess Mononoke", "Battle Royale",
-    "Drive My Car", "Shoplifters", "Tokyo Story", "Harakiri", "Rashomon", "Ikiru", "Perfect Blue"
-  ],
-  Korean: [
-    "Parasite", "Oldboy", "Train to Busan", "The Handmaiden",
-    "Memories of Murder", "Burning", "The Wailing", "I Saw the Devil",
-    "A Taxi Driver", "The Man from Nowhere", "Joint Security Area", "Mother", "The Host", "Minari", "Decision to Leave"
-  ],
-  Hindi: [
-    "3 Idiots", "Dangal", "Lagaan", "Sholay", "Dilwale Dulhania Le Jayenge",
-    "Zindagi Na Milegi Dobara", "Gangs of Wasseypur", "Taare Zameen Par",
-    "Andhadhun", "Barfi!", "Queen", "My Name Is Khan", "Swades", "Haider", "Gully Boy"
-  ],
-  Kannada: [
-    "K.G.F: Chapter 1", "Kantara", "Kirik Party", "Mungaru Male", "Ulidavaru Kandanthe",
-    "Lucia", "Thithi", "Rangitaranga", "Garuda Gamana Vrishabha Vahana", "777 Charlie",
-    "K.G.F: Chapter 2", "Sapta Sagaradaache Ello - Side A", "Bettada Hoovu", "Om", "Aa Dinagalu"
-  ]
-};
-
+const availableLanguages = ["English", "Spanish", "French", "Japanese", "Korean", "Hindi", "Kannada", "German"];
 
 interface MovieWithPoster extends Movie {
     posterUrl: string | null;
@@ -83,29 +45,42 @@ export default function LanguagePicksSection() {
     setIsLoading(true);
     setRecommendations([]);
     try {
-      const movieTitles = selectedLanguages.flatMap(lang => languagePlaylists[lang] || []);
-      const uniqueMovieTitles = Array.from(new Set(movieTitles));
+      // Call AI flow to get relevant movie titles for the selected languages
+      const result = await languageBasedMoviePicks({ 
+          languages: selectedLanguages,
+          numberOfRecommendations: 12
+      });
       
-      const moviePromises = uniqueMovieTitles.map(async (title) => {
+      const movieTitles = result.movieRecommendations;
+      
+      // Fetch full TMDB data for these titles
+      const moviePromises = movieTitles.map(async (title) => {
         const searchResults = await searchMovies(title);
         const movie = searchResults.length > 0 ? searchResults[0] : null;
         if (movie) {
             const videos = await getMovieVideos(movie.id);
             const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-            movie.trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
+            return {
+                ...movie,
+                posterUrl: getPosterUrl(movie.poster_path),
+                trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
+            } as MovieWithPoster;
         }
-        return movie;
+        return null;
       });
 
-      const moviesData = (await Promise.all(moviePromises))
-        .map((movie, index) => ({
-          ...(movie || { title: uniqueMovieTitles[index], poster_path: null, id: 0, overview: "" }),
-          title: movie ? movie.title : uniqueMovieTitles[index],
-          posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
-          trailerUrl: movie?.trailerUrl
-        }));
+      const moviesData = (await Promise.all(moviePromises)).filter((m): m is MovieWithPoster => m !== null);
       
       setRecommendations(moviesData);
+      
+      if (moviesData.length === 0) {
+          toast({
+              variant: "destructive",
+              title: "Search failed",
+              description: "Could not find these movies on TMDB.",
+          });
+      }
+
     } catch (error) {
       console.error(error);
       toast({
@@ -122,9 +97,9 @@ export default function LanguagePicksSection() {
     <section className="space-y-6">
       <div className="space-y-2">
         <h2 className="font-headline text-2xl font-bold tracking-tight">Picks In Your Language</h2>
-        <p className="text-muted-foreground">Discover movies in the languages you prefer.</p>
+        <p className="text-muted-foreground">Discover top-rated movies on TMDB in the languages you prefer.</p>
       </div>
-      <div className="flex flex-wrap gap-4 items-center">
+      <div className="flex flex-wrap gap-4 items-center bg-secondary/30 p-4 rounded-xl border border-white/5">
         {availableLanguages.map(lang => (
           <div key={lang} className="flex items-center space-x-2">
             <Checkbox
@@ -132,11 +107,11 @@ export default function LanguagePicksSection() {
               checked={selectedLanguages.includes(lang)}
               onCheckedChange={() => handleLanguageChange(lang)}
             />
-            <Label htmlFor={`lang-${lang}`} className="font-medium cursor-pointer">{lang}</Label>
+            <Label htmlFor={`lang-${lang}`} className="font-medium cursor-pointer text-sm">{lang}</Label>
           </div>
         ))}
       </div>
-      <Button onClick={handleGetPicks} disabled={isLoading}>
+      <Button onClick={handleGetPicks} disabled={isLoading} className="rounded-full px-8">
         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Globe className="mr-2 h-4 w-4" />}
         Find Movies
       </Button>

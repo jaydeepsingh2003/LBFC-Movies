@@ -5,7 +5,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { getFavoriteArtistsDirectorsRecommendations } from "@/ai/flows/favorite-artists-directors"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2, Film } from "lucide-react"
+import { Loader2, Film, Users } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { MovieCarousel } from "../movie-carousel"
@@ -40,38 +40,46 @@ export default function FavoriteArtistsSection() {
       const actors = favoriteActors.split(',').map(s => s.trim()).filter(Boolean);
       const directors = favoriteDirectors.split(',').map(s => s.trim()).filter(Boolean);
 
+      // AI generates relevant titles based on input artists
       const result = await getFavoriteArtistsDirectorsRecommendations({ 
         favoriteActors: actors,
         favoriteDirectors: directors 
       });
       
+      // Fetch full TMDB records for each recommendation
       const moviePromises = result.recommendations.map(async (title) => {
         const searchResults = await searchMovies(title);
         const movie = searchResults.length > 0 ? searchResults[0] : null;
         if (movie) {
             const videos = await getMovieVideos(movie.id);
             const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-            movie.trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
+            return {
+                ...movie,
+                posterUrl: getPosterUrl(movie.poster_path),
+                trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
+            } as MovieWithPoster;
         }
-        return movie;
+        return null;
       });
 
-      const moviesData = (await Promise.all(moviePromises))
-        .map((movie, index) => ({
-          ...(movie || { title: result.recommendations[index], poster_path: null, id: 0, overview: "" }),
-          title: movie ? movie.title : result.recommendations[index],
-          posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
-          trailerUrl: movie?.trailerUrl
-        }));
+      const moviesData = (await Promise.all(moviePromises)).filter((m): m is MovieWithPoster => m !== null);
       
       setRecommendations(moviesData);
+
+      if (moviesData.length === 0) {
+          toast({
+              variant: "destructive",
+              title: "No data found",
+              description: "Could not fetch movie details from TMDB.",
+          });
+      }
 
     } catch (error) {
       console.error(error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to get recommendations. Please try again.",
+        description: "Failed to get recommendations from TMDB. Please try again.",
       });
     } finally {
       setIsLoading(false);
@@ -81,43 +89,46 @@ export default function FavoriteArtistsSection() {
   return (
     <section className="space-y-6">
       <div className="space-y-2">
-        <h2 className="font-headline text-2xl font-bold tracking-tight">From Your Favorites</h2>
-        <p className="text-muted-foreground">Get recommendations based on actors and directors you love.</p>
+        <h2 className="font-headline text-2xl font-bold tracking-tight flex items-center gap-2">
+            <Users className="text-primary size-6" />
+            From Your Favorites
+        </h2>
+        <p className="text-muted-foreground">Get recommendations from the TMDB catalog based on actors and directors you love.</p>
       </div>
       
-      <Card>
+      <Card className="border-white/5 bg-secondary/20">
         <CardHeader>
           <CardTitle>Find Movies by Artists</CardTitle>
-          <CardDescription>Enter your favorite actors or directors, separated by commas.</CardDescription>
+          <CardDescription>Enter your favorite stars or directors to discover their work on TMDB.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="actors" className="text-sm font-medium">Favorite Actors</label>
+              <label htmlFor="actors" className="text-sm font-medium text-muted-foreground">Favorite Actors</label>
               <Input 
                 id="actors" 
                 value={favoriteActors} 
                 onChange={e => setFavoriteActors(e.target.value)} 
                 placeholder="e.g., Tom Hanks, Meryl Streep" 
-                className="mt-1" 
+                className="mt-1.5" 
                 disabled={isLoading}
               />
             </div>
             <div>
-              <label htmlFor="directors" className="text-sm font-medium">Favorite Directors</label>
+              <label htmlFor="directors" className="text-sm font-medium text-muted-foreground">Favorite Directors</label>
               <Input 
                 id="directors" 
                 value={favoriteDirectors} 
                 onChange={e => setFavoriteDirectors(e.target.value)} 
                 placeholder="e.g., Christopher Nolan, Greta Gerwig" 
-                className="mt-1" 
+                className="mt-1.5" 
                 disabled={isLoading}
               />
             </div>
           </div>
-          <Button onClick={handleGetRecommendations} disabled={isLoading}>
+          <Button onClick={handleGetRecommendations} disabled={isLoading} className="rounded-full px-8">
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Film className="mr-2 h-4 w-4" />}
-            Get Recommendations
+            Get TMDB Recommendations
           </Button>
         </CardContent>
       </Card>

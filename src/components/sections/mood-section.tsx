@@ -10,42 +10,9 @@ import { Loader2 } from "lucide-react"
 import { getPosterUrl, searchMovies, getMovieVideos } from "@/lib/tmdb.client"
 import { Movie } from "@/lib/tmdb"
 import { Skeleton } from "../ui/skeleton"
+import { getMoodBasedRecommendations } from "@/ai/flows/mood-based-recommendations"
 
-const moods = ["Happy", "Sad", "Adventurous", "Romantic", "Thrilling", "Funny"];
-
-const moodPlaylists: Record<string, string[]> = {
-  Happy: [
-    "Paddington 2", "School of Rock", "Mamma Mia!", "Little Miss Sunshine", 
-    "The Lego Movie", "Singin' in the Rain", "Ferris Bueller's Day Off", "Up", 
-    "Enchanted", "My Neighbor Totoro"
-  ],
-  Sad: [
-    "Grave of the Fireflies", "Schindler's List", "The Boy in the Striped Pyjamas", 
-    "Hachi: A Dog's Tale", "Manchester by the Sea", "Brokeback Mountain", 
-    "Atonement", "The Green Mile", "Million Dollar Baby", "Dancer in the Dark"
-  ],
-  Adventurous: [
-    "Indiana Jones and the Raiders of the Lost Ark", "The Lord of the Rings: The Fellowship of the Ring", 
-    "Mad Max: Fury Road", "Jurassic Park", "Pirates of ahe Caribbean: The Curse of the Black Pearl", 
-    "The Goonies", "Star Wars: A New Hope", "Avatar", "Jumanji: Welcome to the Jungle", "The Mummy (1999)"
-  ],
-  Romantic: [
-    "Pride & Prejudice", "Before Sunrise", "Casablanca", "When Harry Met Sally...", 
-    "The Notebook", "La La Land", "Amélie", "The Princess Bride", 
-    "Notting Hill", "About Time"
-  ],
-  Thrilling: [
-    "The Silence of the Lambs", "Zodiac", "Parasite", "Get Out", 
-    "A Quiet Place", "The Fugitive", "No Country for Old Men", "Prisoners",
-    "Sicario", "Seven"
-  ],
-  Funny: [
-    "Superbad", "Booksmart", "Step Brothers", "What We Do in the Shadows", 
-    "Airplane!", "Monty Python and the Holy Grail", "Shaun of the Dead", "Bridesmaids", 
-    "The Grand Budapest Hotel", "Borat"
-  ]
-};
-
+const moods = ["Happy", "Sad", "Adventurous", "Romantic", "Thrilling", "Funny", "Epic", "Thought-provoking"];
 
 interface MovieWithPoster extends Movie {
     posterUrl: string | null;
@@ -58,34 +25,43 @@ export default function MoodSection() {
   const { toast } = useToast()
 
   const handleMoodSelect = async (mood: string) => {
-    if (selectedMood === mood) return;
+    if (selectedMood === mood && recommendations.length > 0) return;
     
     setSelectedMood(mood)
     setIsLoading(true)
     setRecommendations([])
     try {
-      const movieTitles = moodPlaylists[mood] || [];
+      // Fetch dynamic recommendations from AI
+      const result = await getMoodBasedRecommendations({ mood });
+      const movieTitles = result.movieSuggestions;
       
+      // Fetch full movie data from TMDB for each title
       const moviePromises = movieTitles.map(async (title) => {
         const searchResults = await searchMovies(title);
         const movie = searchResults.length > 0 ? searchResults[0] : null;
         if (movie) {
             const videos = await getMovieVideos(movie.id);
             const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-            movie.trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
+            return {
+                ...movie,
+                posterUrl: getPosterUrl(movie.poster_path),
+                trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
+            } as MovieWithPoster;
         }
-        return movie;
+        return null;
       });
 
-      const moviesData = (await Promise.all(moviePromises))
-        .map((movie, index) => ({
-            ...(movie || { title: movieTitles[index], poster_path: null, id: 0, overview: "" }),
-            title: movie ? movie.title : movieTitles[index],
-            posterUrl: movie ? getPosterUrl(movie.poster_path) : null,
-            trailerUrl: movie?.trailerUrl
-        }));
+      const moviesData = (await Promise.all(moviePromises)).filter((m): m is MovieWithPoster => m !== null);
 
-      setRecommendations(moviesData)
+      if (moviesData.length === 0) {
+          toast({
+              variant: "destructive",
+              title: "No matches found",
+              description: "We couldn't find TMDB data for these recommendations.",
+          });
+      }
+
+      setRecommendations(moviesData);
 
     } catch (error) {
       console.error(error)
@@ -103,7 +79,7 @@ export default function MoodSection() {
     <section className="space-y-6">
       <div className="space-y-2">
         <h2 className="font-headline text-2xl font-bold tracking-tight">What's Your Mood?</h2>
-        <p className="text-muted-foreground">Select a mood to get instant recommendations.</p>
+        <p className="text-muted-foreground">Select a mood to get instant recommendations from TMDB.</p>
       </div>
       <div className="flex flex-wrap gap-2">
         {moods.map((mood) => (
@@ -111,8 +87,8 @@ export default function MoodSection() {
             key={mood}
             variant="outline"
             className={cn(
-              "transition-all",
-              selectedMood === mood && "bg-accent text-accent-foreground border-accent"
+              "transition-all rounded-full px-6",
+              selectedMood === mood && "bg-primary text-primary-foreground border-primary"
             )}
             onClick={() => handleMoodSelect(mood)}
             disabled={isLoading && selectedMood === mood}
