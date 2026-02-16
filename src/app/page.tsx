@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -38,34 +37,44 @@ export default function DashboardPage() {
 
   if (isLoading || !user) {
     return (
-      <div className="flex justify-center items-center h-screen bg-background">
-        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+      <div className="flex justify-center items-center h-svh bg-background">
+        <Loader2 className="size-12 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
     <AppLayout>
-      <HeroSection />
-      <div className="space-y-12 py-8 px-4 md:px-8">
-          <TrendingOttsSection />
-          <NowPlayingSection />
-          <UpcomingSection />
-          <FranchiseFocusSection />
-          <ForYouSection />
-          <TrendingSection />
-          <EnglishTvSection />
-          <HindiTvSection />
-          <KannadaTvSection />
-          <TamilTvSection />
-          <HindiMoviesSection />
-          <KannadaMoviesSection />
-          <TamilMoviesSection />
-          <TeluguMoviesSection />
-          <MoodSection />
-          <FavoriteArtistsSection />
-          <LanguagePicksSection />
-          <MovieMatchmakerSection />
+      <div className="flex flex-col w-full overflow-x-hidden">
+        <HeroSection />
+        <div className="space-y-16 py-12 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto w-full">
+            <TrendingOttsSection />
+            <NowPlayingSection />
+            <UpcomingSection />
+            <FranchiseFocusSection />
+            <div className="grid grid-cols-1 gap-16">
+              <ForYouSection />
+              <TrendingSection />
+            </div>
+            <div className="space-y-16">
+              <EnglishTvSection />
+              <HindiTvSection />
+              <KannadaTvSection />
+              <TamilTvSection />
+            </div>
+            <div className="space-y-16">
+              <HindiMoviesSection />
+              <KannadaMoviesSection />
+              <TamilMoviesSection />
+              <TeluguMoviesSection />
+            </div>
+            <MoodSection />
+            <FavoriteArtistsSection />
+            <LanguagePicksSection />
+            <div className="pt-8 border-t border-primary/10">
+              <MovieMatchmakerSection />
+            </div>
+        </div>
       </div>
     </AppLayout>
   );

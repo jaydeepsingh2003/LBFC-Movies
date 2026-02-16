@@ -1,15 +1,12 @@
-
 'use client';
 
 import { Header } from './header';
 import { useUser } from '@/firebase/auth/auth-client';
 import { BottomNav } from './bottom-nav';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { SidebarProvider } from '../ui/sidebar';
 import { useState, useEffect } from 'react';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user } = useUser();
   const isMobile = useIsMobile();
   const [isClient, setIsClient] = useState(false);
 
@@ -18,14 +15,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex flex-col">
-        {isClient && !isMobile && <Header />}
-        <main className="flex-1 pb-16 md:pb-0">
-          {children}
-        </main>
-        {isClient && isMobile && <BottomNav />}
-      </div>
-    </SidebarProvider>
+    <div className="min-h-screen flex flex-col bg-background selection:bg-primary/30">
+      {isClient && !isMobile && <Header />}
+      <main className="flex-1 w-full max-w-[2000px] mx-auto pb-20 md:pb-8">
+        {children}
+      </main>
+      {isClient && isMobile && <BottomNav />}
+    </div>
   );
 }
