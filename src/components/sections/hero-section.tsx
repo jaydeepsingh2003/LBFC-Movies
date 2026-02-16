@@ -78,7 +78,7 @@ export default function HeroSection() {
 
     if (isLoading) {
         return (
-            <div className="relative w-full h-[70svh] md:h-svh bg-secondary/10">
+            <div className="relative w-full h-svh bg-secondary/10">
                 <Skeleton className="w-full h-full rounded-none" />
                 <div className="absolute bottom-[20%] left-4 md:left-12 lg:left-24 max-w-2xl space-y-6 z-10">
                     <Skeleton className="h-12 md:h-24 w-3/4" />
@@ -98,7 +98,7 @@ export default function HeroSection() {
     if (movies.length === 0) return null;
 
     return (
-        <section className="relative w-full h-[70svh] md:h-svh bg-background overflow-hidden">
+        <section className="relative w-full h-svh bg-background overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background animate-pulse z-0" />
             
             <Carousel
@@ -112,7 +112,7 @@ export default function HeroSection() {
                     skipSnaps: false,
                 }}
             >
-                <CarouselContent className="h-[70svh] md:h-svh ml-0">
+                <CarouselContent className="h-svh ml-0">
                     {movies.map((movie) => (
                         <CarouselItem key={movie.id} className="h-full w-full pl-0 relative">
                             <div className="relative h-full w-full">
@@ -131,16 +131,16 @@ export default function HeroSection() {
                                 <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-transparent hidden lg:block" />
                                 <div className="absolute inset-0 bg-black/40 lg:bg-black/10" />
                                 
-                                <div className="absolute bottom-[10%] md:bottom-[20%] left-4 md:left-12 lg:left-24 max-w-4xl px-2 z-20">
-                                    <div className="space-y-4 md:space-y-6">
+                                <div className="absolute bottom-[10%] md:bottom-[20%] left-4 md:left-12 lg:left-24 max-w-4xl px-4 z-20">
+                                    <div className="space-y-4 md:space-y-8">
                                         <div className="flex items-center gap-2 md:gap-3 animate-in fade-in slide-in-from-left-10 duration-700">
-                                            <Badge className="bg-primary font-black uppercase text-[8px] md:text-xs px-2 md:px-3 py-1 rounded-sm">Featured</Badge>
-                                            <Badge variant="outline" className="border-white/40 text-white font-bold backdrop-blur-md text-[8px] md:text-xs">
-                                                4K Ultra HD
+                                            <Badge className="bg-primary font-black uppercase text-[8px] md:text-xs px-2 md:px-3 py-1 rounded-sm shadow-lg shadow-primary/20">Cinema Featured</Badge>
+                                            <Badge variant="outline" className="border-white/40 text-white font-bold backdrop-blur-md text-[8px] md:text-xs uppercase tracking-widest">
+                                                Ultra HD 4K
                                             </Badge>
                                         </div>
                                         
-                                        <h1 className="hero-title text-white text-3xl sm:text-5xl md:text-8xl animate-in fade-in slide-in-from-bottom-10 duration-700 delay-100">
+                                        <h1 className="font-headline text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[0.85] drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] animate-in fade-in slide-in-from-bottom-10 duration-700 delay-100">
                                             {movie.title}
                                         </h1>
                                         
@@ -148,28 +148,28 @@ export default function HeroSection() {
                                             {movie.overview}
                                         </p>
                                         
-                                        <div className="flex flex-wrap gap-2 md:gap-4 pt-2 md:pt-4 animate-in fade-in slide-in-from-bottom-16 duration-700 delay-300">
+                                        <div className="flex flex-wrap gap-3 md:gap-5 pt-4 md:pt-6 animate-in fade-in slide-in-from-bottom-16 duration-700 delay-300">
                                             <Button 
                                                 size="lg" 
-                                                className="bg-white text-black hover:bg-white/90 font-black rounded-full px-5 md:px-10 h-10 md:h-14 shadow-2xl transition-transform hover:scale-105 active:scale-95 text-xs md:text-base" 
+                                                className="bg-white text-black hover:bg-white/90 font-black rounded-full px-6 md:px-12 h-12 md:h-16 shadow-2xl transition-transform hover:scale-105 active:scale-95 text-xs md:text-lg" 
                                                 onClick={(e) => handlePlayTrailer(e, movie.trailerUrl)}
                                             >
-                                                <Play className="mr-1.5 md:mr-3 size-4 md:size-6 fill-current" /> Play Now
+                                                <Play className="mr-2 md:mr-3 size-4 md:size-6 fill-current" /> Watch Trailer
                                             </Button>
                                             
                                             <Button 
                                                 size="lg" 
                                                 variant="secondary" 
-                                                className="bg-secondary/40 hover:bg-secondary/60 text-white backdrop-blur-xl border border-white/10 font-bold rounded-full px-5 md:px-10 h-10 md:h-14 transition-transform hover:scale-105 active:scale-95 text-xs md:text-base" 
+                                                className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-2xl border border-white/10 font-bold rounded-full px-6 md:px-12 h-12 md:h-16 transition-transform hover:scale-105 active:scale-95 text-xs md:text-lg" 
                                                 asChild
                                             >
                                                 <Link href={`/movie/${movie.id}`}>
-                                                    <Info className="mr-1.5 md:mr-3 size-4 md:size-6" /> More Info
+                                                    <Info className="mr-2 md:mr-3 size-4 md:size-6" /> Explore Details
                                                 </Link>
                                             </Button>
                                             
-                                            <Button size="icon" variant="outline" className="rounded-full h-10 w-10 md:h-14 md:w-14 border-white/20 bg-white/5 backdrop-blur-md hover:bg-white/20 text-white hidden sm:flex">
-                                                <Plus className="size-4 md:size-6" />
+                                            <Button size="icon" variant="outline" className="rounded-full h-12 w-12 md:h-16 md:w-16 border-white/20 bg-white/5 backdrop-blur-md hover:bg-white/20 text-white hidden sm:flex transition-all">
+                                                <Plus className="size-5 md:size-7" />
                                             </Button>
                                         </div>
                                     </div>

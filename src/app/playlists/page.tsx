@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -37,8 +36,8 @@ export default function PlaylistsPage() {
     user && firestore ? collection(firestore, `users/${user.uid}/savedTvShows`) : null
   , [firestore, user]);
   
-  const [savedMoviesSnapshot, moviesLoading, moviesError] = useCollection(savedMoviesQuery);
-  const [savedTvShowsSnapshot, tvLoading, tvError] = useCollection(savedTvShowsQuery);
+  const [savedMoviesSnapshot, moviesLoading] = useCollection(savedMoviesQuery);
+  const [savedTvShowsSnapshot, tvLoading] = useCollection(savedTvShowsQuery);
   
   const [criteria, setCriteria] = useState({ genre: 'Sci-Fi', mood: 'Thought-provoking', description: 'movies about AI' });
   const [playlist, setPlaylist] = useState<SmartPlaylistOutput | null>(null);

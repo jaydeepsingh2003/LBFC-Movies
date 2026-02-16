@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -79,8 +78,8 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
     try {
         await saveTvShowToPlaylist(firestore, user.uid, { id, name: title, overview: overview || '', poster_path: poster_path || null });
         toast({
-            title: "Added to List",
-            description: `${title} is now in your TV collection.`,
+            title: "Added to Vault",
+            description: `${title} is now in your series vault.`,
         });
     } catch (error) {
         console.error("Error saving TV show:", error);

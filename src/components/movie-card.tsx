@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -34,7 +33,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
   const [cachedTrailer, setCachedTrailer] = useState<string | null>(initialTrailerUrl || null);
 
   const handleNavigateToDetails = (e: React.MouseEvent) => {
-    // Navigate to details if clicking the main card area
+    // Standard navigation
     router.push(`/movie/${id}`);
   };
 
