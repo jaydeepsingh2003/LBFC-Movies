@@ -113,6 +113,54 @@ export async function getUpcomingMovies(language: string = 'en-US'): Promise<Mov
   return data.results;
 }
 
+export async function getAiringTodayTvShows(): Promise<TVShow[]> {
+  if (!TMDB_API_KEY) return [];
+  const url = `/api/tmdb/3/tv/airing_today?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function getOnTheAirTvShows(): Promise<TVShow[]> {
+  if (!TMDB_API_KEY) return [];
+  const url = `/api/tmdb/3/tv/on_the_air?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function getPopularTvShows(): Promise<TVShow[]> {
+  if (!TMDB_API_KEY) return [];
+  const url = `/api/tmdb/3/tv/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function getTopRatedTvShows(): Promise<TVShow[]> {
+  if (!TMDB_API_KEY) return [];
+  const url = `/api/tmdb/3/tv/top_rated?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    return [];
+  }
+}
+
 export async function discoverMovies(options: {
   genreId?: number;
   primaryReleaseYear?: number;
@@ -185,6 +233,51 @@ export async function discoverTvShows(options: {
     allTvShows = allTvShows.concat(data.results);
   }
   return allTvShows;
+}
+
+export async function getWatchProviders(): Promise<WatchProvider[]> {
+  if (!TMDB_API_KEY) return [];
+  const url = `/api/tmdb/3/watch/providers/movie?api_key=${TMDB_API_KEY}&language=en-US&watch_region=IN`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.results || [];
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function getPopularPeople(): Promise<Person[]> {
+  if (!TMDB_API_KEY) return [];
+  const url = `/api/tmdb/3/person/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.results || [];
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function searchPeople(query: string): Promise<Person[]> {
+  if (!TMDB_API_KEY) return [];
+  const url = `/api/tmdb/3/search/person?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false&language=en-US&page=1`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.results || [];
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function getPersonDetails(personId: number): Promise<PersonDetails> {
+  const url = `/api/tmdb/3/person/${personId}?api_key=${TMDB_API_KEY}&append_to_response=movie_credits,images`;
+  const response = await fetch(url);
+  return response.json();
 }
 
 export function getPosterUrl(path: string | null) {
