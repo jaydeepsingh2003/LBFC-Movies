@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { getTvShowDetails, getPosterUrl, getBackdropUrl, getLogoUrl } from '@/lib/tmdb.client';
+import { getTvShowDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
 import type { TVShowDetails, CastMember, CrewMember, TVShow, TVSeason } from '@/lib/tmdb';
 import { getExternalTvRatings } from '@/ai/flows/get-external-tv-ratings';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft } from 'lucide-react';
+import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Info, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -22,6 +22,7 @@ import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { TvShowRating } from '@/components/tv-show-rating';
 import { TVUserReviewsSection } from '@/components/tv-user-reviews-section';
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 interface TVShowDetailsWithMedia extends TVShowDetails {
   posterUrl: string | null;
@@ -73,6 +74,7 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
+      window.scrollTo(0, 0);
       try {
         const showId = parseInt(id, 10);
         const showDetails = await getTvShowDetails(showId);
@@ -84,9 +86,9 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
         };
         setShow(showWithMedia);
 
+        // Fetch AI External Ratings
         const ratingsResult = await getExternalTvRatings({ tvShowTitle: showDetails.name });
         setExternalRatings(ratingsResult);
-
 
       } catch (error) {
         console.error("Failed to fetch tv show details", error);
@@ -108,8 +110,8 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
     if (!user || !firestore || !show) {
         toast({
             variant: "destructive",
-            title: "Please log in",
-            description: "You must be logged in to save shows.",
+            title: "Sign in required",
+            description: "Please log in to curate your TV collection.",
         });
         return;
     }
@@ -117,7 +119,7 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
     try {
         if (isSaved) {
             await removeTvShowFromPlaylist(firestore, user.uid, show.id);
-            toast({ title: "Show removed from your playlist." });
+            toast({ title: "Removed from TV Vault" });
         } else {
             await saveTvShowToPlaylist(firestore, user.uid, {
                 id: show.id,
@@ -125,105 +127,35 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                 overview: show.overview,
                 poster_path: show.poster_path,
             });
-            toast({ title: "Show added to your playlist!" });
+            toast({ title: "Saved to TV Vault" });
         }
     } catch (error) {
         console.error("Error toggling save state:", error);
-        toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Could not update your playlist. Please try again.",
-        });
     }
   };
-  
-  const getAverageRating = () => {
-    if (!externalRatings) return null;
-    const imdbScore = parseFloat(externalRatings.imdb.split('/')[0]);
-    const rtScore = parseInt(externalRatings.rottenTomatoes.replace('%', ''));
 
-    if (isNaN(imdbScore) || isNaN(rtScore)) return null;
-
-    const average = (imdbScore * 10 + rtScore) / 2;
-    return `${average.toFixed(0)}%`;
-  }
-  
-  const usProviders = show?.['watch/providers']?.results?.US;
-  const streamingProviders = usProviders?.flatrate || [];
+  const streamingProviders = show?.['watch/providers']?.results?.IN?.flatrate || [];
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader2 className="h-32 w-32 animate-spin text-primary" />
+      <div className="flex flex-col justify-center items-center h-screen gap-6">
+        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        <p className="text-muted-foreground font-bold tracking-widest uppercase text-xs animate-pulse">Retrieving Series Intel...</p>
       </div>
     );
   }
 
-  if (!show) {
-    return (
-      <div className="text-center py-16">
-        <h2 className="text-2xl font-bold">TV Show not found</h2>
-        <p className="text-muted-foreground mt-2">We couldn't find details for this show.</p>
-      </div>
-    );
-  }
-
-  const renderCreditList = (items: (CastMember | CrewMember)[], maxItems = 12) => (
-     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-      {items.slice(0, maxItems).map(item => (
-        <Card key={item.credit_id} className="bg-card/50 transition-colors hover:bg-secondary">
-          <Link href={`/person/${item.id}`} className="block h-full">
-            <CardContent className="p-3 flex items-center gap-3 h-full">
-              <Avatar>
-                <AvatarImage src={item.profile_path ? getPosterUrl(item.profile_path) : undefined} />
-                <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-semibold text-sm">{item.name}</p>
-                <p className="text-xs text-muted-foreground">{'character' in item ? item.character : item.job}</p>
-              </div>
-            </CardContent>
-          </Link>
-        </Card>
-      ))}
-    </div>
-  );
-  
-  const renderSeasons = (seasons: TVSeason[]) => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {seasons.filter(s => s.season_number > 0).map(season => (
-             <Card key={season.id} className="flex gap-4 overflow-hidden bg-secondary">
-                <div className="w-1/3 aspect-[2/3] relative flex-shrink-0">
-                     {season.poster_path ? (
-                        <Image src={getPosterUrl(season.poster_path)} alt={season.name} fill className="object-cover" />
-                     ) : (
-                        <div className="w-full h-full bg-muted flex items-center justify-center">
-                            <Tv className="w-8 h-8 text-muted-foreground" />
-                        </div>
-                     )}
-                </div>
-                <div className="p-4 flex flex-col">
-                    <h3 className="font-bold text-lg leading-tight">{season.name}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{season.air_date ? new Date(season.air_date).getFullYear() : ''} | {season.episode_count} Episodes</p>
-                    <p className="text-sm text-foreground/80 mt-2 line-clamp-4">{season.overview}</p>
-                </div>
-            </Card>
-        ))}
-    </div>
-  );
-
-  const similarShows = show.similar.results
-        .map(m => ({ ...m, posterUrl: getPosterUrl(m.poster_path), title: m.name } as TVShowWithPoster))
-        .filter(m => m.posterUrl);
+  if (!show) return <div className="text-center py-20 font-headline text-2xl font-bold">Show unavailable.</div>;
 
   const trailerAvailable = !!show?.videos?.results?.find(v => v.type === 'Trailer');
 
   return (
-    <div className="relative">
-      <div className="relative h-96 md:h-[32rem] w-full">
-        {show.backdropUrl && <Image src={show.backdropUrl} alt={show.name} fill className="object-cover" />}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent" />
+    <div className="relative min-h-screen">
+      {/* Backdrop Section */}
+      <div className="relative h-[50vh] md:h-[70vh] w-full">
+        {show.backdropUrl && <Image src={show.backdropUrl} alt={show.name} fill className="object-cover" priority />}
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent hidden md:block" />
         
         {/* Back Button */}
         <Link href="/tv" className="absolute top-8 left-4 md:left-8 z-20">
@@ -233,10 +165,11 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
         </Link>
       </div>
 
-      <div className="relative -mt-48 px-4 md:px-8 pb-8">
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="w-full md:w-1/4">
-            <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden shadow-2xl border-2 border-primary group glass-card">
+      <div className="content-container relative -mt-32 md:-mt-48 pb-20">
+        <div className="flex flex-col lg:flex-row gap-12">
+          {/* Poster & Actions Sidebar */}
+          <div className="w-full lg:w-[350px] flex-shrink-0 space-y-6">
+            <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden shadow-2xl border-2 border-white/10 glass-card group">
                 {show.posterUrl && <Image src={show.posterUrl} alt={show.name} fill className="object-cover" />}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     {trailerAvailable && (
@@ -247,130 +180,151 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                 </div>
             </div>
             
-            <div className="flex gap-2 mt-4">
-              <Button onClick={handlePlayTrailer} className="flex-1" size="lg" disabled={!trailerAvailable}>
-                <PlayCircle className="mr-2" /> Watch Trailer
-              </Button>
-              {user && (
-                <Button onClick={handleSaveToggle} variant={isSaved ? "secondary" : "outline"} size="lg" disabled={isSavedShowLoading} className="glass-card border-white/10">
-                  <Bookmark className={cn("size-5", isSaved && "fill-primary text-primary")} />
+            <div className="grid grid-cols-1 gap-3">
+                <Button onClick={handlePlayTrailer} disabled={!trailerAvailable} size="lg" className="rounded-xl h-14 font-black text-lg shadow-xl shadow-primary/20">
+                    <PlayCircle className="mr-3 fill-current" /> Watch Trailer
                 </Button>
-              )}
+                <div className="flex gap-3">
+                    <Button onClick={handleSaveToggle} variant={isSaved ? "secondary" : "outline"} className="flex-1 rounded-xl h-14 border-white/10 glass-card" disabled={isSavedShowLoading}>
+                        <Bookmark className={cn("mr-2 size-5", isSaved && "fill-primary text-primary")} /> 
+                        {isSaved ? 'In Vault' : 'Add to Vault'}
+                    </Button>
+                    <Button variant="outline" className="rounded-xl h-14 w-14 glass-card border-white/10">
+                        <Info className="size-5" />
+                    </Button>
+                </div>
             </div>
+
             {streamingProviders.length > 0 && (
-                <Card className="mt-4 bg-secondary">
-                    <CardHeader>
-                        <CardTitle className="text-base">Where to Watch</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-wrap gap-2">
+                <div className="glass-panel rounded-2xl p-6 space-y-4">
+                    <h3 className="font-bold text-sm uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                        <Info className="size-4" /> Stream Now
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
                         {streamingProviders.map(provider => (
-                            <div key={provider.provider_id} title={provider.provider_name}>
-                                <Avatar className="h-10 w-10">
-                                    <AvatarImage src={getPosterUrl(provider.logo_path)} alt={provider.provider_name} />
-                                    <AvatarFallback>{provider.provider_name.substring(0, 2)}</AvatarFallback>
-                                </Avatar>
+                            <div key={provider.provider_id} title={provider.provider_name} className="relative size-12 rounded-xl overflow-hidden shadow-lg hover:scale-110 transition-transform">
+                                <Image src={getPosterUrl(provider.logo_path)!} alt={provider.provider_name} fill className="object-cover" />
                             </div>
                         ))}
-                    </CardContent>
-                </Card>
-            )}
-          </div>
-
-          <div className="w-full md:w-3/4 space-y-6">
-            <header className="space-y-2">
-              <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tight text-foreground">{show.name}</h1>
-              <p className="text-muted-foreground text-lg italic">{show.tagline}</p>
-              <div className="flex flex-wrap gap-2">
-                {show.genres.map(genre => <Badge key={genre.id} variant="secondary" className="glass-card border-none">{genre.name}</Badge>)}
-              </div>
-            </header>
-            
-            {user && (
-              <div className="space-y-2 glass-panel p-4 rounded-xl">
-                <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Your Rating</h3>
-                <TvShowRating showId={show.id} />
-              </div>
-            )}
-
-            <p className="text-foreground/80 leading-relaxed text-lg max-w-4xl">{show.overview}</p>
-            
-            <div className="flex items-center flex-wrap gap-4 text-sm font-bold">
-                <div className="flex items-center gap-2 text-yellow-400 bg-yellow-400/10 px-3 py-1.5 rounded-full">
-                    <Star className="w-4 h-4 fill-current" />
-                    <span>{show.vote_average.toFixed(1)}</span>
-                </div>
-
-                {externalRatings && (
-                    <>
-                        <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full">
-                           <ImdbIcon />
-                           <span>{externalRatings.imdb}</span>
-                        </div>
-                        <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full">
-                           <RottenTomatoesIcon />
-                           <span>{externalRatings.rottenTomatoes}</span>
-                        </div>
-                    </>
-                )}
-
-                <div className="bg-white/5 px-3 py-1.5 rounded-full text-muted-foreground">
-                    {show.first_air_date ? new Date(show.first_air_date).getFullYear() : ''} - {show.in_production ? 'Present' : (show.last_air_date ? new Date(show.last_air_date).getFullYear() : '')}
-                </div>
-                <div className="bg-white/5 px-3 py-1.5 rounded-full text-muted-foreground">
-                    {show.number_of_seasons} Seasons
-                </div>
-            </div>
-
-            <Separator className="bg-white/10" />
-            
-            {show.created_by && show.created_by.length > 0 && (
-                 <div className="space-y-3">
-                    <h3 className="text-lg font-semibold text-foreground">Created by</h3>
-                    <div className="flex flex-wrap gap-4">
-                    {show.created_by.map(creator => (
-                        <Link href={`/person/${creator.id}`} key={creator.credit_id}>
-                            <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary hover:bg-secondary/80">
-                                <Avatar className="h-10 w-10">
-                                    <AvatarImage src={getPosterUrl(creator.profile_path)} />
-                                    <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <span className="font-semibold text-sm">{creator.name}</span>
-                            </div>
-                        </Link>
-                    ))}
                     </div>
                 </div>
             )}
+          </div>
 
-            <TVUserReviewsSection showId={show.id} />
+          {/* Main Info Section */}
+          <div className="flex-1 space-y-10">
+            <div className="space-y-6">
+                <header className="space-y-4">
+                    <h1 className="font-headline text-5xl md:text-7xl font-black tracking-tighter text-white drop-shadow-2xl">
+                        {show.name}
+                    </h1>
+                    <div className="flex flex-wrap items-center gap-4 text-sm font-bold">
+                        <div className="flex items-center gap-2 text-yellow-400 bg-yellow-400/10 px-3 py-1.5 rounded-full">
+                            <Star className="size-4 fill-current" />
+                            <span>{show.vote_average.toFixed(1)} TMDB</span>
+                        </div>
 
-            <section className="space-y-4 pt-8">
-              <h2 className="section-title">Seasons</h2>
-              {renderSeasons(show.seasons)}
+                        {externalRatings && (
+                            <>
+                                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full">
+                                   <ImdbIcon />
+                                   <span>{externalRatings.imdb}</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full">
+                                   <RottenTomatoesIcon />
+                                   <span>{externalRatings.rottenTomatoes}</span>
+                                </div>
+                            </>
+                        )}
+
+                        <div className="flex items-center gap-2 text-muted-foreground bg-white/5 px-3 py-1.5 rounded-full">
+                            <Calendar className="size-4" />
+                            <span>{show.first_air_date ? new Date(show.first_air_date).getFullYear() : 'TBA'}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-muted-foreground bg-white/5 px-3 py-1.5 rounded-full">
+                            <Badge variant="outline" className="border-none p-0 text-muted-foreground">
+                                {show.number_of_seasons} Seasons
+                            </Badge>
+                        </div>
+                        {show.genres.slice(0, 3).map(g => (
+                            <Badge key={g.id} variant="secondary" className="rounded-full px-4 py-1.5 glass-card font-bold border-none">
+                                {g.name}
+                            </Badge>
+                        ))}
+                    </div>
+                </header>
+
+                <div className="max-w-3xl">
+                    <p className="text-xl md:text-2xl font-medium text-white/90 leading-relaxed italic border-l-4 border-primary pl-6 py-2">
+                        {show.tagline || "A compelling series that demands your attention."}
+                    </p>
+                    <p className="mt-6 text-lg text-muted-foreground leading-relaxed font-medium">
+                        {show.overview}
+                    </p>
+                </div>
+            </div>
+
+            {/* Sub-sections */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8">
+                <section className="space-y-6">
+                    <h2 className="section-title">Created By & Cast</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {show.credits.cast.slice(0, 6).map(person => (
+                            <Link href={`/person/${person.id}`} key={person.credit_id} className="flex items-center gap-4 p-3 glass-panel rounded-xl hover:bg-white/10 transition-all group">
+                                <Avatar className="size-14 border-2 border-white/10 group-hover:border-primary transition-colors">
+                                    <AvatarImage src={getPosterUrl(person.profile_path)!} />
+                                    <AvatarFallback>{person.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div className="overflow-hidden">
+                                    <p className="font-bold text-sm truncate">{person.name}</p>
+                                    <p className="text-xs text-muted-foreground truncate">{person.character}</p>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="space-y-6">
+                    <h2 className="section-title">Your Verdict</h2>
+                    <div className="glass-panel rounded-2xl p-8 space-y-6">
+                        <div className="space-y-2">
+                            <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-center">Rate this Series</p>
+                            <div className="flex justify-center py-2">
+                                <TvShowRating showId={show.id} />
+                            </div>
+                        </div>
+                        <Separator className="bg-white/5" />
+                        <TVUserReviewsSection showId={show.id} />
+                    </div>
+                </section>
+            </div>
+
+            {/* Seasons Grid */}
+            <section className="space-y-6 pt-12">
+                <h2 className="section-title">Seasons</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {show.seasons.filter(s => s.season_number > 0).map(season => (
+                        <div key={season.id} className="flex gap-4 p-4 glass-panel rounded-2xl overflow-hidden group hover:bg-white/5 transition-all">
+                            <div className="w-24 aspect-[2/3] relative flex-shrink-0 rounded-lg overflow-hidden border border-white/10">
+                                {season.poster_path ? (
+                                    <Image src={getPosterUrl(season.poster_path)!} alt={season.name} fill className="object-cover" />
+                                ) : (
+                                    <div className="w-full h-full bg-secondary flex items-center justify-center">
+                                        <Tv className="size-8 text-muted-foreground/20" />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex-1 space-y-1">
+                                <h3 className="font-bold text-base group-hover:text-primary transition-colors">{season.name}</h3>
+                                <p className="text-xs font-bold text-muted-foreground uppercase">{season.air_date ? new Date(season.air_date).getFullYear() : 'TBA'} • {season.episode_count} Episodes</p>
+                                <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed mt-2">{season.overview || "No overview available for this season."}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </section>
-            
-            <section className="space-y-4 pt-8">
-              <h2 className="section-title">Cast</h2>
-              {renderCreditList(show.credits.cast)}
-            </section>
-
           </div>
         </div>
-        
-        {similarShows.length > 0 && (
-            <div className="pt-12">
-                 <div className="space-y-4">
-                    <h2 className="section-title">You Might Also Like</h2>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                        {similarShows.map((s) => (
-                           s.id ? (
-                            <TVShowCard key={s.id} id={s.id} title={s.title} posterUrl={s.posterUrl} />
-                           ) : null
-                        ))}
-                    </div>
-                </div>
-            </div>
-        )}
       </div>
     </div>
   );

@@ -273,7 +273,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                 </div>
             </div>
 
-            {/* Sub-sections */}
+            {/* Director & Cast Sub-section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8">
                 <section className="space-y-6">
                     <h2 className="section-title">Director & Cast</h2>
@@ -308,6 +308,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                 </section>
             </div>
 
+            {/* AI Trivia Section */}
             {trivia && (
                 <section className="space-y-8 glass-panel rounded-3xl p-8 md:p-12">
                     <h2 className="section-title">Director's Cut & Trivia</h2>
