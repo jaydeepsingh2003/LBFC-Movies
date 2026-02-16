@@ -1,9 +1,8 @@
-
-"use client";
+'use client';
 
 import { useState, useEffect } from "react";
 import { MovieCarousel } from "../movie-carousel";
-import { getPosterUrl, getMovieVideos, getTrendingMovies } from "@/lib/tmdb.client";
+import { getPosterUrl, getTrendingMovies } from "@/lib/tmdb.client";
 import { Movie } from "@/lib/tmdb";
 import { Skeleton } from "../ui/skeleton";
 
@@ -21,19 +20,10 @@ export default function TrendingSection() {
             setIsLoading(true);
             try {
                 const trendingMovies = await getTrendingMovies();
-                
-                const moviePromises = trendingMovies.map(async (movie) => {
-                    const videos = await getMovieVideos(movie.id);
-                    const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-                    return {
-                        ...movie,
-                        posterUrl: getPosterUrl(movie.poster_path),
-                        trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
-                    };
-                });
-
-                const fetchedMovies = await Promise.all(moviePromises);
-                
+                const fetchedMovies = trendingMovies.map((movie) => ({
+                    ...movie,
+                    posterUrl: getPosterUrl(movie.poster_path),
+                }));
                 setMovies(fetchedMovies as MovieWithPoster[]);
             } catch (error) {
                 console.error("Failed to fetch trending movies:", error);
@@ -41,7 +31,6 @@ export default function TrendingSection() {
                 setIsLoading(false);
             }
         }
-
         fetchTrending();
     }, []);
 

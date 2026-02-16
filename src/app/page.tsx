@@ -18,11 +18,7 @@ import TeluguMoviesSection from '@/components/sections/telugu-movies-section';
 import MovieMatchmakerSection from '@/components/movie-matchmaker-section';
 import NowPlayingSection from '@/components/sections/now-playing-section';
 import UpcomingSection from '@/components/sections/upcoming-section';
-import EnglishTvSection from '@/components/sections/english-tv-section';
-import HindiTvSection from '@/components/sections/hindi-tv-section';
-import KannadaTvSection from '@/components/sections/kannada-tv-section';
 import TrendingOttsSection from '@/components/sections/trending-otts-section';
-import TamilTvSection from '@/components/sections/tamil-tv-section';
 
 export default function DashboardPage() {
   const { user, isLoading } = useUser();
@@ -53,12 +49,6 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 gap-16">
             <ForYouSection />
             <TrendingSection />
-          </div>
-          <div className="space-y-16">
-            <EnglishTvSection />
-            <HindiTvSection />
-            <KannadaTvSection />
-            <TamilTvSection />
           </div>
           <div className="space-y-16">
             <HindiMoviesSection />

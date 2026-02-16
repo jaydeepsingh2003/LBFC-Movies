@@ -1,9 +1,8 @@
-
-"use client";
+'use client';
 
 import { useState, useEffect } from "react";
 import { MovieCarousel } from "../movie-carousel";
-import { getUpcomingMovies, getPosterUrl, getMovieVideos } from "@/lib/tmdb.client";
+import { getUpcomingMovies, getPosterUrl } from "@/lib/tmdb.client";
 import { Movie } from "@/lib/tmdb";
 import { Skeleton } from "../ui/skeleton";
 
@@ -20,27 +19,11 @@ export default function UpcomingSection() {
         const fetchUpcoming = async () => {
             setIsLoading(true);
             try {
-                const [enMovies, hiMovies, knMovies] = await Promise.all([
-                    getUpcomingMovies('en'),
-                    getUpcomingMovies('hi'),
-                    getUpcomingMovies('kn')
-                ]);
-
-                const combined = [...enMovies.slice(0,10), ...hiMovies.slice(0,5), ...knMovies.slice(0,5)];
-                const shuffled = combined.sort(() => 0.5 - Math.random());
-
-                const moviePromises = shuffled.map(async (movie) => {
-                    const videos = await getMovieVideos(movie.id);
-                    const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-                    return {
-                        ...movie,
-                        posterUrl: getPosterUrl(movie.poster_path),
-                        trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
-                    };
-                });
-                
-                const moviesWithTrailers = await Promise.all(moviePromises);
-
+                const results = await getUpcomingMovies();
+                const moviesWithTrailers = results.map((movie) => ({
+                    ...movie,
+                    posterUrl: getPosterUrl(movie.poster_path),
+                }));
                 setMovies(moviesWithTrailers as MovieWithPoster[]);
             } catch (error) {
                 console.error("Failed to fetch upcoming movies:", error);
@@ -48,7 +31,6 @@ export default function UpcomingSection() {
                 setIsLoading(false);
             }
         }
-
         fetchUpcoming();
     }, []);
 

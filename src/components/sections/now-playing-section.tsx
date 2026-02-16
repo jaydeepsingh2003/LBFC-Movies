@@ -1,9 +1,8 @@
-
-"use client";
+'use client';
 
 import { useState, useEffect } from "react";
 import { MovieCarousel } from "../movie-carousel";
-import { getNowPlayingMovies, getPosterUrl, getMovieVideos } from "@/lib/tmdb.client";
+import { getNowPlayingMovies, getPosterUrl } from "@/lib/tmdb.client";
 import { Movie } from "@/lib/tmdb";
 import { Skeleton } from "../ui/skeleton";
 
@@ -20,21 +19,11 @@ export default function NowPlayingSection() {
         const fetchNowPlaying = async () => {
             setIsLoading(true);
             try {
-                // Fetch Hindi movies currently in theaters in India
-                const hiMovies = await getNowPlayingMovies('hi-IN', 'IN');
-                
-                const moviePromises = hiMovies.map(async (movie) => {
-                    const videos = await getMovieVideos(movie.id);
-                    const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-                    return {
-                        ...movie,
-                        posterUrl: getPosterUrl(movie.poster_path),
-                        trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
-                    };
-                });
-
-                const moviesWithDetails = await Promise.all(moviePromises);
-                
+                const results = await getNowPlayingMovies('en-US', 'IN');
+                const moviesWithDetails = results.map((movie) => ({
+                    ...movie,
+                    posterUrl: getPosterUrl(movie.poster_path),
+                }));
                 setMovies(moviesWithDetails as MovieWithPoster[]);
             } catch (error) {
                 console.error("Failed to fetch now playing movies:", error);
@@ -42,7 +31,6 @@ export default function NowPlayingSection() {
                 setIsLoading(false);
             }
         }
-
         fetchNowPlaying();
     }, []);
 
@@ -59,5 +47,5 @@ export default function NowPlayingSection() {
         )
     }
 
-    return <MovieCarousel title="Now Playing in Theaters" movies={movies} />;
+    return <MovieCarousel title="In Theaters" movies={movies} />;
 }
