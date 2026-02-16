@@ -27,6 +27,8 @@ const QUICK_FILTERS = [
   { label: 'Blockbusters', sortBy: 'revenue.desc' },
 ];
 
+const currentYear = new Date().getFullYear();
+
 export default function DiscoverPage() {
   const [results, setResults] = useState<DiscoverResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);

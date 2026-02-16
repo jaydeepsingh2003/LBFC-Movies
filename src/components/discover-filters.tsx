@@ -142,7 +142,7 @@ export default function DiscoverFilters({ onSearch, isLoading, searchType }: Dis
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {sortOptions.map(opt => <SelectItem key={v.value} value={opt.value}>{opt.label}</SelectItem>)}
+                {sortOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
