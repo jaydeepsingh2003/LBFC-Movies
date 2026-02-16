@@ -148,15 +148,15 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
   const streamingProviders = movie['watch/providers']?.results?.IN?.flatrate || [];
 
   return (
-    <div className="relative min-h-screen -mt-24 md:-mt-28">
+    <div className="relative min-h-screen">
       {/* Immersive Backdrop Section */}
       <div className="relative h-[60vh] md:h-[80vh] w-full">
         {movie.backdropUrl && <Image src={movie.backdropUrl} alt={movie.title} fill className="object-cover" priority />}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent hidden md:block" />
         
-        {/* Back Button - Fixed position relative to viewport or offset relative to main */}
-        <Link href="/" className="absolute top-28 left-4 md:left-8 z-20">
+        {/* Back Button */}
+        <Link href="/" className="absolute top-8 left-4 md:left-8 z-20">
             <Button variant="ghost" className="glass-card rounded-full gap-2 text-white hover:bg-primary transition-all">
                 <ChevronLeft className="size-5" /> Back to Dashboard
             </Button>
