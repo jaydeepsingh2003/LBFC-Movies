@@ -7,7 +7,7 @@ import { getMovieTrivia } from '@/ai/flows/movie-trivia';
 import { getExternalRatings } from '@/ai/flows/get-external-ratings';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, Bookmark, Music } from 'lucide-react';
+import { Loader2, Play, Star, Bookmark, Music, Calendar, Clock, ChevronLeft, Share2, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -22,6 +22,7 @@ import { saveMovieToPlaylist, removeMovieFromPlaylist } from '@/firebase/firesto
 import { doc } from 'firebase/firestore';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { MovieCarousel } from '@/components/movie-carousel';
+import { Separator } from '@/components/ui/separator';
 
 interface MovieDetailsWithMedia extends MovieDetails {
   posterUrl: string | null;
@@ -42,24 +43,8 @@ interface ExternalRatings {
 interface MovieWithPoster extends Partial<Movie> {
     posterUrl: string | null;
     title: string;
+    id: number;
 }
-
-
-const RottenTomatoesIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.17 14.83c-.39.39-1.02.39-1.41 0L12 15.41l-1.76 1.42c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41l1.42-1.76-1.42-1.76c-.39-.39-.39-10.2 0-1.41.39-.39 1.02-.39 1.41 0l1.76 1.42 1.76-1.42c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-1.42 1.76 1.42 1.76c.39.39.39 1.02 0 1.41z" fill="#FA320A"/>
-    </svg>
-);
-
-const ImdbIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-auto">
-    <rect width="48" height="24" rx="4" fill="#F5C518"/>
-    <path d="M8 6H11V18H8V6Z" fill="black"/>
-    <path d="M15.2 6H19.4L16.4 13.8L15.2 18H12L14.6 11.4L13.4 6H15.2Z" fill="black"/>
-    <path d="M21.6 6H24.6C26.4 6 27.6 6.9 27.6 9C27.6 10.5 26.7 11.4 25.5 11.7L28.2 18H24.9L22.8 12.3H24V8.4H22.2L21.6 6ZM24 8.4V10.2C25.2 10.2 25.5 9.9 25.5 9C25.5 8.1 25.2 8.4 24 8.4Z" fill="black"/>
-    <path d="M31 6H39V8.1H35.5V18H32.5V8.1H31V6Z" fill="black"/>
-  </svg>
-);
 
 export default function MovieDetailsPage(props: { params: { id: string } }) {
   const params = React.use(props.params);
@@ -80,19 +65,10 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
   const [savedMovieDoc, isSavedMovieLoading] = useDocumentData(savedMovieRef);
   const isSaved = !!savedMovieDoc;
 
-  const isMovieInTheaters = useMemo(() => {
-    if (!movie?.release_date) return false;
-    const releaseDate = new Date(movie.release_date);
-    const today = new Date();
-    const inTheatersUntil = new Date(releaseDate.getTime() + 90 * 24 * 60 * 60 * 1000);
-    return releaseDate <= today && today <= inTheatersUntil && movie.status === 'Released';
-  }, [movie]);
-
-
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
-      setSimilarMovies([]);
+      window.scrollTo(0, 0);
       try {
         const movieId = parseInt(id, 10);
         const movieDetails = await getMovieDetails(movieId);
@@ -104,14 +80,14 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
         };
         setMovie(movieWithMedia);
 
-        const similarMoviesPromises = movieDetails.similar.results.map(async (m) => {
+        const similarMoviesPromises = movieDetails.similar.results.slice(0, 12).map(async (m) => {
             const videos = await getMovieVideos(m.id);
             const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
             return {
                 ...m,
                 posterUrl: getPosterUrl(m.poster_path),
                 title: m.title,
-                trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
+                trailerUrl: trailer ? trailer.key : undefined,
             } as MovieWithPoster;
         });
 
@@ -128,7 +104,7 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
         setExternalRatings(ratingsResult);
 
       } catch (error) {
-        console.error("Failed to fetch movie details or trivia", error);
+        console.error("Failed to fetch movie details", error);
       } finally {
         setIsLoading(false);
       }
@@ -136,289 +112,206 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
     fetchData();
   }, [id]);
 
-  const handlePlayVideo = (key: string) => {
-    setVideoId(key);
-  };
+  const handlePlayVideo = (key: string) => setVideoId(key);
   
   const handleSaveToggle = async () => {
     if (!user || !firestore || !movie) {
-        toast({
-            variant: "destructive",
-            title: "Please log in",
-            description: "You must be logged in to manage your playlist.",
-        });
+        toast({ variant: "destructive", title: "Sign in required", description: "You need an account to curate your playlist." });
         return;
     }
-
     try {
         if (isSaved) {
             await removeMovieFromPlaylist(firestore, user.uid, movie.id);
-            toast({ title: "Movie removed from your playlist." });
+            toast({ title: "Removed from Playlist" });
         } else {
-            await saveMovieToPlaylist(firestore, user.uid, {
-                id: movie.id,
-                title: movie.title,
-                overview: movie.overview,
-                poster_path: movie.poster_path,
-            });
-            toast({ title: "Movie added to your playlist!" });
+            await saveMovieToPlaylist(firestore, user.uid, { id: movie.id, title: movie.title, overview: movie.overview, poster_path: movie.poster_path });
+            toast({ title: "Added to Playlist" });
         }
     } catch (error) {
-        console.error("Error toggling save state:", error);
-        toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Could not update your playlist. Please try again.",
-        });
+        console.error("Error toggling save:", error);
     }
   };
 
-  const getAverageRating = () => {
-    if (!externalRatings) return null;
-    const imdbScore = parseFloat(externalRatings.imdb.split('/')[0]);
-    const rtScore = parseInt(externalRatings.rottenTomatoes.replace('%', ''));
-
-    if (isNaN(imdbScore) || isNaN(rtScore)) return null;
-
-    const average = (imdbScore * 10 + rtScore) / 2;
-    return `${average.toFixed(0)}%`;
-  }
-  
-  const usProviders = movie?.['watch/providers']?.results?.US;
-  const streamingProviders = usProviders?.flatrate || [];
-  
-  const trailer = movie?.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-  const musicVideos = movie?.videos.results.filter(v => v.type === 'Music Video' && v.site === 'YouTube');
-
-
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader2 className="h-32 w-32 animate-spin text-primary" />
+      <div className="flex flex-col justify-center items-center h-screen gap-6">
+        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        <p className="text-muted-foreground font-bold tracking-widest uppercase text-xs animate-pulse">Scanning the Archives...</p>
       </div>
     );
   }
 
-  if (!movie) {
-    return (
-      <div className="text-center py-16">
-        <h2 className="text-2xl font-bold">Movie not found</h2>
-        <p className="text-muted-foreground mt-2">We couldn't find details for this movie.</p>
-      </div>
-    );
-  }
+  if (!movie) return <div className="text-center py-20 font-headline text-2xl font-bold">Content unavailable.</div>;
 
-  const renderCreditList = (items: (CastMember | CrewMember)[], maxItems = 12) => (
-     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-      {items.slice(0, maxItems).map(item => (
-        <Card key={item.credit_id} className="bg-card/50 transition-colors hover:bg-secondary">
-          <Link href={`/person/${item.id}`} className="block h-full">
-            <CardContent className="p-3 flex items-center gap-3 h-full">
-              <Avatar>
-                <AvatarImage src={item.profile_path ? getPosterUrl(item.profile_path) : undefined} />
-                <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-semibold text-sm">{item.name}</p>
-                <p className="text-xs text-muted-foreground">{'character' in item ? item.character : item.job}</p>
-              </div>
-            </CardContent>
-          </Link>
-        </Card>
-      ))}
-    </div>
-  );
-  
-  const renderReviews = (reviews: Review[], maxItems = 3) => (
-    <div className="space-y-4">
-        {reviews.slice(0, maxItems).map(review => (
-            <Card key={review.id} className="bg-card/50">
-                <CardHeader>
-                    <div className="flex items-center gap-3">
-                        <Avatar>
-                            <AvatarImage src={review.author_details.avatar_path ? getPosterUrl(review.author_details.avatar_path) : undefined} />
-                            <AvatarFallback>{review.author.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <p className="font-semibold">{review.author}</p>
-                            {review.author_details.rating && (
-                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                    <Star className="w-3 h-3 text-yellow-400" />
-                                    <span>{review.author_details.rating} / 10</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-sm text-foreground/80 line-clamp-4 italic">"{review.content}"</p>
-                </CardContent>
-            </Card>
-        ))}
-    </div>
-  );
-
+  const trailer = movie.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official) || movie.videos.results[0];
+  const streamingProviders = movie['watch/providers']?.results?.IN?.flatrate || [];
 
   return (
-    <div className="relative">
-      <div className="relative h-96 md:h-[32rem] w-full">
-        {movie.backdropUrl && <Image src={movie.backdropUrl} alt={movie.title} fill className="object-cover" />}
+    <div className="relative min-h-screen">
+      {/* Immersive Backdrop Section */}
+      <div className="relative h-[60vh] md:h-[80vh] w-full">
+        {movie.backdropUrl && <Image src={movie.backdropUrl} alt={movie.title} fill className="object-cover" priority />}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent hidden md:block" />
+        
+        {/* Back Button */}
+        <Link href="/" className="absolute top-24 left-4 md:left-8 z-20">
+            <Button variant="ghost" className="glass-card rounded-full gap-2 text-white hover:bg-primary transition-all">
+                <ChevronLeft className="size-5" /> Back to Dashboard
+            </Button>
+        </Link>
       </div>
 
-      <div className="relative -mt-48 px-4 md:px-8 pb-8">
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="w-full md:w-1/4">
-            <Card className="overflow-hidden border-2 border-primary shadow-lg">
-              <CardContent className="p-0 aspect-[2/3] relative w-full">
+      <div className="content-container relative -mt-64 md:-mt-96 pb-20">
+        <div className="flex flex-col lg:flex-row gap-12">
+          {/* Poster & Actions Sidebar */}
+          <div className="w-full lg:w-[350px] flex-shrink-0 space-y-6">
+            <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden shadow-2xl border-2 border-white/10 glass-card group">
                 {movie.posterUrl && <Image src={movie.posterUrl} alt={movie.title} fill className="object-cover" />}
-              </CardContent>
-            </Card>
-            <div className="flex flex-col gap-2 mt-4">
-              <Button onClick={() => trailer && handlePlayVideo(trailer.key)} disabled={!trailer} className="w-full" size="lg">
-                <PlayCircle className="mr-2" /> Play Trailer
-              </Button>
-               {user && (
-                <Button onClick={handleSaveToggle} variant={isSaved ? "secondary" : "default"} size="lg" disabled={isSavedMovieLoading}>
-                  <Bookmark className={isSaved ? "mr-2 fill-current" : "mr-2"} /> {isSaved ? 'Saved' : 'Save'}
-                </Button>
-              )}
-               {isMovieInTheaters && (
-                <Button asChild size="lg">
-                  <a href="https://www.district.in/movies/" target="_blank" rel="noopener noreferrer">
-                    Book your tickets in District by Zomato
-                  </a>
-                </Button>
-              )}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    {trailer && (
+                        <Button variant="outline" className="rounded-full h-16 w-16 p-0 border-white/20 bg-white/10 backdrop-blur-md" onClick={() => handlePlayVideo(trailer.key)}>
+                            <Play className="size-8 fill-current" />
+                        </Button>
+                    )}
+                </div>
             </div>
-             {streamingProviders.length > 0 && (
-                <Card className="mt-4 bg-secondary">
-                    <CardHeader>
-                        <CardTitle className="text-base">Where to Watch</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-wrap gap-2">
+            
+            <div className="grid grid-cols-1 gap-3">
+                <Button onClick={() => trailer && handlePlayVideo(trailer.key)} disabled={!trailer} size="lg" className="rounded-xl h-14 font-black text-lg shadow-xl shadow-primary/20">
+                    <Play className="mr-3 fill-current" /> Watch Trailer
+                </Button>
+                <div className="flex gap-3">
+                    <Button onClick={handleSaveToggle} variant={isSaved ? "secondary" : "outline"} className="flex-1 rounded-xl h-14 border-white/10 glass-card" disabled={isSavedMovieLoading}>
+                        <Bookmark className={cn("mr-2 size-5", isSaved && "fill-primary text-primary")} /> 
+                        {isSaved ? 'In List' : 'Add to List'}
+                    </Button>
+                    <Button variant="outline" className="rounded-xl h-14 w-14 glass-card border-white/10">
+                        <Share2 className="size-5" />
+                    </Button>
+                </div>
+            </div>
+
+            {streamingProviders.length > 0 && (
+                <div className="glass-panel rounded-2xl p-6 space-y-4">
+                    <h3 className="font-bold text-sm uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                        <Info className="size-4" /> Available on
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
                         {streamingProviders.map(provider => (
-                            <div key={provider.provider_id} title={provider.provider_name}>
-                                <Avatar className="h-10 w-10">
-                                    <AvatarImage src={getPosterUrl(provider.logo_path)} alt={provider.provider_name} />
-                                    <AvatarFallback>{provider.provider_name.substring(0, 2)}</AvatarFallback>
-                                </Avatar>
+                            <div key={provider.provider_id} title={provider.provider_name} className="relative size-12 rounded-xl overflow-hidden shadow-lg hover:scale-110 transition-transform">
+                                <Image src={getPosterUrl(provider.logo_path)!} alt={provider.provider_name} fill className="object-cover" />
                             </div>
                         ))}
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             )}
           </div>
 
-          <div className="w-full md:w-3/4 space-y-6">
-            <header className="space-y-2">
-              <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tight text-foreground">{movie.title}</h1>
-              <p className="text-muted-foreground text-lg">{movie.tagline}</p>
-              <div className="flex flex-wrap gap-2">
-                {movie.genres.map(genre => <Badge key={genre.id} variant="secondary">{genre.name}</Badge>)}
-              </div>
-            </header>
-            
-            {user && (
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-foreground">Your Rating</h3>
-                <MovieRating movieId={movie.id} />
-              </div>
-            )}
+          {/* Main Info Section */}
+          <div className="flex-1 space-y-10">
+            <div className="space-y-6">
+                <header className="space-y-4">
+                    <h1 className="font-headline text-5xl md:text-7xl font-black tracking-tighter text-white drop-shadow-2xl">
+                        {movie.title}
+                    </h1>
+                    <div className="flex flex-wrap items-center gap-4 text-sm font-bold">
+                        <div className="flex items-center gap-2 text-yellow-400 bg-yellow-400/10 px-3 py-1.5 rounded-full">
+                            <Star className="size-4 fill-current" />
+                            <span>{movie.vote_average.toFixed(1)} TMDB</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-muted-foreground bg-white/5 px-3 py-1.5 rounded-full">
+                            <Calendar className="size-4" />
+                            <span>{new Date(movie.release_date).getFullYear()}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-muted-foreground bg-white/5 px-3 py-1.5 rounded-full">
+                            <Clock className="size-4" />
+                            <span>{Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m</span>
+                        </div>
+                        {movie.genres.slice(0, 3).map(g => (
+                            <Badge key={g.id} variant="secondary" className="rounded-full px-4 py-1.5 glass-card font-bold border-none">
+                                {g.name}
+                            </Badge>
+                        ))}
+                    </div>
+                </header>
 
-            <p className="text-foreground/80 leading-relaxed">{movie.overview}</p>
-            
-            <div className="flex items-center flex-wrap gap-4 text-sm">
-                <div className="flex items-center gap-2" title="TMDB User Score">
-                    <Star className="w-5 h-5 text-yellow-400" />
-                    <span className="font-bold text-lg">{movie.vote_average.toFixed(1)}</span>
-                    <span className="text-muted-foreground">/ 10</span>
+                <div className="max-w-3xl">
+                    <p className="text-xl md:text-2xl font-medium text-white/90 leading-relaxed italic border-l-4 border-primary pl-6 py-2">
+                        {movie.tagline || "A cinematic masterpiece waiting to be explored."}
+                    </p>
+                    <p className="mt-6 text-lg text-muted-foreground leading-relaxed font-medium">
+                        {movie.overview}
+                    </p>
                 </div>
-
-                {externalRatings && (
-                    <>
-                        <div className="flex items-center gap-2" title="IMDb Rating">
-                           <ImdbIcon />
-                           <span className="font-bold text-lg">{externalRatings.imdb}</span>
-                        </div>
-                        <div className="flex items-center gap-2" title="Rotten Tomatoes Score">
-                           <RottenTomatoesIcon />
-                           <span className="font-bold text-lg">{externalRatings.rottenTomatoes}</span>
-                        </div>
-                        <div className="flex items-center gap-2 p-2 rounded-md bg-secondary" title="Average Critic Score">
-                            <span className="text-xs font-bold text-muted-foreground">AVG</span>
-                            <span className="font-bold text-lg">{getAverageRating()}</span>
-                        </div>
-                    </>
-                )}
-
-                <span className="text-muted-foreground hidden md:inline">&#8226;</span>
-                <span className="text-muted-foreground">{new Date(movie.release_date).getFullYear()}</span>
-                 <span className="text-muted-foreground">&#8226;</span>
-                <span className="text-muted-foreground">{Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m</span>
             </div>
-            
-            {musicVideos && musicVideos.length > 0 && (
-                <section className="space-y-4 pt-8">
-                    <h2 className="font-headline text-2xl font-bold">Music Videos</h2>
+
+            {/* Sub-sections */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8">
+                <section className="space-y-6">
+                    <h2 className="section-title">Director & Cast</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {musicVideos.map(video => (
-                            <Card key={video.id} className="bg-card/50 hover:bg-secondary transition-colors cursor-pointer" onClick={() => handlePlayVideo(video.key)}>
-                                <CardContent className="p-4 flex items-center gap-4">
-                                    <div className="p-3 bg-primary/20 rounded-md">
-                                        <Music className="w-6 h-6 text-primary" />
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold line-clamp-1">{video.name}</p>
-                                        <p className="text-xs text-muted-foreground">Music Video</p>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                        {movie.credits.cast.slice(0, 6).map(person => (
+                            <Link href={`/person/${person.id}`} key={person.credit_id} className="flex items-center gap-4 p-3 glass-panel rounded-xl hover:bg-white/10 transition-all group">
+                                <Avatar className="size-14 border-2 border-white/10 group-hover:border-primary transition-colors">
+                                    <AvatarImage src={getPosterUrl(person.profile_path)!} />
+                                    <AvatarFallback>{person.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div className="overflow-hidden">
+                                    <p className="font-bold text-sm truncate">{person.name}</p>
+                                    <p className="text-xs text-muted-foreground truncate">{person.character}</p>
+                                </div>
+                            </Link>
                         ))}
                     </div>
                 </section>
-            )}
 
-            <section className="space-y-4 pt-8">
-              <h2 className="font-headline text-2xl font-bold">Cast</h2>
-              {renderCreditList(movie.credits.cast)}
-            </section>
-            
-            {movie.reviews && movie.reviews.results.length > 0 && (
-                <section className="space-y-4 pt-8">
-                    <h2 className="font-headline text-2xl font-bold">Critical Acclaim (from TMDB)</h2>
-                    {renderReviews(movie.reviews.results)}
+                <section className="space-y-6">
+                    <h2 className="section-title">Your Verdict</h2>
+                    <div className="glass-panel rounded-2xl p-8 space-y-6">
+                        <div className="space-y-2">
+                            <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-center">Rate this Title</p>
+                            <div className="flex justify-center py-2">
+                                <MovieRating movieId={movie.id} />
+                            </div>
+                        </div>
+                        <Separator className="bg-white/5" />
+                        <UserReviewsSection movieId={movie.id} />
+                    </div>
                 </section>
-            )}
+            </div>
 
-            <UserReviewsSection movieId={movie.id} />
-
-             {trivia && (
-                <section className="space-y-4 pt-8">
-                    <h2 className="font-headline text-2xl font-bold">Behind the Scenes</h2>
-                    <div className="space-y-6 text-sm">
+            {trivia && (
+                <section className="space-y-8 glass-panel rounded-3xl p-8 md:p-12">
+                    <h2 className="section-title">Director's Cut & Trivia</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {trivia.trivia.length > 0 && (
-                            <div>
-                                <h3 className="font-semibold text-lg mb-2 text-accent">Trivia</h3>
-                                <ul className="list-disc list-inside space-y-2 text-foreground/80">
-                                    {trivia.trivia.map((item, index) => <li key={`trivia-${index}`}>{item}</li>)}
+                            <div className="space-y-4">
+                                <h3 className="font-black text-primary uppercase text-xs tracking-[0.2em]">Fun Facts</h3>
+                                <ul className="space-y-4">
+                                    {trivia.trivia.slice(0, 3).map((item, i) => (
+                                        <li key={i} className="text-sm text-muted-foreground font-medium leading-relaxed">• {item}</li>
+                                    ))}
                                 </ul>
                             </div>
                         )}
-                         {trivia.behindTheScenes.length > 0 && (
-                            <div>
-                                <h3 className="font-semibold text-lg mb-2 text-accent">Production Notes</h3>
-                                <ul className="list-disc list-inside space-y-2 text-foreground/80">
-                                    {trivia.behindTheScenes.map((item, index) => <li key={`bts-${index}`}>{item}</li>)}
+                        {trivia.behindTheScenes.length > 0 && (
+                            <div className="space-y-4">
+                                <h3 className="font-black text-primary uppercase text-xs tracking-[0.2em]">The Production</h3>
+                                <ul className="space-y-4">
+                                    {trivia.behindTheScenes.slice(0, 3).map((item, i) => (
+                                        <li key={i} className="text-sm text-muted-foreground font-medium leading-relaxed">• {item}</li>
+                                    ))}
                                 </ul>
                             </div>
                         )}
                         {trivia.goofs.length > 0 && (
-                            <div>
-                                <h3 className="font-semibold text-lg mb-2 text-accent">Goofs</h3>
-                                 <ul className="list-disc list-inside space-y-2 text-foreground/80">
-                                    {trivia.goofs.map((item, index) => <li key={`goof-${index}`}>{item}</li>)}
+                            <div className="space-y-4">
+                                <h3 className="font-black text-primary uppercase text-xs tracking-[0.2em]">Cinema Goofs</h3>
+                                <ul className="space-y-4">
+                                    {trivia.goofs.slice(0, 3).map((item, i) => (
+                                        <li key={i} className="text-sm text-muted-foreground font-medium leading-relaxed">• {item}</li>
+                                    ))}
                                 </ul>
                             </div>
                         )}
@@ -429,8 +322,8 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
         </div>
         
         {similarMovies.length > 0 && (
-            <div className="pt-12">
-                <MovieCarousel title="You Might Also Like" movies={similarMovies} />
+            <div className="mt-20">
+                <MovieCarousel title="Titles You Might Love" movies={similarMovies} />
             </div>
         )}
       </div>

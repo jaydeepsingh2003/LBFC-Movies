@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
 import { MovieCard } from '../movie-card';
 import { TVShowCard } from '../tv-show-card';
+import { Clapperboard } from 'lucide-react';
 
 interface ContentWithPoster extends Partial<Movie>, Partial<TVShow> {
   posterUrl: string | null;
@@ -24,7 +25,7 @@ const ottPlatforms = [
     provider_id: 8,
   },
   {
-    name: 'Amazon Prime',
+    name: 'Prime Video',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Amazon_Prime_Video_logo.svg/2560px-Amazon_Prime_Video_logo.svg.png',
     provider_id: 119,
   },
@@ -65,9 +66,9 @@ export default function TrendingOttsSection() {
         ];
 
         combinedContent.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-        setContentData(combinedContent.slice(0, 20));
+        setContentData(combinedContent.slice(0, 18));
       } catch (error) {
-        console.error("Error fetching OTT content:", error);
+        console.error("OTT Fetch Error:", error);
       } finally {
         setIsLoading(false);
       }
@@ -77,46 +78,49 @@ export default function TrendingOttsSection() {
   }, [activePlatform]);
 
   return (
-    <section className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h2 className="font-headline text-2xl font-bold tracking-tight">Trending on</h2>
-          <div className="relative h-8 w-28 hidden sm:block">
-            {activePlatformLogo && (
-              <Image src={activePlatformLogo} alt={activePlatform} fill className="object-contain" />
-            )}
-          </div>
+    <section className="space-y-8 py-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-1">
+          <h2 className="section-title mb-0">
+            <Clapperboard className="text-primary size-6" />
+            Trending on OTT
+          </h2>
+          <p className="text-sm font-medium text-muted-foreground">The most watched titles on your favorite platforms today.</p>
         </div>
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 max-w-[200px] sm:max-w-none">
-          {ottPlatforms.map((platform) => (
-            <button
-              key={platform.name}
-              onClick={() => setActivePlatform(platform.name)}
-              className={cn(
-                'flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all border',
-                activePlatform === platform.name
-                  ? 'bg-primary border-primary text-white'
-                  : 'bg-secondary border-white/5 text-muted-foreground'
-              )}
-            >
-              {platform.name}
-            </button>
-          ))}
+        
+        <div className="flex items-center gap-2 p-1.5 glass-panel rounded-2xl overflow-x-auto no-scrollbar">
+          {ottPlatforms.map((platform) => {
+            const isActive = activePlatform === platform.name;
+            return (
+                <button
+                    key={platform.name}
+                    onClick={() => setActivePlatform(platform.name)}
+                    className={cn(
+                        'flex-shrink-0 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300',
+                        isActive
+                        ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-105'
+                        : 'text-muted-foreground hover:bg-white/5 hover:text-white'
+                    )}
+                >
+                    {platform.name}
+                </button>
+            )
+          })}
         </div>
       </div>
 
-      <div className="min-h-[300px]">
+      <div className="min-h-[350px]">
         {isLoading ? (
           <div className="flex gap-4 overflow-hidden">
             {[...Array(7)].map((_, i) => (
-              <Skeleton key={i} className="aspect-[2/3] w-40 md:w-48 flex-shrink-0 rounded-lg" />
+              <Skeleton key={i} className="aspect-[2/3] w-40 md:w-56 flex-shrink-0 rounded-2xl" />
             ))}
           </div>
         ) : (
           <Carousel opts={{ align: 'start', loop: false, dragFree: true }} className="w-full">
-            <CarouselContent className="-ml-2 md:-ml-4">
+            <CarouselContent className="-ml-4">
               {contentData.map((item) => (
-                <CarouselItem key={`${item.type}-${item.id}`} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 pl-2 md:pl-4">
+                <CarouselItem key={`${item.type}-${item.id}`} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 2xl:basis-1/7 pl-4">
                   {item.type === 'movie' ? (
                     <MovieCard id={item.id} title={item.title} posterUrl={item.posterUrl} />
                   ) : (
@@ -125,8 +129,8 @@ export default function TrendingOttsSection() {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="ml-12 bg-background/50 backdrop-blur-sm" />
-            <CarouselNext className="mr-12 bg-background/50 backdrop-blur-sm" />
+            <CarouselPrevious className="ml-12 glass-panel border-none h-12 w-12 hover:bg-primary transition-all" />
+            <CarouselNext className="mr-12 glass-panel border-none h-12 w-12 hover:bg-primary transition-all" />
           </Carousel>
         )}
       </div>
