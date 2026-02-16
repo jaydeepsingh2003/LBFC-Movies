@@ -1,24 +1,32 @@
+
 "use client";
 
 import { useState } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { Tv, Play, Info, Loader2, Star } from 'lucide-react';
+import { Tv, Play, Info, Loader2, Star, Bookmark } from 'lucide-react';
 import Link from 'next/link';
 import { useVideoPlayer } from '@/context/video-provider';
 import { getTvShowVideos } from '@/lib/tmdb.client';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from './ui/button';
+import { useUser } from '@/firebase/auth/auth-client';
+import { useFirestore } from '@/firebase';
+import { saveTvShowToPlaylist } from '@/firebase/firestore/tv-playlists';
 
 interface TVShowCardProps {
   id: number;
   title: string;
   posterUrl: string | null;
+  overview?: string;
+  poster_path?: string | null;
   className?: string;
 }
 
-export function TVShowCard({ id, title, posterUrl, className }: TVShowCardProps) {
+export function TVShowCard({ id, title, posterUrl, className, overview, poster_path }: TVShowCardProps) {
   const { setVideoId } = useVideoPlayer();
+  const { user } = useUser();
+  const firestore = useFirestore();
   const { toast } = useToast();
   const [isLoadingTrailer, setIsLoadingTrailer] = useState(false);
   const [cachedTrailer, setCachedTrailer] = useState<string | null>(null);
@@ -52,6 +60,33 @@ export function TVShowCard({ id, title, posterUrl, className }: TVShowCardProps)
     }
   };
 
+  const handleSaveShow = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user || !firestore) {
+        toast({
+            variant: "destructive",
+            title: "Access Restricted",
+            description: "Please sign in to curate your collection.",
+        });
+        return;
+    }
+    try {
+        await saveTvShowToPlaylist(firestore, user.uid, { id, name: title, overview: overview || '', poster_path: poster_path || null });
+        toast({
+            title: "Added to List",
+            description: `${title} is now in your collection.`,
+        });
+    } catch (error) {
+        console.error("Error saving TV show:", error);
+        toast({
+            variant: "destructive",
+            title: "Update Failed",
+            description: "Unable to sync with your collection. Try again later.",
+        });
+    }
+  };
+
   return (
     <div className={cn("relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-secondary transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/20 group", className)}>
       {/* Base Content */}
@@ -78,6 +113,14 @@ export function TVShowCard({ id, title, posterUrl, className }: TVShowCardProps)
         
         {/* Action Buttons (Top Right) */}
         <div className="absolute top-3 right-3 flex flex-col gap-2 pointer-events-auto">
+          <Button 
+            variant="secondary" 
+            size="icon" 
+            className="h-9 w-9 rounded-full glass-card hover:bg-primary hover:text-white border-none shadow-lg transition-colors"
+            onClick={handleSaveShow}
+          >
+            <Bookmark className="size-4" />
+          </Button>
           <Button 
             variant="secondary" 
             size="icon" 
