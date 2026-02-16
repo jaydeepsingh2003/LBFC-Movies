@@ -77,7 +77,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         await saveMovieToPlaylist(firestore, user.uid, { id, title, overview: overview || '', poster_path: poster_path || null });
         toast({
             title: "Added to List",
-            description: `${title} is now in your collection.`,
+            description: `${title} is now in your movie collection.`,
         });
     } catch (error) {
         console.error("Error saving movie:", error);
@@ -107,7 +107,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         </div>
       )}
 
-      {/* Main Click Area (Stretched Link) */}
+      {/* Main Click Area (Stretched Link) - Navigation to Details */}
       <Link href={`/movie/${id}`} className="absolute inset-0 z-0" aria-label={title} />
 
       {/* Hover Overlay */}
@@ -118,6 +118,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
           <Button 
             variant="secondary" 
             size="icon" 
+            title="Save to Playlist"
             className="h-9 w-9 rounded-full glass-card hover:bg-primary hover:text-white border-none shadow-lg transition-colors"
             onClick={handleSaveMovie}
           >
@@ -126,6 +127,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
           <Button 
             variant="secondary" 
             size="icon" 
+            title="More Info"
             className="h-9 w-9 rounded-full glass-card hover:bg-white hover:text-black border-none shadow-lg transition-colors"
             asChild
           >
