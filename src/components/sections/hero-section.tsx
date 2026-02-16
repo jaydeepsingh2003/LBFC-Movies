@@ -95,12 +95,10 @@ export default function HeroSection() {
         )
     }
 
-    // If no movies found, don't render a blank space
     if (movies.length === 0) return null;
 
     return (
         <div className="relative w-full h-[70vh] md:h-[95vh] bg-background overflow-hidden">
-            {/* Fallback background if images fail to load */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background animate-pulse" />
             
             <Carousel
@@ -127,7 +125,6 @@ export default function HeroSection() {
                                     />
                                 )}
                                 
-                                {/* Cinematic Overlays */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
                                 <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-transparent hidden lg:block" />
                                 <div className="absolute inset-0 bg-black/30 lg:bg-black/10" />
