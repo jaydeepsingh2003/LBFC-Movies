@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Loader2, Music, Search, Youtube, Play, Sparkles, Globe } from 'lucide-react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Loader2, Music, Search, Youtube, Play, Sparkles, Globe, Disc } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import { advancedMovieSearch, type AdvancedMovieSearchOutput } from '@/ai/flows/advanced-movie-search';
@@ -11,20 +11,23 @@ import { useVideoPlayer } from '@/context/video-provider';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-const MUSIC_CATEGORIES = [
-    { label: 'Global Hits', query: 'latest global hits 2025' },
-    { label: 'Hindi', query: 'trending hindi music videos 2025' },
-    { label: 'Tamil', query: 'trending tamil music videos 2025' },
-    { label: 'Telugu', query: 'trending telugu music videos 2025' },
-    { label: 'Kannada', query: 'trending kannada music videos 2025' },
-    { label: 'K-Pop', query: 'latest kpop music videos' },
-    { label: 'Latin', query: 'latest latin music videos hits' },
-    { label: 'French', query: 'musique française 2025' },
-    { label: 'Japanese', query: 'trending japanese music videos' },
-    { label: 'Punjabi', query: 'trending punjabi music videos' },
-];
-
 export default function MusicPage() {
+  const currentYear = useMemo(() => new Date().getFullYear(), []);
+  
+  const MUSIC_CATEGORIES = useMemo(() => [
+    { label: 'Global Hits', query: `latest global music hits ${currentYear}` },
+    { label: 'Hindi', query: `trending hindi music videos ${currentYear}` },
+    { label: 'Soundtracks', query: `official movie soundtracks ${currentYear} high quality` },
+    { label: 'Tamil', query: `trending tamil hits ${currentYear}` },
+    { label: 'Telugu', query: `trending telugu hits ${currentYear}` },
+    { label: 'Kannada', query: `trending kannada hits ${currentYear}` },
+    { label: 'K-Pop', query: 'latest kpop music videos trending' },
+    { label: 'Latin', query: 'latest latin music hits' },
+    { label: 'French', query: 'musique française trending' },
+    { label: 'Japanese', query: 'trending japanese music' },
+    { label: 'Punjabi', query: `trending punjabi hits ${currentYear}` },
+  ], [currentYear]);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState(MUSIC_CATEGORIES[0].label);
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -35,6 +38,7 @@ export default function MusicPage() {
   const handleSearch = useCallback(async (query: string) => {
     setIsSearching(true);
     try {
+      // Use AI to find the best music matches
       const results = await advancedMovieSearch({ query: `${query} official music video` });
       setVideoResults(results);
     } catch (error) {
@@ -63,13 +67,13 @@ export default function MusicPage() {
         setActiveCategory(defaultCat.label);
         handleSearch(defaultCat.query);
     }
-  }, [debouncedSearchQuery, handleSearch]);
+  }, [debouncedSearchQuery, handleSearch, activeCategory, MUSIC_CATEGORIES]);
 
   // Initial fetch
   useEffect(() => {
     const defaultCat = MUSIC_CATEGORIES[0];
     handleSearch(defaultCat.query);
-  }, [handleSearch]);
+  }, [handleSearch, MUSIC_CATEGORIES]);
 
   const renderContent = () => {
     if (isSearching) {
@@ -154,8 +158,8 @@ export default function MusicPage() {
               Sonic <span className="text-primary">Discovery</span>
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl font-medium">
-              Explore the latest and trending music videos across every major language and culture. 
-              Powered by real-time YouTube insights.
+              Explore real-time trending hits and movie soundtracks. 
+              Powered by deep YouTube indexing for up-to-the-minute global insights.
             </p>
           </div>
 
@@ -174,7 +178,7 @@ export default function MusicPage() {
         <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2 text-muted-foreground">
                 <Globe className="size-4" />
-                <span className="text-xs font-bold uppercase tracking-widest">Browse by Language:</span>
+                <span className="text-xs font-bold uppercase tracking-widest">Global & Cinematic Hubs:</span>
             </div>
             <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-2">
                 {MUSIC_CATEGORIES.map((cat) => (
@@ -182,12 +186,13 @@ export default function MusicPage() {
                         key={cat.label}
                         onClick={() => handleCategoryClick(cat)}
                         className={cn(
-                            "px-6 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all border",
+                            "px-6 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all border flex items-center gap-2",
                             activeCategory === cat.label
                                 ? "bg-primary border-primary text-white scale-105 shadow-lg shadow-primary/20"
                                 : "bg-secondary/30 border-white/5 text-muted-foreground hover:bg-secondary/50 hover:text-white"
                         )}
                     >
+                        {cat.label === 'Soundtracks' && <Disc className="size-4" />}
                         {cat.label}
                     </button>
                 ))}
@@ -206,7 +211,7 @@ export default function MusicPage() {
             </h2>
             {videoResults && (
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-tighter bg-secondary/40 px-3 py-1 rounded-md">
-                    Showing {videoResults.results.length} Videos
+                    Live from YouTube • {videoResults.results.length} Videos
                 </span>
             )}
         </div>
