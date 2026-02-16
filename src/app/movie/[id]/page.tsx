@@ -2,14 +2,13 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { getMovieDetails, getPosterUrl, getBackdropUrl, getMovieVideos } from '@/lib/tmdb.client';
-import type { MovieDetails, CastMember, CrewMember, Review, Movie, TmdbVideo } from '@/lib/tmdb';
+import type { MovieDetails, Movie } from '@/lib/tmdb';
 import { getMovieTrivia } from '@/ai/flows/movie-trivia';
 import { getExternalRatings } from '@/ai/flows/get-external-ratings';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, Play, Star, Bookmark, Music, Calendar, Clock, ChevronLeft, Share2, Info } from 'lucide-react';
+import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
 import { Button } from '@/components/ui/button';
@@ -47,9 +46,8 @@ interface MovieWithPoster extends Partial<Movie> {
     id: number;
 }
 
-export default function MovieDetailsPage(props: { params: { id: string } }) {
-  const params = React.use(props.params);
-  const { id } = params;
+export default function MovieDetailsPage(props: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(props.params);
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -82,13 +80,10 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
         setMovie(movieWithMedia);
 
         const similarMoviesPromises = movieDetails.similar.results.slice(0, 12).map(async (m) => {
-            const videos = await getMovieVideos(m.id);
-            const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
             return {
                 ...m,
                 posterUrl: getPosterUrl(m.poster_path),
                 title: m.title,
-                trailerUrl: trailer ? trailer.key : undefined,
             } as MovieWithPoster;
         });
 

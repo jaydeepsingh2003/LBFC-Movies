@@ -6,7 +6,7 @@ import type { TVShowDetails, CastMember, CrewMember, TVShow, TVSeason } from '@/
 import { getExternalTvRatings } from '@/ai/flows/get-external-tv-ratings';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, Tv, Bookmark } from 'lucide-react';
+import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -54,9 +54,8 @@ const ImdbIcon = () => (
   </svg>
 );
 
-export default function TVShowDetailsPage(props: { params: { id: string } }) {
-  const params = React.use(props.params);
-  const { id } = params;
+export default function TVShowDetailsPage(props: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(props.params);
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -217,29 +216,44 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
         .map(m => ({ ...m, posterUrl: getPosterUrl(m.poster_path), title: m.name } as TVShowWithPoster))
         .filter(m => m.posterUrl);
 
+  const trailerAvailable = !!show?.videos?.results?.find(v => v.type === 'Trailer');
+
   return (
     <div className="relative">
       <div className="relative h-96 md:h-[32rem] w-full">
         {show.backdropUrl && <Image src={show.backdropUrl} alt={show.name} fill className="object-cover" />}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent" />
+        
+        {/* Back Button */}
+        <Link href="/tv" className="absolute top-8 left-4 md:left-8 z-20">
+            <Button variant="ghost" className="glass-card rounded-full gap-2 text-white hover:bg-primary transition-all">
+                <ChevronLeft className="size-5" /> Back to TV Hub
+            </Button>
+        </Link>
       </div>
 
       <div className="relative -mt-48 px-4 md:px-8 pb-8">
         <div className="flex flex-col md:flex-row gap-8">
           <div className="w-full md:w-1/4">
-            <Card className="overflow-hidden border-2 border-primary shadow-lg">
-              <CardContent className="p-0 aspect-[2/3] relative w-full">
+            <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden shadow-2xl border-2 border-primary group glass-card">
                 {show.posterUrl && <Image src={show.posterUrl} alt={show.name} fill className="object-cover" />}
-              </CardContent>
-            </Card>
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    {trailerAvailable && (
+                        <Button variant="outline" className="rounded-full h-16 w-16 p-0 border-white/20 bg-white/10 backdrop-blur-md" onClick={handlePlayTrailer}>
+                            <PlayCircle className="size-10 fill-current" />
+                        </Button>
+                    )}
+                </div>
+            </div>
+            
             <div className="flex gap-2 mt-4">
-              <Button onClick={handlePlayTrailer} className="w-full" size="lg" disabled={!show?.videos?.results?.find(v => v.type === 'Trailer')}>
-                <PlayCircle className="mr-2" /> Play Trailer
+              <Button onClick={handlePlayTrailer} className="flex-1" size="lg" disabled={!trailerAvailable}>
+                <PlayCircle className="mr-2" /> Watch Trailer
               </Button>
               {user && (
-                <Button onClick={handleSaveToggle} variant={isSaved ? "secondary" : "default"} size="lg" disabled={isSavedShowLoading}>
-                  <Bookmark className={isSaved ? "mr-2 fill-current" : "mr-2"} /> {isSaved ? 'Saved' : 'Save'}
+                <Button onClick={handleSaveToggle} variant={isSaved ? "secondary" : "outline"} size="lg" disabled={isSavedShowLoading} className="glass-card border-white/10">
+                  <Bookmark className={cn("size-5", isSaved && "fill-primary text-primary")} />
                 </Button>
               )}
             </div>
@@ -260,75 +274,54 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
                     </CardContent>
                 </Card>
             )}
-             {show.networks && show.networks.length > 0 && (
-              <Card className="mt-4 bg-secondary">
-                <CardHeader>
-                  <CardTitle className="text-base">Networks</CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-wrap gap-4 items-center">
-                  {show.networks.map(network => (
-                     network.logo_path && (
-                      <div key={network.id} title={network.name} className="relative h-6 w-20">
-                          <Image src={getLogoUrl(network.logo_path)} alt={network.name} fill className="object-contain" />
-                      </div>
-                     )
-                  ))}
-                </CardContent>
-              </Card>
-            )}
           </div>
 
           <div className="w-full md:w-3/4 space-y-6">
             <header className="space-y-2">
               <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tight text-foreground">{show.name}</h1>
-              <p className="text-muted-foreground text-lg">{show.tagline}</p>
+              <p className="text-muted-foreground text-lg italic">{show.tagline}</p>
               <div className="flex flex-wrap gap-2">
-                {show.genres.map(genre => <Badge key={genre.id} variant="secondary">{genre.name}</Badge>)}
+                {show.genres.map(genre => <Badge key={genre.id} variant="secondary" className="glass-card border-none">{genre.name}</Badge>)}
               </div>
             </header>
             
             {user && (
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-foreground">Your Rating</h3>
+              <div className="space-y-2 glass-panel p-4 rounded-xl">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Your Rating</h3>
                 <TvShowRating showId={show.id} />
               </div>
             )}
 
-            <p className="text-foreground/80 leading-relaxed">{show.overview}</p>
+            <p className="text-foreground/80 leading-relaxed text-lg max-w-4xl">{show.overview}</p>
             
-            <div className="flex items-center flex-wrap gap-4 text-sm">
-                <div className="flex items-center gap-2" title="TMDB User Score">
-                    <Star className="w-5 h-5 text-yellow-400" />
-                    <span className="font-bold text-lg">{show.vote_average.toFixed(1)}</span>
-                    <span className="text-muted-foreground">/ 10</span>
+            <div className="flex items-center flex-wrap gap-4 text-sm font-bold">
+                <div className="flex items-center gap-2 text-yellow-400 bg-yellow-400/10 px-3 py-1.5 rounded-full">
+                    <Star className="w-4 h-4 fill-current" />
+                    <span>{show.vote_average.toFixed(1)}</span>
                 </div>
 
                 {externalRatings && (
                     <>
-                        <div className="flex items-center gap-2" title="IMDb Rating">
+                        <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full">
                            <ImdbIcon />
-                           <span className="font-bold text-lg">{externalRatings.imdb}</span>
+                           <span>{externalRatings.imdb}</span>
                         </div>
-                        <div className="flex items-center gap-2" title="Rotten Tomatoes Score">
+                        <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full">
                            <RottenTomatoesIcon />
-                           <span className="font-bold text-lg">{externalRatings.rottenTomatoes}</span>
-                        </div>
-                        <div className="flex items-center gap-2 p-2 rounded-md bg-secondary" title="Average Critic Score">
-                            <span className="text-xs font-bold text-muted-foreground">AVG</span>
-                            <span className="font-bold text-lg">{getAverageRating()}</span>
+                           <span>{externalRatings.rottenTomatoes}</span>
                         </div>
                     </>
                 )}
 
-                <span className="text-muted-foreground hidden md:inline">&#8226;</span>
-                <span className="text-muted-foreground">{show.first_air_date ? new Date(show.first_air_date).getFullYear() : ''} - {show.in_production ? 'Present' : (show.last_air_date ? new Date(show.last_air_date).getFullYear() : '')}</span>
-                 <span className="text-muted-foreground">&#8226;</span>
-                <span className="text-muted-foreground">{show.number_of_seasons} Seasons</span>
-                 <span className="text-muted-foreground">&#8226;</span>
-                <span className="text-muted-foreground">{show.number_of_episodes} Episodes</span>
+                <div className="bg-white/5 px-3 py-1.5 rounded-full text-muted-foreground">
+                    {show.first_air_date ? new Date(show.first_air_date).getFullYear() : ''} - {show.in_production ? 'Present' : (show.last_air_date ? new Date(show.last_air_date).getFullYear() : '')}
+                </div>
+                <div className="bg-white/5 px-3 py-1.5 rounded-full text-muted-foreground">
+                    {show.number_of_seasons} Seasons
+                </div>
             </div>
 
-            <Separator />
+            <Separator className="bg-white/10" />
             
             {show.created_by && show.created_by.length > 0 && (
                  <div className="space-y-3">
@@ -352,12 +345,12 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
             <TVUserReviewsSection showId={show.id} />
 
             <section className="space-y-4 pt-8">
-              <h2 className="font-headline text-2xl font-bold">Seasons</h2>
+              <h2 className="section-title">Seasons</h2>
               {renderSeasons(show.seasons)}
             </section>
             
             <section className="space-y-4 pt-8">
-              <h2 className="font-headline text-2xl font-bold">Cast</h2>
+              <h2 className="section-title">Cast</h2>
               {renderCreditList(show.credits.cast)}
             </section>
 
@@ -367,7 +360,7 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
         {similarShows.length > 0 && (
             <div className="pt-12">
                  <div className="space-y-4">
-                    <h2 className="font-headline text-2xl font-bold tracking-tight text-foreground">You Might Also Like</h2>
+                    <h2 className="section-title">You Might Also Like</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                         {similarShows.map((s) => (
                            s.id ? (

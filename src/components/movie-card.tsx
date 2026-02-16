@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { Film, Play, Bookmark, Star, Info } from 'lucide-react';
+import { Film, Play, Bookmark, Star, Info, Loader2 } from 'lucide-react';
 import { useVideoPlayer } from '@/context/video-provider';
 import Link from 'next/link';
 import { Button } from './ui/button';
@@ -10,6 +11,7 @@ import { useUser } from '@/firebase/auth/auth-client';
 import { useToast } from '@/hooks/use-toast';
 import { saveMovieToPlaylist } from '@/firebase/firestore/playlists';
 import { useFirestore } from '@/firebase';
+import { getMovieVideos } from '@/lib/tmdb.client';
 
 interface MovieCardProps {
   id: number;
@@ -21,18 +23,41 @@ interface MovieCardProps {
   className?: string;
 }
 
-export function MovieCard({ id, title, posterUrl, trailerUrl, className, overview, poster_path }: MovieCardProps) {
+export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl, className, overview, poster_path }: MovieCardProps) {
   const { setVideoId } = useVideoPlayer();
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const [isLoadingTrailer, setIsLoadingTrailer] = useState(false);
+  const [cachedTrailer, setCachedTrailer] = useState<string | null>(initialTrailerUrl || null);
 
-  const handlePlayTrailer = (e: React.MouseEvent) => {
+  const handlePlayTrailer = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (trailerUrl) {
-      const videoId = trailerUrl.includes('v=') ? trailerUrl.split('v=')[1] : trailerUrl;
+    
+    if (cachedTrailer) {
+      const videoId = cachedTrailer.includes('v=') ? cachedTrailer.split('v=')[1] : cachedTrailer;
       setVideoId(videoId);
+      return;
+    }
+
+    setIsLoadingTrailer(true);
+    try {
+      const videos = await getMovieVideos(id);
+      const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+      if (trailer) {
+        setCachedTrailer(trailer.key);
+        setVideoId(trailer.key);
+      } else {
+        toast({
+          title: "Trailer Unavailable",
+          description: "We couldn't find a preview for this title.",
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching trailer:", error);
+    } finally {
+      setIsLoadingTrailer(false);
     }
   };
 
@@ -84,7 +109,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl, className, overvie
       {/* Main Click Area (Stretched Link) */}
       <Link href={`/movie/${id}`} className="absolute inset-0 z-0" aria-label={title} />
 
-      {/* Hover Overlay - Interactive elements with higher z-index */}
+      {/* Hover Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none z-10">
         
         {/* Action Buttons (Top Right) */}
@@ -109,16 +134,18 @@ export function MovieCard({ id, title, posterUrl, trailerUrl, className, overvie
           </Button>
         </div>
 
-        {/* Center Play Button (Triggered by trailer availability) */}
+        {/* Center Play Button */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
-          {trailerUrl && (
-              <div 
-                  className="h-16 w-16 rounded-full bg-primary/90 flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-transform duration-500 cursor-pointer"
-                  onClick={handlePlayTrailer}
-              >
-                  <Play className="size-8 text-white fill-current ml-1" />
-              </div>
-          )}
+          <div 
+              className="h-16 w-16 rounded-full bg-primary/90 flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-transform duration-500 cursor-pointer"
+              onClick={handlePlayTrailer}
+          >
+              {isLoadingTrailer ? (
+                <Loader2 className="size-8 text-white animate-spin" />
+              ) : (
+                <Play className="size-8 text-white fill-current ml-1" />
+              )}
+          </div>
         </div>
 
         {/* Bottom Info Section */}
@@ -131,10 +158,8 @@ export function MovieCard({ id, title, posterUrl, trailerUrl, className, overvie
           <div className="flex items-center gap-3">
               <div className="flex items-center gap-1 text-xs font-bold text-yellow-400">
                   <Star className="size-3 fill-current" />
-                  <span>Watch Now</span>
+                  <span>{title}</span>
               </div>
-              <div className="h-1 w-1 rounded-full bg-white/30" />
-              <span className="text-[10px] text-white/70 font-bold uppercase tracking-tighter">Premium Content</span>
           </div>
         </div>
       </div>
