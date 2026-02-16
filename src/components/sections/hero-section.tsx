@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -20,7 +21,7 @@ interface MovieWithImages extends Movie {
 
 export default function HeroSection() {
     const plugin = React.useRef(
-        Autoplay({ delay: 8000, stopOnInteraction: true })
+        Autoplay({ delay: 8000, stopOnInteraction: false })
     )
     const [movies, setMovies] = React.useState<MovieWithImages[]>([]);
     const [isLoading, setIsLoading] = React.useState(true);
@@ -36,7 +37,8 @@ export default function HeroSection() {
                     return;
                 }
 
-                const topMovies = popularMovies.slice(0, 10);
+                // Fetch top 15 movies for more variety in the full-screen loop
+                const topMovies = popularMovies.slice(0, 15);
 
                 const moviesDataPromises = topMovies.map(async (movie) => {
                     try {
@@ -78,7 +80,7 @@ export default function HeroSection() {
 
     if (isLoading) {
         return (
-            <div className="relative h-[70vh] md:h-[90vh] w-full bg-secondary/10">
+            <div className="relative w-full h-[calc(100vh-4rem)] md:h-[calc(100vh-4.5rem)] bg-secondary/10">
                 <Skeleton className="w-full h-full rounded-none" />
                 <div className="absolute bottom-[20%] left-4 md:left-12 lg:left-24 max-w-2xl space-y-6 z-10">
                     <Skeleton className="h-16 md:h-24 w-3/4" />
@@ -98,8 +100,8 @@ export default function HeroSection() {
     if (movies.length === 0) return null;
 
     return (
-        <div className="relative w-full h-[70vh] md:h-[95vh] bg-background overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background animate-pulse" />
+        <section className="relative w-full h-[calc(100vh-4rem)] md:h-[calc(100vh-4.5rem)] bg-background overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background animate-pulse z-0" />
             
             <Carousel
                 plugins={[plugin.current]}
@@ -108,9 +110,11 @@ export default function HeroSection() {
                 onMouseLeave={plugin.current.reset}
                 opts={{
                     loop: true,
+                    align: "start",
+                    skipSnaps: false,
                 }}
             >
-                <CarouselContent className="h-[70vh] md:h-[95vh] ml-0">
+                <CarouselContent className="h-[calc(100vh-4rem)] md:h-[calc(100vh-4.5rem)] ml-0">
                     {movies.map((movie) => (
                         <CarouselItem key={movie.id} className="h-full w-full pl-0 relative">
                             <div className="relative h-full w-full">
@@ -125,9 +129,10 @@ export default function HeroSection() {
                                     />
                                 )}
                                 
+                                {/* Complex gradients for cinematic depth */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
                                 <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-transparent hidden lg:block" />
-                                <div className="absolute inset-0 bg-black/30 lg:bg-black/10" />
+                                <div className="absolute inset-0 bg-black/40 lg:bg-black/10" />
                                 
                                 <div className="absolute bottom-[10%] md:bottom-[15%] lg:bottom-[20%] left-4 md:left-12 lg:left-24 max-w-4xl px-2 z-20">
                                     <div className="space-y-4 md:space-y-6">
@@ -177,6 +182,6 @@ export default function HeroSection() {
                     ))}
                 </CarouselContent>
             </Carousel>
-        </div>
+        </section>
     );
 }

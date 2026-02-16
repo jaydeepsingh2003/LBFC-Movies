@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from 'react';
@@ -40,7 +41,10 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
+      {/* Hero Section is full-bleed and fits the screen height minus navbar */}
       <HeroSection />
+      
+      {/* Scrollable content container with proper padding and layout */}
       <div className="space-y-16 py-12 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto w-full">
           <TrendingOttsSection />
           <NowPlayingSection />
