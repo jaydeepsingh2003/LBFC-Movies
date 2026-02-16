@@ -8,7 +8,7 @@ import { getMovieTrivia } from '@/ai/flows/movie-trivia';
 import { getExternalRatings } from '@/ai/flows/get-external-ratings';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, Info } from 'lucide-react';
+import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, Info, Sparkles, TrendingUp, Trophy } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
@@ -48,13 +48,13 @@ interface MovieWithPoster extends Partial<Movie> {
 }
 
 const RottenTomatoesIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.17 14.83c-.39.39-1.02.39-1.41 0L12 15.41l-1.76 1.42c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41l1.42-1.76-1.42-1.76c-.39-.39-.39-10.2 0-1.41.39-.39 1.02-.39 1.41 0l1.76 1.42 1.76-1.42c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-1.42 1.76 1.42 1.76c.39.39.39 1.02 0 1.41z" fill="#FA320A"/>
     </svg>
 );
 
 const ImdbIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-auto">
+  <svg width="36" height="18" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="48" height="24" rx="4" fill="#F5C518"/>
     <path d="M8 6H11V18H8V6Z" fill="black"/>
     <path d="M15.2 6H19.4L16.4 13.8L15.2 18H12L14.6 11.4L13.4 6H15.2Z" fill="black"/>
@@ -151,8 +151,11 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
 
   if (isLoading) {
     return (
-      <div className="flex flex-col justify-center items-center h-screen gap-6">
-        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+      <div className="flex flex-col justify-center items-center h-screen gap-6 bg-background">
+        <div className="relative">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full animate-pulse" />
+        </div>
         <p className="text-muted-foreground font-bold tracking-widest uppercase text-xs animate-pulse">Scanning the Archives...</p>
       </div>
     );
@@ -164,59 +167,84 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
   const streamingProviders = movie['watch/providers']?.results?.IN?.flatrate || [];
 
   return (
-    <div className="relative min-h-screen">
-      {/* Backdrop Section */}
-      <div className="relative h-[50vh] md:h-[70vh] w-full">
-        {movie.backdropUrl && <Image src={movie.backdropUrl} alt={movie.title} fill className="object-cover" priority />}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent hidden md:block" />
+    <div className="relative min-h-screen bg-background">
+      {/* Cinematic Backdrop Section */}
+      <div className="relative h-[60vh] md:h-[80vh] w-full overflow-hidden">
+        {movie.backdropUrl && (
+            <Image 
+                src={movie.backdropUrl} 
+                alt={movie.title} 
+                fill 
+                className="object-cover transition-transform duration-1000 scale-105" 
+                priority 
+            />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-transparent hidden md:block" />
         
         {/* Back Button */}
         <div className="absolute top-8 left-4 md:left-8 z-20">
-            <Button onClick={() => window.history.back()} variant="ghost" className="glass-card rounded-full gap-2 text-white hover:bg-primary transition-all">
+            <Button onClick={() => window.history.back()} variant="ghost" className="glass-card rounded-full gap-2 text-white hover:bg-primary transition-all px-6 py-6 font-bold uppercase tracking-widest text-xs">
                 <ChevronLeft className="size-5" /> Back
             </Button>
         </div>
+
+        {/* Header Overlay Info */}
+        <div className="absolute bottom-[10%] left-4 md:left-12 lg:left-24 max-w-4xl z-20 pointer-events-none">
+            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-10 duration-700">
+                <div className="flex items-center gap-3">
+                    <Badge className="bg-primary font-black uppercase text-[10px] px-3 py-1 rounded-sm">Premium</Badge>
+                    <div className="flex items-center gap-1 text-yellow-400 font-bold text-sm bg-black/40 backdrop-blur-md px-3 py-1 rounded-full">
+                        <Star className="size-4 fill-current" />
+                        {movie.vote_average.toFixed(1)}
+                    </div>
+                </div>
+                <h1 className="font-headline text-5xl md:text-8xl font-black tracking-tighter text-white leading-[0.9] drop-shadow-2xl">
+                    {movie.title}
+                </h1>
+            </div>
+        </div>
       </div>
 
-      <div className="content-container relative -mt-32 md:-mt-48 pb-20">
+      <div className="content-container relative -mt-32 md:-mt-48 pb-20 z-30">
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Poster & Actions Sidebar */}
-          <div className="w-full lg:w-[350px] flex-shrink-0 space-y-6">
-            <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden shadow-2xl border-2 border-white/10 glass-card group">
-                {movie.posterUrl && <Image src={movie.posterUrl} alt={movie.title} fill className="object-cover" />}
+          <div className="w-full lg:w-[380px] flex-shrink-0 space-y-8">
+            <div className="relative aspect-[2/3] w-full rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border-2 border-white/10 glass-card group">
+                {movie.posterUrl && <Image src={movie.posterUrl} alt={movie.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     {trailer && (
-                        <Button variant="outline" className="rounded-full h-16 w-16 p-0 border-white/20 bg-white/10 backdrop-blur-md" onClick={() => handlePlayVideo(trailer.key)}>
-                            <Play className="size-8 fill-current" />
+                        <Button variant="outline" className="rounded-full h-20 w-20 p-0 border-white/20 bg-white/10 backdrop-blur-md hover:bg-primary hover:text-white transition-all scale-75 group-hover:scale-100 duration-500" onClick={() => handlePlayVideo(trailer.key)}>
+                            <Play className="size-10 fill-current" />
                         </Button>
                     )}
                 </div>
             </div>
             
-            <div className="grid grid-cols-1 gap-3">
-                <Button onClick={() => trailer && handlePlayVideo(trailer.key)} disabled={!trailer} size="lg" className="rounded-xl h-14 font-black text-lg shadow-xl shadow-primary/20">
-                    <Play className="mr-3 fill-current" /> Watch Trailer
+            <div className="grid grid-cols-1 gap-4">
+                <Button onClick={() => trailer && handlePlayVideo(trailer.key)} disabled={!trailer} size="lg" className="rounded-2xl h-16 font-black text-xl shadow-2xl shadow-primary/20 group">
+                    <Play className="mr-3 fill-current transition-transform group-hover:scale-110" /> Watch Trailer
                 </Button>
-                <div className="flex gap-3">
-                    <Button onClick={handleSaveToggle} variant={isSaved ? "secondary" : "outline"} className="flex-1 rounded-xl h-14 border-white/10 glass-card" disabled={isSavedMovieLoading}>
-                        <Bookmark className={cn("mr-2 size-5", isSaved && "fill-primary text-primary")} /> 
+                <div className="flex gap-4">
+                    <Button onClick={handleSaveToggle} variant={isSaved ? "secondary" : "outline"} className="flex-1 rounded-2xl h-16 border-white/10 glass-card text-lg font-bold" disabled={isSavedMovieLoading}>
+                        <Bookmark className={cn("mr-3 size-6 transition-all", isSaved && "fill-primary text-primary")} /> 
                         {isSaved ? 'In List' : 'Add to List'}
                     </Button>
-                    <Button variant="outline" className="rounded-xl h-14 w-14 glass-card border-white/10">
-                        <Share2 className="size-5" />
+                    <Button variant="outline" className="rounded-2xl h-16 w-16 glass-card border-white/10 hover:bg-white hover:text-black transition-colors">
+                        <Share2 className="size-6" />
                     </Button>
                 </div>
             </div>
 
             {streamingProviders.length > 0 && (
-                <div className="glass-panel rounded-2xl p-6 space-y-4">
-                    <h3 className="font-bold text-sm uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                        <Info className="size-4" /> Available on
+                <div className="glass-panel rounded-[2rem] p-8 space-y-6 border-white/5">
+                    <h3 className="font-black text-xs uppercase tracking-[0.25em] text-muted-foreground flex items-center gap-3">
+                        <div className="p-1.5 bg-primary/10 rounded-lg"><TrendingUp className="size-4 text-primary" /></div>
+                        Available on
                     </h3>
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-wrap gap-4">
                         {streamingProviders.map(provider => (
-                            <div key={provider.provider_id} title={provider.provider_name} className="relative size-12 rounded-xl overflow-hidden shadow-lg hover:scale-110 transition-transform">
+                            <div key={provider.provider_id} title={provider.provider_name} className="relative size-14 rounded-2xl overflow-hidden shadow-2xl hover:scale-110 hover:ring-2 ring-primary transition-all cursor-pointer">
                                 <Image src={getPosterUrl(provider.logo_path)!} alt={provider.provider_name} fill className="object-cover" />
                             </div>
                         ))}
@@ -226,83 +254,137 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
           </div>
 
           {/* Main Info Section */}
-          <div className="flex-1 space-y-10">
-            <div className="space-y-6">
-                <header className="space-y-4">
-                    <h1 className="font-headline text-5xl md:text-7xl font-black tracking-tighter text-white drop-shadow-2xl">
-                        {movie.title}
-                    </h1>
+          <div className="flex-1 space-y-12">
+            <div className="space-y-8">
+                <header className="space-y-6">
                     <div className="flex flex-wrap items-center gap-4 text-sm font-bold">
-                        <div className="flex items-center gap-2 text-yellow-400 bg-yellow-400/10 px-3 py-1.5 rounded-full">
-                            <Star className="size-4 fill-current" />
-                            <span>{movie.vote_average.toFixed(1)} TMDB</span>
-                        </div>
-
                         {externalRatings && (
-                            <>
-                                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full">
+                            <div className="flex items-center gap-3 bg-white/5 px-5 py-2.5 rounded-2xl border border-white/5 backdrop-blur-md">
+                                <div className="flex items-center gap-2 border-r border-white/10 pr-3">
                                    <ImdbIcon />
-                                   <span>{externalRatings.imdb}</span>
+                                   <span className="text-white">{externalRatings.imdb}</span>
                                 </div>
-                                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full">
+                                <div className="flex items-center gap-2">
                                    <RottenTomatoesIcon />
-                                   <span>{externalRatings.rottenTomatoes}</span>
+                                   <span className="text-white">{externalRatings.rottenTomatoes}</span>
                                 </div>
-                            </>
+                            </div>
                         )}
 
-                        <div className="flex items-center gap-2 text-muted-foreground bg-white/5 px-3 py-1.5 rounded-full">
-                            <Calendar className="size-4" />
-                            <span>{new Date(movie.release_date).getFullYear()}</span>
+                        <div className="flex items-center gap-6 bg-white/5 px-6 py-2.5 rounded-2xl border border-white/5 backdrop-blur-md text-muted-foreground">
+                            <div className="flex items-center gap-2">
+                                <Calendar className="size-4 text-primary" />
+                                <span>{new Date(movie.release_date).getFullYear()}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Clock className="size-4 text-primary" />
+                                <span>{Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m</span>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2 text-muted-foreground bg-white/5 px-3 py-1.5 rounded-full">
-                            <Clock className="size-4" />
-                            <span>{Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m</span>
+                        
+                        <div className="flex flex-wrap gap-2">
+                            {movie.genres.slice(0, 3).map(g => (
+                                <Badge key={g.id} variant="secondary" className="rounded-xl px-5 py-2 glass-card font-black border-none text-[10px] uppercase tracking-widest hover:bg-primary transition-colors">
+                                    {g.name}
+                                </Badge>
+                            ))}
                         </div>
-                        {movie.genres.slice(0, 3).map(g => (
-                            <Badge key={g.id} variant="secondary" className="rounded-full px-4 py-1.5 glass-card font-bold border-none">
-                                {g.name}
-                            </Badge>
-                        ))}
                     </div>
                 </header>
 
-                <div className="max-w-3xl">
-                    <p className="text-xl md:text-2xl font-medium text-white/90 leading-relaxed italic border-l-4 border-primary pl-6 py-2">
-                        {movie.tagline || "A cinematic masterpiece waiting to be explored."}
-                    </p>
-                    <p className="mt-6 text-lg text-muted-foreground leading-relaxed font-medium">
+                <div className="max-w-4xl space-y-8">
+                    <div className="relative">
+                        <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary rounded-full" />
+                        <p className="text-2xl md:text-4xl font-headline font-medium text-white/95 leading-tight italic drop-shadow-xl pl-2">
+                            {movie.tagline || "A cinematic masterpiece waiting to be explored."}
+                        </p>
+                    </div>
+                    <p className="text-xl text-muted-foreground/90 leading-relaxed font-medium">
                         {movie.overview}
                     </p>
                 </div>
             </div>
 
+            {/* AI Trivia & Director's Cut Section */}
+            {trivia && (
+                <section className="space-y-10 bg-gradient-to-br from-secondary/40 to-background border border-white/5 rounded-[3rem] p-10 md:p-16 shadow-2xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <Sparkles className="size-24 text-primary animate-pulse" />
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-primary/10 rounded-2xl">
+                            <Sparkles className="size-8 text-primary" />
+                        </div>
+                        <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight text-white">AI Director's Cut</h2>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                        {trivia.trivia.length > 0 && (
+                            <div className="space-y-6">
+                                <h3 className="font-black text-primary uppercase text-xs tracking-[0.3em] flex items-center gap-2">
+                                    <Trophy className="size-4" /> Fun Facts
+                                </h3>
+                                <ul className="space-y-6">
+                                    {trivia.trivia.slice(0, 3).map((item, i) => (
+                                        <li key={i} className="text-base text-muted-foreground font-medium leading-relaxed border-l-2 border-white/5 pl-4 hover:border-primary transition-colors">{item}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                        {trivia.behindTheScenes.length > 0 && (
+                            <div className="space-y-6">
+                                <h3 className="font-black text-primary uppercase text-xs tracking-[0.3em] flex items-center gap-2">
+                                    <Info className="size-4" /> The Production
+                                </h3>
+                                <ul className="space-y-6">
+                                    {trivia.behindTheScenes.slice(0, 3).map((item, i) => (
+                                        <li key={i} className="text-base text-muted-foreground font-medium leading-relaxed border-l-2 border-white/5 pl-4 hover:border-primary transition-colors">{item}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                        {trivia.goofs.length > 0 && (
+                            <div className="space-y-6">
+                                <h3 className="font-black text-primary uppercase text-xs tracking-[0.3em] flex items-center gap-2">
+                                    <TrendingUp className="size-4" /> Cinema Goofs
+                                </h3>
+                                <ul className="space-y-6">
+                                    {trivia.goofs.slice(0, 3).map((item, i) => (
+                                        <li key={i} className="text-base text-muted-foreground font-medium leading-relaxed border-l-2 border-white/5 pl-4 hover:border-primary transition-colors">{item}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                </section>
+            )}
+
             {/* Director & Cast Sub-section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8">
-                <section className="space-y-6">
-                    <h2 className="section-title">Director & Cast</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 pt-12">
+                <section className="space-y-8">
+                    <h2 className="section-title text-3xl font-black tracking-tighter">Director & Cast</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {movie.credits.cast.slice(0, 6).map(person => (
-                            <Link href={`/person/${person.id}`} key={person.credit_id} className="flex items-center gap-4 p-3 glass-panel rounded-xl hover:bg-white/10 transition-all group">
-                                <Avatar className="size-14 border-2 border-white/10 group-hover:border-primary transition-colors">
+                            <Link href={`/person/${person.id}`} key={person.credit_id} className="flex items-center gap-5 p-4 glass-panel rounded-2xl hover:bg-white/10 hover:scale-[1.02] transition-all group border-white/5">
+                                <Avatar className="size-16 border-2 border-white/10 group-hover:border-primary transition-colors shadow-2xl">
                                     <AvatarImage src={getPosterUrl(person.profile_path)!} />
-                                    <AvatarFallback>{person.name.charAt(0)}</AvatarFallback>
+                                    <AvatarFallback className="bg-secondary text-primary font-bold">{person.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="overflow-hidden">
-                                    <p className="font-bold text-sm truncate">{person.name}</p>
-                                    <p className="text-xs text-muted-foreground truncate">{person.character}</p>
+                                    <p className="font-bold text-base truncate group-hover:text-primary transition-colors">{person.name}</p>
+                                    <p className="text-xs text-muted-foreground truncate uppercase font-bold tracking-widest">{person.character}</p>
                                 </div>
                             </Link>
                         ))}
                     </div>
                 </section>
 
-                <section className="space-y-6">
-                    <h2 className="section-title">Your Verdict</h2>
-                    <div className="glass-panel rounded-2xl p-8 space-y-6">
-                        <div className="space-y-2">
-                            <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-center">Rate this Title</p>
-                            <div className="flex justify-center py-2">
+                <section className="space-y-8">
+                    <h2 className="section-title text-3xl font-black tracking-tighter">Your Verdict</h2>
+                    <div className="glass-panel rounded-[2.5rem] p-10 space-y-10 border-white/5 bg-secondary/20 shadow-2xl backdrop-blur-2xl">
+                        <div className="space-y-4">
+                            <p className="text-xs font-black uppercase tracking-[0.3em] text-muted-foreground text-center">Rate this Title</p>
+                            <div className="flex justify-center py-2 scale-125">
                                 <MovieRating movieId={movie.id} />
                             </div>
                         </div>
@@ -311,50 +393,11 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                     </div>
                 </section>
             </div>
-
-            {/* AI Trivia Section */}
-            {trivia && (
-                <section className="space-y-8 glass-panel rounded-3xl p-8 md:p-12">
-                    <h2 className="section-title">Director's Cut & Trivia</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {trivia.trivia.length > 0 && (
-                            <div className="space-y-4">
-                                <h3 className="font-black text-primary uppercase text-xs tracking-[0.2em]">Fun Facts</h3>
-                                <ul className="space-y-4">
-                                    {trivia.trivia.slice(0, 3).map((item, i) => (
-                                        <li key={i} className="text-sm text-muted-foreground font-medium leading-relaxed">• {item}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                        {trivia.behindTheScenes.length > 0 && (
-                            <div className="space-y-4">
-                                <h3 className="font-black text-primary uppercase text-xs tracking-[0.2em]">The Production</h3>
-                                <ul className="space-y-4">
-                                    {trivia.behindTheScenes.slice(0, 3).map((item, i) => (
-                                        <li key={i} className="text-sm text-muted-foreground font-medium leading-relaxed">• {item}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                        {trivia.goofs.length > 0 && (
-                            <div className="space-y-4">
-                                <h3 className="font-black text-primary uppercase text-xs tracking-[0.2em]">Cinema Goofs</h3>
-                                <ul className="space-y-4">
-                                    {trivia.goofs.slice(0, 3).map((item, i) => (
-                                        <li key={i} className="text-sm text-muted-foreground font-medium leading-relaxed">• {item}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
-                </section>
-            )}
           </div>
         </div>
         
         {similarMovies.length > 0 && (
-            <div className="mt-20">
+            <div className="mt-32 pt-16 border-t border-white/5">
                 <MovieCarousel title="Titles You Might Love" movies={similarMovies} />
             </div>
         )}
