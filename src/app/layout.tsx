@@ -2,7 +2,6 @@
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import { AiChatbotWidget } from '@/components/ai-chatbot-widget';
 import { VideoPlayerProvider } from '@/context/video-provider';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { AppLayout } from '@/components/layout/app-layout';
@@ -41,7 +40,6 @@ export default function RootLayout({
           <FirebaseClientProvider>
             <VideoPlayerProvider>
                 <LayoutWrapper>{children}</LayoutWrapper>
-                <AiChatbotWidget />
                 <Toaster />
             </VideoPlayerProvider>
           </FirebaseClientProvider>
