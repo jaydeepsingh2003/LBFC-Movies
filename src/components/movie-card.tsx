@@ -151,15 +151,13 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         {/* Bottom Info Section */}
         <div className="absolute bottom-0 left-0 p-4 w-full space-y-2 pointer-events-auto">
           <Link href={`/movie/${id}`} onClick={(e) => e.stopPropagation()} className="block">
-            <h3 className="font-headline text-base font-black text-white leading-tight line-clamp-2 drop-shadow-lg group-hover:text-primary transition-colors">
+            <h3 className="font-headline text-sm font-black text-white leading-tight line-clamp-2 drop-shadow-lg group-hover:text-primary transition-colors">
                 {title}
             </h3>
           </Link>
-          <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 text-xs font-bold text-yellow-400">
-                  <Star className="size-3 fill-current" />
-                  <span>{title}</span>
-              </div>
+          <div className="flex items-center gap-2">
+              <Star className="size-3 text-yellow-400 fill-current" />
+              <span className="text-[10px] font-bold text-white/70 uppercase">Movie</span>
           </div>
         </div>
       </div>

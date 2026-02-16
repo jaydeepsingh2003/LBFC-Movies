@@ -46,6 +46,22 @@ interface MovieWithPoster extends Partial<Movie> {
     id: number;
 }
 
+const RottenTomatoesIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.17 14.83c-.39.39-1.02.39-1.41 0L12 15.41l-1.76 1.42c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41l1.42-1.76-1.42-1.76c-.39-.39-.39-10.2 0-1.41.39-.39 1.02-.39 1.41 0l1.76 1.42 1.76-1.42c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-1.42 1.76 1.42 1.76c.39.39.39 1.02 0 1.41z" fill="#FA320A"/>
+    </svg>
+);
+
+const ImdbIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-auto">
+    <rect width="48" height="24" rx="4" fill="#F5C518"/>
+    <path d="M8 6H11V18H8V6Z" fill="black"/>
+    <path d="M15.2 6H19.4L16.4 13.8L15.2 18H12L14.6 11.4L13.4 6H15.2Z" fill="black"/>
+    <path d="M21.6 6H24.6C26.4 6 27.6 6.9 27.6 9C27.6 10.5 26.7 11.4 25.5 11.7L28.2 18H24.9L22.8 12.3H24V8.4H22.2L21.6 6ZM24 8.4V10.2C25.2 10.2 25.5 9.9 25.5 9C25.5 8.1 25.2 8.4 24 8.4Z" fill="black"/>
+    <path d="M31 6H39V8.1H35.5V18H32.5V8.1H31V6Z" fill="black"/>
+  </svg>
+);
+
 export default function MovieDetailsPage(props: { params: Promise<{ id: string }> }) {
   const { id } = React.use(props.params);
   const { user } = useUser();
@@ -91,6 +107,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
             setSimilarMovies(movies.filter(m => m.posterUrl));
         });
 
+        // AI Flows for Trivia and External Ratings
         const [triviaResult, ratingsResult] = await Promise.all([
             getMovieTrivia({ movieTitle: movieDetails.title }),
             getExternalRatings({ movieTitle: movieDetails.title })
@@ -216,6 +233,20 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                             <Star className="size-4 fill-current" />
                             <span>{movie.vote_average.toFixed(1)} TMDB</span>
                         </div>
+
+                        {externalRatings && (
+                            <>
+                                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full">
+                                   <ImdbIcon />
+                                   <span>{externalRatings.imdb}</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full">
+                                   <RottenTomatoesIcon />
+                                   <span>{externalRatings.rottenTomatoes}</span>
+                                </div>
+                            </>
+                        )}
+
                         <div className="flex items-center gap-2 text-muted-foreground bg-white/5 px-3 py-1.5 rounded-full">
                             <Calendar className="size-4" />
                             <span>{new Date(movie.release_date).getFullYear()}</span>

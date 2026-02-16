@@ -70,7 +70,7 @@ export function TVShowCard({ id, title, posterUrl, className }: TVShowCardProps)
         </div>
       )}
 
-      {/* Main Click Area */}
+      {/* Main Click Area (Stretched Link) */}
       <Link href={`/tv/${id}`} className="absolute inset-0 z-0" aria-label={title} />
 
       {/* Hover Overlay */}
@@ -106,9 +106,11 @@ export function TVShowCard({ id, title, posterUrl, className }: TVShowCardProps)
 
         {/* Bottom Info Section */}
         <div className="absolute bottom-0 left-0 p-4 w-full pointer-events-auto">
-          <h3 className="font-headline text-base font-bold text-white shadow-md line-clamp-2 leading-tight group-hover:text-primary transition-colors">
-            {title}
-          </h3>
+          <Link href={`/tv/${id}`} onClick={(e) => e.stopPropagation()} className="block">
+            <h3 className="font-headline text-sm font-bold text-white shadow-md line-clamp-2 leading-tight group-hover:text-primary transition-colors">
+              {title}
+            </h3>
+          </Link>
           <div className="flex items-center gap-2 mt-1">
               <Star className="size-3 text-yellow-400 fill-current" />
               <span className="text-[10px] font-bold text-white/70 uppercase">TV Series</span>
