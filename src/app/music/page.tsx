@@ -1,8 +1,6 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { AppLayout } from '@/components/layout/app-layout';
 import { Loader2, Music, Search, Youtube } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
@@ -96,33 +94,31 @@ export default function MusicPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="py-8 px-4 md:px-8 space-y-12">
-        <header className="space-y-4">
-          <div className="flex items-center gap-3">
-            <Music className="w-8 h-8 text-primary" />
-            <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">
-              Music Video Search
-            </h1>
-          </div>
-          <p className="text-muted-foreground">
-            Find music videos for your favorite songs and artists on YouTube.
-          </p>
-          <div className="relative max-w-lg">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              placeholder="Search for songs or artists..."
-              className="pl-10 h-12 text-base"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </header>
+    <div className="py-8 px-4 md:px-8 space-y-12">
+      <header className="space-y-4">
+        <div className="flex items-center gap-3">
+          <Music className="w-8 h-8 text-primary" />
+          <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">
+            Music Video Search
+          </h1>
+        </div>
+        <p className="text-muted-foreground">
+          Find music videos for your favorite songs and artists on YouTube.
+        </p>
+        <div className="relative max-w-lg">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            placeholder="Search for songs or artists..."
+            className="pl-10 h-12 text-base"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      </header>
 
-        <section>
-          {renderContent()}
-        </section>
-      </div>
-    </AppLayout>
+      <section>
+        {renderContent()}
+      </section>
+    </div>
   );
 }

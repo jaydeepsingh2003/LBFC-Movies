@@ -1,8 +1,6 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AppLayout } from '@/components/layout/app-layout';
 import { getAiringTodayTvShows, getOnTheAirTvShows, getPopularTvShows, getTopRatedTvShows, getPosterUrl } from '@/lib/tmdb.client';
 import type { TVShow } from '@/lib/tmdb';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -101,24 +99,22 @@ export default function TVPage() {
     }, []);
 
   return (
-    <AppLayout>
-      <div className="space-y-12 py-8 px-4 md:px-8">
-        <header className="space-y-2">
-            <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">TV Shows</h1>
-            <p className="text-muted-foreground">Browse and discover new TV series.</p>
-        </header>
-        
-        <TvCarousel title="Airing Today" shows={airingToday} isLoading={loadingState.airingToday} />
-        <TvCarousel title="Currently On The Air" shows={onTheAir} isLoading={loadingState.onTheAir} />
-        <TvCarousel title="Popular TV Shows" shows={popular} isLoading={loadingState.popular} />
-        <TvCarousel title="Top Rated TV Shows" shows={topRated} isLoading={loadingState.topRated} />
+    <div className="space-y-12 py-8 px-4 md:px-8">
+      <header className="space-y-2">
+          <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">TV Shows</h1>
+          <p className="text-muted-foreground">Browse and discover new TV series.</p>
+      </header>
+      
+      <TvCarousel title="Airing Today" shows={airingToday} isLoading={loadingState.airingToday} />
+      <TvCarousel title="Currently On The Air" shows={onTheAir} isLoading={loadingState.onTheAir} />
+      <TvCarousel title="Popular TV Shows" shows={popular} isLoading={loadingState.popular} />
+      <TvCarousel title="Top Rated TV Shows" shows={topRated} isLoading={loadingState.topRated} />
 
-        <div className="space-y-12">
-            <EnglishTvSection />
-            <HindiTvSection />
-            <KannadaTvSection />
-        </div>
+      <div className="space-y-12">
+          <EnglishTvSection />
+          <HindiTvSection />
+          <KannadaTvSection />
       </div>
-    </AppLayout>
+    </div>
   );
 }

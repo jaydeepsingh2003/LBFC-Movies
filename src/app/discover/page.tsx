@@ -1,14 +1,11 @@
-
 'use client';
 
 import { useState, useCallback } from 'react';
-import { AppLayout } from '@/components/layout/app-layout';
 import DiscoverFilters, { type FilterState } from '@/components/discover-filters';
 import { useToast } from '@/hooks/use-toast';
 import { MovieCard } from '@/components/movie-card';
 import { TVShowCard } from '@/components/tv-show-card';
 import { discoverMovies, discoverTvShows, getPosterUrl, getMovieVideos, getTvShowVideos } from '@/lib/tmdb.client';
-import type { Movie, TVShow } from '@/lib/tmdb';
 import { Loader2, Film, Tv } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -102,60 +99,58 @@ export default function DiscoverPage() {
   }, [toast, activeTab]);
 
   return (
-    <AppLayout>
-      <div className="space-y-8 px-4 md:px-8 py-8">
-        <header className="space-y-2">
-          <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">Discover</h1>
-          <p className="text-muted-foreground">Use advanced filters to find exactly what you're looking for.</p>
-        </header>
-        
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'movie' | 'tv')} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 max-w-sm mx-auto">
-              <TabsTrigger value="movie"><Film className="mr-2"/>Movies</TabsTrigger>
-              <TabsTrigger value="tv"><Tv className="mr-2"/>TV Shows</TabsTrigger>
-          </TabsList>
-        </Tabs>
+    <div className="space-y-8 px-4 md:px-8 py-8">
+      <header className="space-y-2">
+        <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">Discover</h1>
+        <p className="text-muted-foreground">Use advanced filters to find exactly what you're looking for.</p>
+      </header>
+      
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'movie' | 'tv')} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 max-w-sm mx-auto">
+            <TabsTrigger value="movie"><Film className="mr-2"/>Movies</TabsTrigger>
+            <TabsTrigger value="tv"><Tv className="mr-2"/>TV Shows</TabsTrigger>
+        </TabsList>
+      </Tabs>
 
-        <div className="">
-          <DiscoverFilters onSearch={handleSearch} isLoading={isLoading} searchType={activeTab} />
-        </div>
-
-        <div className="mt-8 pb-8">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-64">
-              <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            </div>
-          ) : results.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4">
-                  {results.map((item) => (
-                    item.type === 'movie' ? (
-                      <MovieCard 
-                          key={item.id} 
-                          id={item.id} 
-                          title={item.title} 
-                          posterUrl={item.posterUrl} 
-                          trailerUrl={item.trailerUrl} 
-                          overview={item.overview} 
-                          poster_path={item.poster_path} 
-                      />
-                    ) : (
-                      <TVShowCard
-                          key={item.id}
-                          id={item.id}
-                          title={item.title}
-                          posterUrl={item.posterUrl}
-                      />
-                    )
-                  ))}
-              </div>
-          ) : (
-            <div className="text-center py-16">
-              <h3 className="text-lg font-semibold text-foreground">No results to show</h3>
-              <p className="text-muted-foreground mt-2">Adjust your filters and start a new search.</p>
-            </div>
-          )}
-        </div>
+      <div className="">
+        <DiscoverFilters onSearch={handleSearch} isLoading={isLoading} searchType={activeTab} />
       </div>
-    </AppLayout>
+
+      <div className="mt-8 pb-8">
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+          </div>
+        ) : results.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4">
+                {results.map((item) => (
+                  item.type === 'movie' ? (
+                    <MovieCard 
+                        key={item.id} 
+                        id={item.id} 
+                        title={item.title} 
+                        posterUrl={item.posterUrl} 
+                        trailerUrl={item.trailerUrl} 
+                        overview={item.overview} 
+                        poster_path={item.poster_path} 
+                    />
+                  ) : (
+                    <TVShowCard
+                        key={item.id}
+                        id={item.id}
+                        title={item.title}
+                        posterUrl={item.posterUrl}
+                    />
+                  )
+                ))}
+            </div>
+        ) : (
+          <div className="text-center py-16">
+            <h3 className="text-lg font-semibold text-foreground">No results to show</h3>
+            <p className="text-muted-foreground mt-2">Adjust your filters and start a new search.</p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

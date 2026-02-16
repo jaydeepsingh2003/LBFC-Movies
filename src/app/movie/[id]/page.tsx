@@ -1,15 +1,13 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { getMovieDetails, getPosterUrl, getBackdropUrl, getMovieVideos } from '@/lib/tmdb.client';
-import type { MovieDetails, CastMember, CrewMember, Review, WatchProvider, Movie, TmdbVideo } from '@/lib/tmdb';
+import type { MovieDetails, CastMember, CrewMember, Review, Movie, TmdbVideo } from '@/lib/tmdb';
 import { getMovieTrivia } from '@/ai/flows/movie-trivia';
 import { getExternalRatings } from '@/ai/flows/get-external-ratings';
-import { AppLayout } from '@/components/layout/app-layout';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, MessageSquareQuote, Bookmark, Music, Ticket } from 'lucide-react';
+import { Loader2, PlayCircle, Star, Bookmark, Music } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -86,7 +84,6 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
     if (!movie?.release_date) return false;
     const releaseDate = new Date(movie.release_date);
     const today = new Date();
-    // Assuming movies are in theaters for 90 days after release.
     const inTheatersUntil = new Date(releaseDate.getTime() + 90 * 24 * 60 * 60 * 1000);
     return releaseDate <= today && today <= inTheatersUntil && movie.status === 'Released';
   }, [movie]);
@@ -107,7 +104,6 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
         };
         setMovie(movieWithMedia);
 
-        // Fetch similar movies with trailers in parallel
         const similarMoviesPromises = movieDetails.similar.results.map(async (m) => {
             const videos = await getMovieVideos(m.id);
             const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
@@ -197,22 +193,18 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
 
   if (isLoading) {
     return (
-      <AppLayout>
-        <div className="flex justify-center items-center h-screen">
-          <Loader2 className="h-32 w-32 animate-spin text-primary" />
-        </div>
-      </AppLayout>
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="h-32 w-32 animate-spin text-primary" />
+      </div>
     );
   }
 
   if (!movie) {
     return (
-      <AppLayout>
-        <div className="text-center py-16">
-          <h2 className="text-2xl font-bold">Movie not found</h2>
-          <p className="text-muted-foreground mt-2">We couldn't find details for this movie.</p>
-        </div>
-      </AppLayout>
+      <div className="text-center py-16">
+        <h2 className="text-2xl font-bold">Movie not found</h2>
+        <p className="text-muted-foreground mt-2">We couldn't find details for this movie.</p>
+      </div>
     );
   }
 
@@ -268,7 +260,7 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
 
 
   return (
-    <AppLayout>
+    <div className="relative">
       <div className="relative h-96 md:h-[32rem] w-full">
         {movie.backdropUrl && <Image src={movie.backdropUrl} alt={movie.title} fill className="object-cover" />}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
@@ -442,8 +434,6 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
             </div>
         )}
       </div>
-    </AppLayout>
+    </div>
   );
 }
-
-    

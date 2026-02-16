@@ -21,7 +21,6 @@ import UpcomingSection from '@/components/sections/upcoming-section';
 import EnglishTvSection from '@/components/sections/english-tv-section';
 import HindiTvSection from '@/components/sections/hindi-tv-section';
 import KannadaTvSection from '@/components/sections/kannada-tv-section';
-import { AppLayout } from '@/components/layout/app-layout';
 import TrendingOttsSection from '@/components/sections/trending-otts-section';
 import TamilTvSection from '@/components/sections/tamil-tv-section';
 
@@ -44,38 +43,36 @@ export default function DashboardPage() {
   }
 
   return (
-    <AppLayout>
-      <div className="flex flex-col w-full overflow-x-hidden">
-        <HeroSection />
-        <div className="space-y-16 py-12 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto w-full">
-            <TrendingOttsSection />
-            <NowPlayingSection />
-            <UpcomingSection />
-            <FranchiseFocusSection />
-            <div className="grid grid-cols-1 gap-16">
-              <ForYouSection />
-              <TrendingSection />
-            </div>
-            <div className="space-y-16">
-              <EnglishTvSection />
-              <HindiTvSection />
-              <KannadaTvSection />
-              <TamilTvSection />
-            </div>
-            <div className="space-y-16">
-              <HindiMoviesSection />
-              <KannadaMoviesSection />
-              <TamilMoviesSection />
-              <TeluguMoviesSection />
-            </div>
-            <MoodSection />
-            <FavoriteArtistsSection />
-            <LanguagePicksSection />
-            <div className="pt-8 border-t border-primary/10">
-              <MovieMatchmakerSection />
-            </div>
-        </div>
+    <div className="flex flex-col w-full overflow-x-hidden">
+      <HeroSection />
+      <div className="space-y-16 py-12 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto w-full">
+          <TrendingOttsSection />
+          <NowPlayingSection />
+          <UpcomingSection />
+          <FranchiseFocusSection />
+          <div className="grid grid-cols-1 gap-16">
+            <ForYouSection />
+            <TrendingSection />
+          </div>
+          <div className="space-y-16">
+            <EnglishTvSection />
+            <HindiTvSection />
+            <KannadaTvSection />
+            <TamilTvSection />
+          </div>
+          <div className="space-y-16">
+            <HindiMoviesSection />
+            <KannadaMoviesSection />
+            <TamilMoviesSection />
+            <TeluguMoviesSection />
+          </div>
+          <MoodSection />
+          <FavoriteArtistsSection />
+          <LanguagePicksSection />
+          <div className="pt-8 border-t border-primary/10">
+            <MovieMatchmakerSection />
+          </div>
       </div>
-    </AppLayout>
+    </div>
   );
 }

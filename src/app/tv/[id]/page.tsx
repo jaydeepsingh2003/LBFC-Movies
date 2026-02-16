@@ -1,16 +1,14 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { getTvShowDetails, getPosterUrl, getBackdropUrl, getLogoUrl } from '@/lib/tmdb.client';
-import type { TVShowDetails, CastMember, CrewMember, WatchProvider, TVShow, TVSeason } from '@/lib/tmdb';
+import type { TVShowDetails, CastMember, CrewMember, TVShow, TVSeason } from '@/lib/tmdb';
 import { getExternalTvRatings } from '@/ai/flows/get-external-tv-ratings';
-import { AppLayout } from '@/components/layout/app-layout';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, Calendar, Clapperboard, Tv, Bookmark } from 'lucide-react';
+import { Loader2, PlayCircle, Star, Tv, Bookmark } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
 import { Button } from '@/components/ui/button';
@@ -156,22 +154,18 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
 
   if (isLoading) {
     return (
-      <AppLayout>
-        <div className="flex justify-center items-center h-screen">
-          <Loader2 className="h-32 w-32 animate-spin text-primary" />
-        </div>
-      </AppLayout>
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="h-32 w-32 animate-spin text-primary" />
+      </div>
     );
   }
 
   if (!show) {
     return (
-      <AppLayout>
-        <div className="text-center py-16">
-          <h2 className="text-2xl font-bold">TV Show not found</h2>
-          <p className="text-muted-foreground mt-2">We couldn't find details for this show.</p>
-        </div>
-      </AppLayout>
+      <div className="text-center py-16">
+        <h2 className="text-2xl font-bold">TV Show not found</h2>
+        <p className="text-muted-foreground mt-2">We couldn't find details for this show.</p>
+      </div>
     );
   }
 
@@ -224,7 +218,7 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
         .filter(m => m.posterUrl);
 
   return (
-    <AppLayout>
+    <div className="relative">
       <div className="relative h-96 md:h-[32rem] w-full">
         {show.backdropUrl && <Image src={show.backdropUrl} alt={show.name} fill className="object-cover" />}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
@@ -385,8 +379,6 @@ export default function TVShowDetailsPage(props: { params: { id: string } }) {
             </div>
         )}
       </div>
-    </AppLayout>
+    </div>
   );
 }
-
-    
