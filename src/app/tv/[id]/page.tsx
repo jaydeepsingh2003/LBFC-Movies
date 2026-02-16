@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -74,25 +75,15 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
 
   const handleSaveToggle = async () => {
     if (!user || !firestore || !show) {
-        toast({
-            variant: "destructive",
-            title: "Sign in required",
-            description: "Please log in to curate your TV collection.",
-        });
+        toast({ variant: "destructive", title: "Sign in required", description: "Please log in to curate your TV collection." });
         return;
     }
-
     try {
         if (isSaved) {
             await removeTvShowFromPlaylist(firestore, user.uid, show.id);
             toast({ title: "Removed from TV Vault" });
         } else {
-            await saveTvShowToPlaylist(firestore, user.uid, {
-                id: show.id,
-                name: show.name,
-                overview: show.overview,
-                poster_path: show.poster_path,
-            });
+            await saveTvShowToPlaylist(firestore, user.uid, { id: show.id, name: show.name, overview: show.overview, poster_path: show.poster_path });
             toast({ title: "Saved to TV Vault" });
         }
     } catch (error) {
@@ -119,7 +110,6 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
 
   return (
     <div className="relative min-h-svh bg-background">
-      {/* Cinematic Backdrop Section */}
       <div className="relative h-[50vh] md:h-[80vh] w-full overflow-hidden">
         {show.backdropUrl && (
             <Image 
@@ -132,15 +122,11 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-transparent to-transparent hidden md:block" />
-        
-        {/* Back Button */}
         <div className="absolute top-6 left-4 md:left-8 z-20">
             <Button onClick={() => window.history.back()} variant="ghost" className="glass-card rounded-full gap-2 text-white hover:bg-primary transition-all px-4 md:px-6 py-4 md:py-6 font-bold uppercase tracking-widest text-[10px] md:text-xs">
                 <ChevronLeft className="size-4 md:size-5" /> Back
             </Button>
         </div>
-
-        {/* Header Overlay Info */}
         <div className="absolute bottom-[10%] md:bottom-[15%] left-4 md:left-12 lg:left-24 max-w-4xl z-20 pointer-events-none">
             <div className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-10 duration-700">
                 <div className="flex flex-wrap items-center gap-2 md:gap-3">
@@ -160,8 +146,6 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
 
       <div className="content-container relative -mt-20 md:-mt-48 pb-20 z-30 px-4 md:px-8 lg:px-12">
         <div className="flex flex-col lg:flex-row gap-8 md:gap-12 lg:gap-20">
-          
-          {/* Poster & Actions Sidebar */}
           <div className="w-full lg:w-[400px] flex-shrink-0 space-y-6 md:space-y-10">
             <div className="relative aspect-[2/3] w-[200px] md:w-full mx-auto md:mx-0 rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] border-2 border-white/10 glass-card group">
                 {show.posterUrl && <Image src={show.posterUrl} alt={show.name} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />}
@@ -206,7 +190,6 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
             )}
           </div>
 
-          {/* Main Info Section */}
           <div className="flex-1 space-y-10 md:space-y-16">
             <div className="space-y-6 md:space-y-10">
                 <header className="space-y-6 md:space-y-8">
@@ -221,7 +204,6 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                                 <span className="uppercase tracking-widest text-[8px] md:text-[10px]">{show.number_of_seasons} Full Seasons</span>
                             </div>
                         </div>
-                        
                         <div className="flex flex-wrap gap-2 md:gap-3">
                             {show.genres.slice(0, 4).map(g => (
                                 <Badge key={g.id} variant="secondary" className="rounded-lg md:rounded-xl px-3 md:px-6 py-1.5 md:py-2.5 glass-panel font-black border-white/5 text-[8px] md:text-[10px] uppercase tracking-widest hover:bg-primary transition-colors cursor-default">
@@ -245,7 +227,6 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                 </div>
             </div>
 
-            {/* Cast & Crew Section */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 md:gap-16 pt-6 md:pt-12">
                 <section className="space-y-6 md:space-y-10">
                     <div className="flex items-center justify-between border-b border-white/10 pb-4">
@@ -281,7 +262,6 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                     </div>
                     <div className="glass-panel rounded-2xl md:rounded-[3rem] p-6 md:p-10 space-y-8 md:space-y-10 border-white/10 bg-secondary/30 shadow-[0_40px_80px_rgba(0,0,0,0.5)] backdrop-blur-3xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 md:w-64 md:h-64 bg-primary/5 blur-[60px] md:blur-[100px] rounded-full -mr-16 -mt-16 md:-mr-32 md:-mt-32" />
-                        
                         <div className="space-y-6 md:space-y-8 relative z-10">
                             <div className="text-center space-y-2">
                                 <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Architect your verdict</p>
@@ -298,18 +278,15 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                 </section>
             </div>
 
-            {/* Episode Guide Section */}
             <section className="space-y-8 md:space-y-12 pt-10 md:pt-20 border-t border-white/10">
                 <div className="flex items-center justify-between border-b border-white/10 pb-6">
                     <div className="flex items-center gap-3 md:gap-4">
                         <Layers className="size-5 md:size-6 text-primary" />
                         <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter uppercase mb-0">Episode Guide</h2>
                     </div>
-                    <div className="flex items-center gap-2 md:gap-3">
-                        <Badge variant="outline" className="rounded-full px-4 md:px-6 py-1.5 border-white/20 text-muted-foreground uppercase font-black text-[8px] md:text-[10px] tracking-widest backdrop-blur-md">
-                            {show.number_of_episodes} Total Episodes
-                        </Badge>
-                    </div>
+                    <Badge variant="outline" className="rounded-full px-4 md:px-6 py-1.5 border-white/20 text-muted-foreground uppercase font-black text-[8px] md:text-[10px] tracking-widest backdrop-blur-md">
+                        {show.number_of_episodes} Total Episodes
+                    </Badge>
                 </div>
                 
                 <div className="grid grid-cols-1 gap-6 md:gap-8">
@@ -324,40 +301,23 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                                             <Tv className="size-8 md:size-12 text-white/10" />
                                         </div>
                                     )}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </div>
-                                
                                 <div className="flex-1 space-y-4 md:space-y-6">
                                     <div className="flex items-start justify-between">
                                         <div className="space-y-1 md:space-y-2">
-                                            <h3 className="font-black text-xl md:text-3xl group-hover:text-primary transition-colors leading-none text-white tracking-tighter uppercase">
-                                                {season.name}
-                                            </h3>
+                                            <h3 className="font-black text-xl md:text-3xl group-hover:text-primary transition-colors leading-none text-white tracking-tighter uppercase">{season.name}</h3>
                                             <div className="flex items-center gap-3 md:gap-4">
-                                                <span className="text-[8px] md:text-[10px] font-black text-primary uppercase tracking-[0.25em]">
-                                                    {season.air_date ? new Date(season.air_date).getFullYear() : 'TBA'} Sequence
-                                                </span>
+                                                <span className="text-[8px] md:text-[10px] font-black text-primary uppercase tracking-[0.25em]">{season.air_date ? new Date(season.air_date).getFullYear() : 'TBA'} Sequence</span>
                                                 <Separator orientation="vertical" className="h-3 bg-white/10" />
-                                                <span className="text-[8px] md:text-[10px] font-black text-muted-foreground uppercase tracking-[0.25em]">
-                                                    {season.episode_count} Episodes
-                                                </span>
+                                                <span className="text-[8px] md:text-[10px] font-black text-muted-foreground uppercase tracking-[0.25em]">{season.episode_count} Episodes</span>
                                             </div>
                                         </div>
-                                        <Badge className="hidden sm:flex bg-primary/10 text-primary border-primary/20 font-black uppercase text-[9px] px-3 py-1">Ready to Stream</Badge>
                                     </div>
-                                    
                                     <p className="text-sm md:text-lg text-muted-foreground/90 leading-relaxed font-medium line-clamp-3 md:line-clamp-4">
                                         {season.overview || "Production details for this cycle are currently classified. Access will be granted upon transmission."}
                                     </p>
-                                    
-                                    <div className="flex items-center gap-4 pt-2 md:pt-4">
-                                        <Button variant="secondary" className="rounded-xl h-10 md:h-12 px-6 md:px-8 font-black uppercase text-[10px] md:text-xs tracking-widest bg-white/5 border border-white/10 hover:bg-primary hover:text-white transition-all">
-                                            View Details
-                                        </Button>
-                                    </div>
                                 </div>
                             </div>
-                            <div className="absolute top-0 right-0 w-[50%] h-full bg-gradient-to-l from-primary/5 to-transparent pointer-events-none" />
                         </div>
                     ))}
                 </div>

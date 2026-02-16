@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -71,6 +72,7 @@ export default function HeroSection() {
 
     const handlePlayTrailer = (e: React.MouseEvent, videoId: string | undefined) => {
         e.preventDefault();
+        e.stopPropagation();
         if (videoId) {
             setVideoId(videoId);
         }

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -33,7 +34,6 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
   const [cachedTrailer, setCachedTrailer] = useState<string | null>(initialTrailerUrl || null);
 
   const handleNavigateToDetails = (e: React.MouseEvent) => {
-    // Standard navigation
     router.push(`/movie/${id}`);
   };
 
@@ -42,8 +42,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
     e.stopPropagation();
     
     if (cachedTrailer) {
-      const videoId = cachedTrailer.includes('v=') ? cachedTrailer.split('v=')[1] : cachedTrailer;
-      setVideoId(videoId);
+      setVideoId(cachedTrailer);
       return;
     }
 
@@ -55,10 +54,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         setCachedTrailer(trailer.key);
         setVideoId(trailer.key);
       } else {
-        toast({
-          title: "Trailer Unavailable",
-          description: "We couldn't find a preview for this title.",
-        });
+        toast({ title: "Trailer Unavailable", description: "We couldn't find a preview for this title." });
       }
     } catch (error) {
       console.error("Error fetching trailer:", error);
@@ -71,26 +67,14 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
     e.preventDefault();
     e.stopPropagation();
     if (!user || !firestore) {
-        toast({
-            variant: "destructive",
-            title: "Access Restricted",
-            description: "Please sign in to curate your collection.",
-        });
+        toast({ variant: "destructive", title: "Access Restricted", description: "Please sign in to curate your collection." });
         return;
     }
     try {
         await saveMovieToPlaylist(firestore, user.uid, { id, title, overview: overview || '', poster_path: poster_path || null });
-        toast({
-            title: "Added to List",
-            description: `${title} is now in your movie collection.`,
-        });
+        toast({ title: "Added to List", description: `${title} is now in your collection.` });
     } catch (error) {
         console.error("Error saving movie:", error);
-        toast({
-            variant: "destructive",
-            title: "Update Failed",
-            description: "Unable to sync with your collection. Try again later.",
-        });
     }
   };
 
@@ -108,15 +92,8 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         className
       )}
     >
-      {/* Base Content: Poster Image */}
       {posterUrl ? (
-        <Image
-          src={posterUrl}
-          alt={title}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 15vw"
-        />
+        <Image src={posterUrl} alt={title} fill className="object-cover" sizes="(max-width: 768px) 50vw, 15vw" />
       ) : (
         <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
           <Film className="w-12 h-12 text-muted-foreground/30 mb-2" />
@@ -124,50 +101,24 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         </div>
       )}
 
-      {/* Hover Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 z-10">
-        
-        {/* Action Buttons (Top Right) */}
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
-          <Button 
-            variant="secondary" 
-            size="icon" 
-            title="Save to Playlist"
-            className="h-9 w-9 rounded-full glass-card hover:bg-primary hover:text-white border-none shadow-lg transition-colors"
-            onClick={handleSaveMovie}
-          >
+          <Button variant="secondary" size="icon" className="h-9 w-9 rounded-full glass-card hover:bg-primary hover:text-white border-none shadow-lg" onClick={handleSaveMovie}>
             <Bookmark className="size-4" />
           </Button>
-          <Button 
-            variant="secondary" 
-            size="icon" 
-            title="More Info"
-            className="h-9 w-9 rounded-full glass-card hover:bg-white hover:text-black border-none shadow-lg transition-colors"
-            onClick={handleMoreInfo}
-          >
+          <Button variant="secondary" size="icon" className="h-9 w-9 rounded-full glass-card hover:bg-white hover:text-black border-none shadow-lg" onClick={handleMoreInfo}>
             <Info className="size-4" />
           </Button>
         </div>
 
-        {/* Center Play Button */}
         <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div 
-              className="h-16 w-16 rounded-full bg-primary/90 flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-transform duration-500 cursor-pointer"
-              onClick={handlePlayTrailer}
-          >
-              {isLoadingTrailer ? (
-                <Loader2 className="size-8 text-white animate-spin" />
-              ) : (
-                <Play className="size-8 text-white fill-current ml-1" />
-              )}
+          <div className="h-16 w-16 rounded-full bg-primary/90 flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-transform duration-500" onClick={handlePlayTrailer}>
+              {isLoadingTrailer ? <Loader2 className="size-8 text-white animate-spin" /> : <Play className="size-8 text-white fill-current ml-1" />}
           </div>
         </div>
 
-        {/* Bottom Info Section */}
         <div className="absolute bottom-0 left-0 p-4 w-full space-y-2 z-10">
-          <h3 className="font-headline text-sm font-black text-white leading-tight line-clamp-2 drop-shadow-lg group-hover:text-primary transition-colors">
-              {title}
-          </h3>
+          <h3 className="font-headline text-sm font-black text-white leading-tight line-clamp-2 drop-shadow-lg group-hover:text-primary transition-colors">{title}</h3>
           <div className="flex items-center gap-2">
               <Star className="size-3 text-yellow-400 fill-current" />
               <span className="text-[10px] font-bold text-white/70 uppercase">Movie</span>
