@@ -1,18 +1,17 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { getTvShowDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
-import type { TVShowDetails, CastMember, CrewMember, TVShow, TVSeason } from '@/lib/tmdb';
+import type { TVShowDetails, TVShow } from '@/lib/tmdb';
 import { getExternalTvRatings } from '@/ai/flows/get-external-tv-ratings';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Info, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
 import { Button } from '@/components/ui/button';
-import { TVShowCard } from '@/components/tv-show-card';
 import { useUser } from '@/firebase/auth/auth-client';
 import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
@@ -27,11 +26,6 @@ import { cn } from '@/lib/utils';
 interface TVShowDetailsWithMedia extends TVShowDetails {
   posterUrl: string | null;
   backdropUrl: string | null;
-}
-
-interface TVShowWithPoster extends Partial<TVShow> {
-    posterUrl: string | null;
-    title: string;
 }
 
 interface ExternalRatings {
@@ -86,9 +80,13 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
         };
         setShow(showWithMedia);
 
-        // Fetch AI External Ratings
-        const ratingsResult = await getExternalTvRatings({ tvShowTitle: showDetails.name });
-        setExternalRatings(ratingsResult);
+        // Fetch AI External Ratings gracefully
+        try {
+            const ratingsResult = await getExternalTvRatings({ tvShowTitle: showDetails.name });
+            setExternalRatings(ratingsResult);
+        } catch (aiError) {
+            console.warn("AI Ratings fetch skipped or failed", aiError);
+        }
 
       } catch (error) {
         console.error("Failed to fetch tv show details", error);
@@ -158,11 +156,11 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent hidden md:block" />
         
         {/* Back Button */}
-        <Link href="/tv" className="absolute top-8 left-4 md:left-8 z-20">
-            <Button variant="ghost" className="glass-card rounded-full gap-2 text-white hover:bg-primary transition-all">
-                <ChevronLeft className="size-5" /> Back to TV Hub
+        <div className="absolute top-8 left-4 md:left-8 z-20">
+            <Button onClick={() => window.history.back()} variant="ghost" className="glass-card rounded-full gap-2 text-white hover:bg-primary transition-all">
+                <ChevronLeft className="size-5" /> Back
             </Button>
-        </Link>
+        </div>
       </div>
 
       <div className="content-container relative -mt-32 md:-mt-48 pb-20">

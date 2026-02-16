@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Film, Play, Bookmark, Star, Info, Loader2 } from 'lucide-react';
 import { useVideoPlayer } from '@/context/video-provider';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import { useUser } from '@/firebase/auth/auth-client';
 import { useToast } from '@/hooks/use-toast';
@@ -29,8 +29,14 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
   const [isLoadingTrailer, setIsLoadingTrailer] = useState(false);
   const [cachedTrailer, setCachedTrailer] = useState<string | null>(initialTrailerUrl || null);
+
+  const handleNavigateToDetails = (e: React.MouseEvent) => {
+    // Navigate to details if clicking the main card area
+    router.push(`/movie/${id}`);
+  };
 
   const handlePlayTrailer = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -89,8 +95,20 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
     }
   };
 
+  const handleMoreInfo = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(`/movie/${id}`);
+  };
+
   return (
-    <div className={cn("relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-secondary transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/20 group", className)}>
+    <div 
+      onClick={handleNavigateToDetails}
+      className={cn(
+        "relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-secondary transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/20 group cursor-pointer", 
+        className
+      )}
+    >
       {/* Base Content: Poster Image */}
       {posterUrl ? (
         <Image
@@ -107,14 +125,11 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         </div>
       )}
 
-      {/* Main Click Area (Stretched Link) - Navigation to Details */}
-      <Link href={`/movie/${id}`} className="absolute inset-0 z-0" aria-label={title} />
-
       {/* Hover Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none z-10">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 z-10">
         
         {/* Action Buttons (Top Right) */}
-        <div className="absolute top-3 right-3 flex flex-col gap-2 pointer-events-auto">
+        <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
           <Button 
             variant="secondary" 
             size="icon" 
@@ -129,16 +144,14 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
             size="icon" 
             title="More Info"
             className="h-9 w-9 rounded-full glass-card hover:bg-white hover:text-black border-none shadow-lg transition-colors"
-            asChild
+            onClick={handleMoreInfo}
           >
-            <Link href={`/movie/${id}`} onClick={(e) => e.stopPropagation()}>
-              <Info className="size-4" />
-            </Link>
+            <Info className="size-4" />
           </Button>
         </div>
 
         {/* Center Play Button */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
+        <div className="absolute inset-0 flex items-center justify-center z-10">
           <div 
               className="h-16 w-16 rounded-full bg-primary/90 flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-transform duration-500 cursor-pointer"
               onClick={handlePlayTrailer}
@@ -152,12 +165,10 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         </div>
 
         {/* Bottom Info Section */}
-        <div className="absolute bottom-0 left-0 p-4 w-full space-y-2 pointer-events-auto">
-          <Link href={`/movie/${id}`} onClick={(e) => e.stopPropagation()} className="block">
-            <h3 className="font-headline text-sm font-black text-white leading-tight line-clamp-2 drop-shadow-lg group-hover:text-primary transition-colors">
-                {title}
-            </h3>
-          </Link>
+        <div className="absolute bottom-0 left-0 p-4 w-full space-y-2 z-10">
+          <h3 className="font-headline text-sm font-black text-white leading-tight line-clamp-2 drop-shadow-lg group-hover:text-primary transition-colors">
+              {title}
+          </h3>
           <div className="flex items-center gap-2">
               <Star className="size-3 text-yellow-400 fill-current" />
               <span className="text-[10px] font-bold text-white/70 uppercase">Movie</span>

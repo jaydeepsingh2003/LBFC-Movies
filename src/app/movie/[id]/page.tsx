@@ -1,7 +1,8 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { getMovieDetails, getPosterUrl, getBackdropUrl, getMovieVideos } from '@/lib/tmdb.client';
+import { getMovieDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
 import type { MovieDetails, Movie } from '@/lib/tmdb';
 import { getMovieTrivia } from '@/ai/flows/movie-trivia';
 import { getExternalRatings } from '@/ai/flows/get-external-ratings';
@@ -107,14 +108,17 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
             setSimilarMovies(movies.filter(m => m.posterUrl));
         });
 
-        // AI Flows for Trivia and External Ratings
-        const [triviaResult, ratingsResult] = await Promise.all([
-            getMovieTrivia({ movieTitle: movieDetails.title }),
-            getExternalRatings({ movieTitle: movieDetails.title })
-        ]);
-        
-        setTrivia(triviaResult);
-        setExternalRatings(ratingsResult);
+        // Dynamic fetching of AI metadata
+        try {
+            const [triviaResult, ratingsResult] = await Promise.all([
+                getMovieTrivia({ movieTitle: movieDetails.title }),
+                getExternalRatings({ movieTitle: movieDetails.title })
+            ]);
+            setTrivia(triviaResult);
+            setExternalRatings(ratingsResult);
+        } catch (aiError) {
+            console.warn("AI Metadata retrieval skipped or failed", aiError);
+        }
 
       } catch (error) {
         console.error("Failed to fetch movie details", error);
@@ -168,11 +172,11 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent hidden md:block" />
         
         {/* Back Button */}
-        <Link href="/" className="absolute top-8 left-4 md:left-8 z-20">
-            <Button variant="ghost" className="glass-card rounded-full gap-2 text-white hover:bg-primary transition-all">
-                <ChevronLeft className="size-5" /> Back to Dashboard
+        <div className="absolute top-8 left-4 md:left-8 z-20">
+            <Button onClick={() => window.history.back()} variant="ghost" className="glass-card rounded-full gap-2 text-white hover:bg-primary transition-all">
+                <ChevronLeft className="size-5" /> Back
             </Button>
-        </Link>
+        </div>
       </div>
 
       <div className="content-container relative -mt-32 md:-mt-48 pb-20">
