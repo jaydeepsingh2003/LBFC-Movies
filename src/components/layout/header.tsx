@@ -24,13 +24,13 @@ export function DesktopNav() {
     });
 
     return (
-        <nav className="flex items-center gap-8 py-3">
+        <nav className="flex items-center gap-8 h-full">
             {items.map((item) => (
                 <Link
                     key={item.href}
                     href={item.href}
                     className={cn(
-                        "transition-all duration-300 text-sm font-bold uppercase tracking-widest hover:text-primary relative group",
+                        "transition-all duration-300 text-sm font-bold uppercase tracking-widest hover:text-primary relative group flex items-center h-full",
                         pathname === item.href ? "text-primary" : "text-muted-foreground"
                     )}
                 >
@@ -38,7 +38,7 @@ export function DesktopNav() {
                         {item.label}
                     </span>
                     <span className={cn(
-                        "absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full",
+                        "absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full",
                         pathname === item.href && "w-full"
                     )} />
                 </Link>
@@ -67,10 +67,10 @@ export function Header() {
 
     return (
         <header className={cn(
-            "fixed top-0 z-50 w-full transition-all duration-500",
-            scrolled ? "bg-background/90 backdrop-blur-xl border-b py-2" : "bg-gradient-to-b from-black/80 to-transparent py-4"
+            "fixed top-0 z-50 w-full transition-all duration-500 h-20 md:h-24",
+            scrolled ? "bg-background/95 backdrop-blur-xl border-b" : "bg-black/40 backdrop-blur-sm border-b border-white/5"
         )}>
-            <div className="content-container flex items-center justify-between gap-8">
+            <div className="content-container flex items-center justify-between gap-8 h-full">
                 {/* Logo Section */}
                 <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
                     <div className="p-2 bg-primary rounded-lg group-hover:scale-110 transition-transform duration-300">
@@ -80,8 +80,8 @@ export function Header() {
                 </Link>
                 
                 {/* Search & Navigation Middle */}
-                <div className="flex-1 flex items-center gap-8">
-                    <div className="hidden lg:block">
+                <div className="flex-1 flex items-center gap-8 h-full">
+                    <div className="hidden lg:block h-full">
                         <DesktopNav />
                     </div>
                     <div className="flex-1 max-w-xl">

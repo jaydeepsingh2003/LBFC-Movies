@@ -149,10 +149,10 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
 
   return (
     <div className="relative min-h-screen">
-      {/* Immersive Backdrop Section */}
-      <div className="relative h-[60vh] md:h-[80vh] w-full">
+      {/* Backdrop Section */}
+      <div className="relative h-[50vh] md:h-[70vh] w-full">
         {movie.backdropUrl && <Image src={movie.backdropUrl} alt={movie.title} fill className="object-cover" priority />}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent hidden md:block" />
         
         {/* Back Button */}
@@ -163,7 +163,7 @@ export default function MovieDetailsPage(props: { params: { id: string } }) {
         </Link>
       </div>
 
-      <div className="content-container relative -mt-64 md:-mt-96 pb-20">
+      <div className="content-container relative -mt-32 md:-mt-48 pb-20">
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Poster & Actions Sidebar */}
           <div className="w-full lg:w-[350px] flex-shrink-0 space-y-6">
