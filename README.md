@@ -1,3 +1,4 @@
+
 # LBFC - AI-Powered Movie Hub
 
 LBFC is a high-performance, production-ready movie discovery platform built with Next.js 15, Firebase, and Google Genkit. It provides personalized recommendations, AI-powered search, and a sleek, responsive interface for film enthusiasts.
