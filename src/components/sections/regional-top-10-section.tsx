@@ -29,7 +29,6 @@ export default function RegionalTop10Section() {
         const fetchRegionalTop10 = async () => {
             setIsLoading(true);
             try {
-                // Fetch authentic regional movies produced in that origin country
                 const results = await discoverMovies({ 
                     with_origin_country: activeRegion, 
                     sort_by: 'popularity.desc' 
@@ -53,12 +52,9 @@ export default function RegionalTop10Section() {
                     <div className="p-2 bg-blue-500/10 rounded-lg">
                         <MapPin className="text-blue-500 size-6 md:size-8" />
                     </div>
-                    <div>
-                        <h2 className="font-headline text-2xl md:text-4xl font-black tracking-tighter uppercase text-white">
-                            Top 10 in <span className="text-blue-500">{activeRegionLabel}</span>
-                        </h2>
-                        <p className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Real-time local favorites</p>
-                    </div>
+                    <h2 className="font-headline text-2xl md:text-4xl font-black tracking-tighter uppercase text-white">
+                        Top 10 in <span className="text-blue-500">{activeRegionLabel}</span>
+                    </h2>
                 </div>
 
                 <Tabs value={activeRegion} onValueChange={setActiveRegion} className="w-full md:w-auto">
@@ -89,7 +85,6 @@ export default function RegionalTop10Section() {
                             {movies.map((movie, index) => (
                                 <CarouselItem key={movie.id} className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 pl-4 md:pl-8">
                                     <div className="relative group h-full">
-                                        {/* Ranked Number Overlay - Corrected for double-digit visibility */}
                                         <div className={cn(
                                             "absolute bottom-0 z-0 select-none pointer-events-none transition-all duration-500",
                                             index === 9 ? "-left-12 md:-left-20" : "-left-4 md:-left-8"

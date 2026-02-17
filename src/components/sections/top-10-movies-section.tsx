@@ -18,7 +18,6 @@ export default function Top10MoviesSection() {
         const fetchTop10 = async () => {
             setIsLoading(true);
             try {
-                // Fetch the absolute latest popular movies globally
                 const results = await getPopularMovies();
                 setMovies(results.slice(0, 10));
             } catch (error) {
@@ -49,12 +48,9 @@ export default function Top10MoviesSection() {
                 <div className="p-2 bg-yellow-500/10 rounded-lg">
                     <Trophy className="text-yellow-500 size-6 md:size-8" />
                 </div>
-                <div>
-                    <h2 className="font-headline text-2xl md:text-4xl font-black tracking-tighter uppercase text-white">
-                        Top 10 <span className="text-yellow-500">Global Hits</span>
-                    </h2>
-                    <p className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Real-time worldwide trending titles</p>
-                </div>
+                <h2 className="font-headline text-2xl md:text-4xl font-black tracking-tighter uppercase text-white">
+                    Top 10 <span className="text-yellow-500">Global Hits</span>
+                </h2>
             </div>
 
             <Carousel opts={{ align: 'start', loop: false, dragFree: true }} className="w-full">
@@ -62,7 +58,6 @@ export default function Top10MoviesSection() {
                     {movies.map((movie, index) => (
                         <CarouselItem key={movie.id} className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 pl-4 md:pl-8">
                             <div className="relative group h-full">
-                                {/* Ranked Number Overlay - Corrected for double-digit visibility */}
                                 <div className={cn(
                                     "absolute bottom-0 z-0 select-none pointer-events-none transition-all duration-500",
                                     index === 9 ? "-left-12 md:-left-20" : "-left-4 md:-left-8"
