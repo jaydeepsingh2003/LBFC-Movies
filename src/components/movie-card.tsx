@@ -75,7 +75,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
     }
     try {
         await saveMovieToPlaylist(firestore, user.uid, { id, title, overview: overview || '', poster_path: poster_path || null });
-        toast({ title: "Added to List", description: `${title} is now in your collection.` });
+        toast({ title: "Added to Vault", description: `${title} is now in your collection.` });
     } catch (error) {
         console.error("Error saving movie:", error);
     }

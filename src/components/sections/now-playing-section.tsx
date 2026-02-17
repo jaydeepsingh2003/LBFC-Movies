@@ -5,6 +5,7 @@ import { MovieCarousel } from "../movie-carousel";
 import { getNowPlayingMovies, getPosterUrl } from "@/lib/tmdb.client";
 import { Movie } from "@/lib/tmdb";
 import { Skeleton } from "../ui/skeleton";
+import { Ticket } from "lucide-react";
 
 interface MovieWithPoster extends Partial<Movie> {
   posterUrl: string | null;
@@ -47,5 +48,16 @@ export default function NowPlayingSection() {
         )
     }
 
-    return <MovieCarousel title="In Theaters" movies={movies} />;
+    return (
+        <div className="space-y-8">
+            <div className="space-y-1">
+                <h2 className="section-title mb-0">
+                    <Ticket className="text-primary size-6" />
+                    In Theaters
+                </h2>
+                <p className="text-sm font-medium text-muted-foreground">Global blockbusters and regional hits playing in cinemas near you.</p>
+            </div>
+            <MovieCarousel title="" movies={movies} />
+        </div>
+    );
 }
