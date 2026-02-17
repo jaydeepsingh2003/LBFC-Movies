@@ -1,10 +1,7 @@
-
 'use client';
 
-import { useEffect } from 'react';
 import { 
     getAuth, 
-    onAuthStateChanged, 
     GoogleAuthProvider, 
     signInWithPopup, 
     signOut,
@@ -21,32 +18,32 @@ export function useUser() {
     const auth = getAuth(app);
     const [user, loading, error] = useAuthState(auth);
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const db = getFirestore(app);
-                const userRef = doc(db, 'users', user.uid);
-                // For new email/password sign-ups, displayName might be null initially
-                const displayName = user.displayName || user.email?.split('@')[0];
-                await setDoc(userRef, {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: displayName,
-                    photoURL: user.photoURL,
-                }, { merge: true });
-            }
-        });
-        return () => unsubscribe();
-    }, [auth, app]);
-
+    // Removed automatic setDoc from hook to prevent Firestore quota exhaustion (resource-exhausted).
+    // User profile sync now happens only on explicit auth events (login/signup).
+    
     return { user, isLoading: loading, error };
+}
+
+async function syncUserProfile(user: User) {
+    const db = getFirestore();
+    const userRef = doc(db, 'users', user.uid);
+    const displayName = user.displayName || user.email?.split('@')[0];
+    await setDoc(userRef, {
+        uid: user.uid,
+        email: user.email,
+        displayName: displayName,
+        photoURL: user.photoURL,
+    }, { merge: true });
 }
 
 export const loginWithGoogle = async () => {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     try {
-        await signInWithPopup(auth, provider);
+        const result = await signInWithPopup(auth, provider);
+        if (result.user) {
+            await syncUserProfile(result.user);
+        }
     } catch (error) {
         console.error("Error signing in with Google", error);
         throw error;
@@ -57,6 +54,7 @@ export const signUpWithEmail = async (email: string, password: string): Promise<
     const auth = getAuth();
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await syncUserProfile(userCredential.user);
         return userCredential.user;
     } catch (error) {
         console.error("Error signing up with email and password", error);
@@ -68,13 +66,13 @@ export const signInWithEmail = async (email: string, password: string): Promise<
     const auth = getAuth();
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        await syncUserProfile(userCredential.user);
         return userCredential.user;
     } catch (error) {
         console.error("Error signing in with email and password", error);
         throw error;
     }
 };
-
 
 export const logout = async () => {
     const auth = getAuth();

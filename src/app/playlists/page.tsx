@@ -16,13 +16,9 @@ import Link from 'next/link';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { cn } from '@/lib/utils';
 
 export default function PlaylistsPage() {
   const { user, isLoading: userLoading } = useUser();
@@ -48,26 +44,26 @@ export default function PlaylistsPage() {
     setIsGenerating(true);
     setPlaylistMovies([]);
     try {
-      // Fetch directly from TMDB based on criteria
+      // Fetch directly from TMDB based on vibe parameters (no AI involved)
       const results = await discoverMovies({
         keywords: criteria.keywords || undefined,
         sort_by: 'popularity.desc',
       });
       
-      setPlaylistMovies(results.slice(0, 10));
+      setPlaylistMovies(results.slice(0, 12));
       
       if (results.length === 0) {
         toast({
-          title: 'No Matches Found',
-          description: 'Try adjusting your vibe parameters.',
+          title: 'No Matches in Archive',
+          description: 'Try adjusting your vibe parameters for a different result.',
         });
       }
     } catch (error) {
       console.error(error);
       toast({
         variant: 'destructive',
-        title: 'Curation Failed',
-        description: 'Could not connect to the movie database.',
+        title: 'Curation Link Offline',
+        description: 'Could not connect to the global cinema database.',
       });
     } finally {
       setIsGenerating(false);
@@ -235,11 +231,9 @@ export default function PlaylistsPage() {
           
           <div className="min-h-[200px]">
               {isGenerating && (
-                  <Card className="rounded-[3rem] bg-secondary/10 animate-pulse border-none p-12">
-                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-                          {[...Array(5)].map((_, i) => <div key={i} className="aspect-[2/3] bg-white/5 rounded-2xl"></div>)}
-                      </div>
-                  </Card>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                      {[...Array(6)].map((_, i) => <div key={i} className="aspect-[2/3] bg-secondary/40 rounded-2xl animate-pulse"></div>)}
+                  </div>
               )}
 
               {playlistMovies.length > 0 && (

@@ -35,6 +35,8 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
   const [cachedTrailer, setCachedTrailer] = useState<string | null>(initialTrailerUrl || null);
 
   const handleNavigateToDetails = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     router.push(`/movie/${id}`);
   };
 
@@ -103,9 +105,8 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
 
   return (
     <div 
-      onClick={handleNavigateToDetails}
       className={cn(
-        "relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-secondary transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/20 group cursor-pointer", 
+        "relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-secondary transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/20 group cursor-pointer border border-white/5", 
         className
       )}
     >
@@ -136,6 +137,9 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
           <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-blue-500 hover:text-white border-none shadow-lg backdrop-blur-md" onClick={handleShare}>
             <Share2 className="size-3.5" />
           </Button>
+          <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-yellow-500 hover:text-white border-none shadow-lg backdrop-blur-md" onClick={handleNavigateToDetails}>
+            <Info className="size-3.5" />
+          </Button>
         </div>
 
         <div className="absolute inset-0 flex items-center justify-center z-10">
@@ -147,7 +151,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 p-3 md:p-4 w-full space-y-1 md:space-y-2 z-10">
+        <div className="absolute bottom-0 left-0 p-3 md:p-4 w-full space-y-1 md:space-y-2 z-10 pointer-events-none">
           <h3 className="font-headline text-xs md:text-sm font-black text-white leading-tight line-clamp-2 drop-shadow-lg group-hover:text-primary transition-colors">{title}</h3>
           <div className="flex items-center gap-2">
               <Star className="size-2.5 md:size-3 text-yellow-400 fill-current" />
