@@ -50,14 +50,10 @@ export default function DashboardPage() {
           {/* Global High Impact Section */}
           <Top10MoviesSection />
           
-          {/* High-Fidelity Tightly Aligned Regional & OTT Tier */}
+          {/* High-Fidelity Zero-Gap Tier: Regional, OTT, and In Theaters */}
           <div className="space-y-0">
             <RegionalTop10Section />
             <TrendingOttsSection />
-          </div>
-          
-          {/* In Theaters follow-up with tight spacing */}
-          <div className="-mt-8">
             <NowPlayingSection />
           </div>
           
