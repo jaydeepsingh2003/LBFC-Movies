@@ -23,7 +23,7 @@ export function useUser() {
     return { user, isLoading: loading, error };
 }
 
-async function syncUserProfile(user: User) {
+export async function syncUserProfile(user: User) {
     const db = getFirestore();
     const userRef = doc(db, 'users', user.uid);
     const displayName = user.displayName || user.email?.split('@')[0] || 'Enthusiast';
