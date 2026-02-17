@@ -70,7 +70,7 @@ export default function MovieMatchmakerSection() {
   };
 
   return (
-    <section className="py-12 space-y-8">
+    <section className="py-6 space-y-8 border-b border-white/5">
       <div className="flex items-center gap-3">
         <div className="p-2 bg-pink-500/10 rounded-lg border border-pink-500/20">
             <Shuffle className="text-pink-500 size-6 md:size-7" />

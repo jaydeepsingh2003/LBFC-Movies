@@ -91,7 +91,7 @@ export default function LanguagePicksSection() {
   };
 
   return (
-    <section className="py-8 space-y-8 border-b border-white/5">
+    <section className="py-6 space-y-8 border-b border-white/5">
       <div className="flex items-center gap-3">
         <div className="p-2 bg-blue-400/10 rounded-lg border border-blue-400/20">
             <Languages className="size-6 md:size-7 text-blue-400" />

@@ -72,9 +72,7 @@ export default function DashboardPage() {
           <FavoriteArtistsSection />
           <LanguagePicksSection />
           
-          <div className="py-16">
-            <MovieMatchmakerSection />
-          </div>
+          <MovieMatchmakerSection />
       </div>
     </div>
   );

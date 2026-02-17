@@ -45,7 +45,7 @@ export default function HindiMoviesSection() {
 
     if (isLoading) {
         return (
-             <div className="py-8 space-y-4">
+             <div className="py-6 space-y-4">
                 <Skeleton className="h-8 w-1/4" />
                 <div className="flex gap-4 overflow-x-auto pb-4">
                     {[...Array(7)].map((_, i) => (
@@ -57,7 +57,7 @@ export default function HindiMoviesSection() {
     }
 
     return (
-        <section className="py-8 space-y-8 border-b border-white/5">
+        <section className="py-6 space-y-8 border-b border-white/5">
             <div className="flex items-center gap-3">
                 <div className="p-2 bg-orange-500/10 rounded-lg border border-orange-500/20">
                     <Globe className="text-orange-500 size-6 md:size-7" />
