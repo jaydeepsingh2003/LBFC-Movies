@@ -1,8 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useUser } from '@/firebase/auth/auth-client';
-import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import HeroSection from '@/components/sections/hero-section';
 import ForYouSection from '@/components/sections/for-you-section';
@@ -21,14 +19,8 @@ import RegionalTop10Section from '@/components/sections/regional-top-10-section'
 
 export default function DashboardPage() {
   const { user, isLoading } = useUser();
-  const router = useRouter();
 
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/login');
-    }
-  }, [isLoading, user, router]);
-
+  // Redirection logic moved to global AppLayout guard
   if (isLoading || !user) {
     return (
       <div className="flex justify-center items-center h-svh bg-background">

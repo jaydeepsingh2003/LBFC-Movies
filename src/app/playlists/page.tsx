@@ -44,7 +44,6 @@ export default function PlaylistsPage() {
     setIsGenerating(true);
     setPlaylistMovies([]);
     try {
-      // Fetch directly from TMDB based on vibe parameters (no AI involved)
       const results = await discoverMovies({
         keywords: criteria.keywords || undefined,
         sort_by: 'popularity.desc',
@@ -83,7 +82,8 @@ export default function PlaylistsPage() {
     </div>
   );
 
-  if (userLoading) {
+  // Redirection handled by global guard, but we still handle loading states here
+  if (userLoading || !user) {
     return (
       <div className="flex flex-col justify-center items-center h-svh gap-6 bg-background">
         <div className="relative">
@@ -91,21 +91,6 @@ export default function PlaylistsPage() {
             <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full animate-pulse" />
         </div>
         <p className="text-muted-foreground font-bold tracking-widest uppercase text-xs animate-pulse">Decrypting Personal Data...</p>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center py-40 bg-secondary/10 rounded-[3rem] border-2 border-dashed border-white/5 m-8">
-        <Bookmark className="h-20 w-20 text-muted-foreground/10 mb-6" />
-        <h3 className="text-3xl font-bold text-white tracking-tight">Identity Verification Needed</h3>
-        <p className="text-muted-foreground mt-3 text-lg font-medium text-center max-w-md px-6">
-          Access to personal cinematic vaults is restricted to authenticated users.
-        </p>
-        <Button asChild className="mt-8 h-16 px-12 rounded-full text-xl font-black shadow-2xl shadow-primary/20 bg-primary hover:bg-primary/90">
-          <Link href="/login">Establish Connection</Link>
-        </Button>
       </div>
     );
   }
@@ -232,7 +217,9 @@ export default function PlaylistsPage() {
           <div className="min-h-[200px]">
               {isGenerating && (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                      {[...Array(6)].map((_, i) => <div key={i} className="aspect-[2/3] bg-secondary/40 rounded-2xl animate-pulse"></div>)}
+                      {[...Array(6)].map((_, i) => (
+                          <div key={i} className="aspect-[2/3] bg-secondary/40 rounded-2xl animate-pulse"></div>
+                      ))}
                   </div>
               )}
 
