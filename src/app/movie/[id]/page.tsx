@@ -1,10 +1,10 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { getMovieDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
 import type { MovieDetails, Movie } from '@/lib/tmdb';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, TrendingUp, Users, Award } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -21,6 +21,7 @@ import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { MovieCarousel } from '@/components/movie-carousel';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 interface MovieDetailsWithMedia extends MovieDetails {
   posterUrl: string | null;

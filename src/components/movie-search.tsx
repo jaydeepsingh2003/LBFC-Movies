@@ -24,6 +24,7 @@ export function MovieSearch() {
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [isListening, setIsListening] = useState(false)
+  const recognitionRef = useRef<any>(null)
   const { toast } = useToast()
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -74,7 +75,14 @@ export function MovieSearch() {
     handleSearch()
   }, [handleSearch])
 
-  const handleVoiceSearch = () => {
+  const toggleVoiceSearch = () => {
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      return;
+    }
+
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
       toast({ title: "Not Supported", description: "Voice search is not supported in your browser." });
@@ -82,13 +90,23 @@ export function MovieSearch() {
     }
 
     const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
     recognition.lang = 'en-US';
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
-    recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
-    recognition.onerror = () => setIsListening(false);
+    recognition.onstart = () => {
+      setIsListening(true);
+      setIsOpen(true);
+    };
+    recognition.onend = () => {
+      setIsListening(false);
+      recognitionRef.current = null;
+    };
+    recognition.onerror = () => {
+      setIsListening(false);
+      recognitionRef.current = null;
+    };
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
       setQuery(transcript);
@@ -127,12 +145,16 @@ export function MovieSearch() {
                 />
             ) : null}
             <button 
-                onClick={handleVoiceSearch}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleVoiceSearch();
+                }}
                 className={cn(
                     "p-1.5 rounded-full transition-all duration-300",
                     isListening ? "bg-primary text-white animate-pulse" : "text-muted-foreground hover:text-primary hover:bg-white/5"
                 )}
-                title="Voice Search"
+                title={isListening ? "Stop Listening" : "Voice Search"}
             >
                 {isListening ? <MicOff className="size-3.5" /> : <Mic className="size-3.5" />}
             </button>
@@ -146,19 +168,22 @@ export function MovieSearch() {
         <div className="flex flex-col gap-1">
           {isListening && (
             <div className="p-6 text-center flex flex-col items-center gap-3">
-                <div className="size-10 bg-primary/20 rounded-full flex items-center justify-center animate-pulse">
-                    <Mic className="size-5 text-primary" />
+                <div className="size-12 bg-primary/20 rounded-full flex items-center justify-center animate-pulse border border-primary/30">
+                    <Mic className="size-6 text-primary" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary animate-pulse">Listening...</span>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary block">Listening...</span>
+                  <p className="text-[9px] text-muted-foreground font-bold uppercase">Say a movie title</p>
+                </div>
             </div>
           )}
-          {isLoading && results.length === 0 && !isListening && (
+          {!isListening && isLoading && results.length === 0 && (
             <div className="p-6 text-center flex flex-col items-center gap-2">
                 <Loader2 className="size-6 animate-spin text-primary" />
                 <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Scanning the Vault...</span>
             </div>
           )}
-          {!isLoading && results.length === 0 && debouncedQuery && !isListening && (
+          {!isListening && !isLoading && results.length === 0 && debouncedQuery && (
             <div className="p-6 text-center space-y-1">
                 <p className="text-xs font-bold text-muted-foreground italic">"No matches found in the archive."</p>
             </div>

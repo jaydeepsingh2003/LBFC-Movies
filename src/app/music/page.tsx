@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Loader2, Music, Search, Youtube, Play, Sparkles, Globe, Disc, Mic, MicOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 export default function MusicPage() {
   const currentYear = useMemo(() => new Date().getFullYear(), []);
   const { toast } = useToast();
+  const recognitionRef = useRef<any>(null);
   
   const MUSIC_CATEGORIES = useMemo(() => [
     { label: 'Global Hits', query: `latest global music hits ${currentYear}` },
@@ -58,7 +59,14 @@ export default function MusicPage() {
     handleSearch(category.query);
   };
 
-  const handleVoiceSearch = () => {
+  const toggleVoiceSearch = () => {
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      return;
+    }
+
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
       toast({ title: "Not Supported", description: "Voice search is not supported in your browser." });
@@ -66,10 +74,17 @@ export default function MusicPage() {
     }
 
     const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
     recognition.lang = 'en-US';
     recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
-    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => {
+      setIsListening(false);
+      recognitionRef.current = null;
+    };
+    recognition.onerror = () => {
+      setIsListening(false);
+      recognitionRef.current = null;
+    };
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
       setSearchQuery(transcript);
@@ -191,17 +206,27 @@ export default function MusicPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <button 
-                    onClick={handleVoiceSearch}
+                    onClick={toggleVoiceSearch}
                     className={cn(
                         "absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all duration-300",
                         isListening ? "bg-primary text-white animate-pulse" : "text-muted-foreground hover:text-white hover:bg-white/10"
                     )}
+                    title={isListening ? "Stop Listening" : "Voice Search"}
                 >
                     {isListening ? <MicOff className="size-5" /> : <Mic className="size-5" />}
                 </button>
             </div>
           </div>
         </div>
+
+        {isListening && (
+          <div className="flex items-center gap-4 bg-primary/10 border border-primary/20 p-4 rounded-2xl animate-in fade-in slide-in-from-top-2">
+            <div className="size-8 bg-primary rounded-full flex items-center justify-center animate-pulse">
+              <Mic className="size-4 text-white" />
+            </div>
+            <span className="text-xs font-black uppercase tracking-[0.2em] text-primary">Listening for sounds...</span>
+          </div>
+        )}
 
         <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2 text-muted-foreground">

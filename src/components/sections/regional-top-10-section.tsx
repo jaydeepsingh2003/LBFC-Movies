@@ -29,6 +29,7 @@ export default function RegionalTop10Section() {
         const fetchRegionalTop10 = async () => {
             setIsLoading(true);
             try {
+                // Using origin_country ensures we see movies produced in that specific region
                 const results = await discoverMovies({ 
                     with_origin_country: activeRegion, 
                     sort_by: 'popularity.desc' 
