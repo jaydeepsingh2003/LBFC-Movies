@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { getTrendingMovies, getBackdropUrl } from '@/lib/tmdb.client';
 
 export default function LoginPage() {
   const { user, isLoading: isUserLoading } = useUser();
@@ -21,12 +22,31 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [bgImageUrl, setBgImageUrl] = useState('https://image.tmdb.org/t/p/original/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg');
 
   useEffect(() => {
     if (user) {
       router.push('/');
     }
   }, [user, router]);
+
+  // Dynamic Backdrop Sync
+  useEffect(() => {
+    async function fetchBackdrop() {
+      try {
+        const trending = await getTrendingMovies('day');
+        if (trending && trending.length > 0) {
+          // Select a random movie from the top 10 for variety
+          const randomIndex = Math.floor(Math.random() * Math.min(10, trending.length));
+          const backdrop = getBackdropUrl(trending[randomIndex].backdrop_path);
+          if (backdrop) setBgImageUrl(backdrop);
+        }
+      } catch (error) {
+        console.error("Login backdrop fetch failed", error);
+      }
+    }
+    fetchBackdrop();
+  }, []);
 
   const handleAuthAction = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,11 +99,13 @@ export default function LoginPage() {
   return (
     <div className="relative h-screen w-screen flex items-center justify-center p-4">
         <Image
-            src="https://image.tmdb.org/t/p/original/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg"
+            src={bgImageUrl}
             alt="Background"
             fill
-            className="object-cover z-0"
+            className="object-cover z-0 transition-opacity duration-1000 animate-in fade-in"
             data-ai-hint="dark cinematic background"
+            priority
+            unoptimized
         />
         <div className="absolute inset-0 bg-black/75 z-10" />
         
