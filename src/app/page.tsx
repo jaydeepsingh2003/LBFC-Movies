@@ -21,6 +21,7 @@ import NowPlayingSection from '@/components/sections/now-playing-section';
 import UpcomingSection from '@/components/sections/upcoming-section';
 import TrendingOttsSection from '@/components/sections/trending-otts-section';
 import Top10MoviesSection from '@/components/sections/top-10-movies-section';
+import RegionalTop10Section from '@/components/sections/regional-top-10-section';
 
 export default function DashboardPage() {
   const { user, isLoading } = useUser();
@@ -49,6 +50,8 @@ export default function DashboardPage() {
       <div className="space-y-16 py-12 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto w-full">
           {/* High Impact Sections First */}
           <Top10MoviesSection />
+          <RegionalTop10Section />
+          
           <TrendingOttsSection />
           
           <NowPlayingSection />
