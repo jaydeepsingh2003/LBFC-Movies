@@ -17,8 +17,8 @@ export default function Top10MoviesSection() {
         const fetchTop10 = async () => {
             setIsLoading(true);
             try {
+                // Fetch the absolute latest popular movies globally
                 const results = await getPopularMovies();
-                // Slice the top 10 most popular movies globally
                 setMovies(results.slice(0, 10));
             } catch (error) {
                 console.error("Failed to fetch top 10 movies:", error);
@@ -52,7 +52,7 @@ export default function Top10MoviesSection() {
                     <h2 className="font-headline text-2xl md:text-4xl font-black tracking-tighter uppercase text-white">
                         Top 10 <span className="text-yellow-500">Global Hits</span>
                     </h2>
-                    <p className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">The most watched movies in the world today</p>
+                    <p className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Real-time worldwide trending titles</p>
                 </div>
             </div>
 
@@ -61,7 +61,6 @@ export default function Top10MoviesSection() {
                     {movies.map((movie, index) => (
                         <CarouselItem key={movie.id} className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 pl-4 md:pl-8">
                             <div className="relative group">
-                                {/* Stylized Rank Number Background */}
                                 <div className="absolute -left-4 md:-left-8 bottom-0 z-0 select-none pointer-events-none">
                                     <span className="text-[120px] md:text-[200px] font-black leading-none text-transparent" 
                                           style={{ WebkitTextStroke: '2px rgba(255,255,255,0.15)' }}>
@@ -69,7 +68,6 @@ export default function Top10MoviesSection() {
                                     </span>
                                 </div>
                                 
-                                {/* Offset Content Card */}
                                 <div className="relative z-10 pl-10 md:pl-16 transform transition-all duration-500 group-hover:-translate-y-3 group-hover:scale-[1.02]">
                                     <MovieCard 
                                         id={movie.id} 

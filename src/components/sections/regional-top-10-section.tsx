@@ -14,7 +14,7 @@ const REGIONS = [
     { label: 'India', code: 'IN' },
     { label: 'USA', code: 'US' },
     { label: 'UK', code: 'GB' },
-    { label: 'South Korea', code: 'KR' },
+    { label: 'S. Korea', code: 'KR' },
     { label: 'Japan', code: 'JP' },
     { label: 'Spain', code: 'ES' },
 ];
@@ -28,7 +28,7 @@ export default function RegionalTop10Section() {
         const fetchRegionalTop10 = async () => {
             setIsLoading(true);
             try {
-                // Using with_origin_country ensures we see ACTUAL regional cinema (e.g. Indian movies for India)
+                // Using with_origin_country for real-time regional cinema
                 const results = await discoverMovies({ 
                     with_origin_country: activeRegion, 
                     sort_by: 'popularity.desc' 
@@ -56,7 +56,7 @@ export default function RegionalTop10Section() {
                         <h2 className="font-headline text-2xl md:text-4xl font-black tracking-tighter uppercase text-white">
                             Top 10 in <span className="text-blue-500">{activeRegionLabel}</span>
                         </h2>
-                        <p className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Trending titles from this region</p>
+                        <p className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Real-time local favorites</p>
                     </div>
                 </div>
 

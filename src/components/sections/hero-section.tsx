@@ -31,6 +31,7 @@ export default function HeroSection() {
         async function fetchHeroMovies() {
             setIsLoading(true);
             try {
+                // Fetch the latest popular hits for the hero rotation
                 const popularMovies = await getPopularMovies();
                 if (!popularMovies || popularMovies.length === 0) {
                     setMovies([]);
@@ -101,7 +102,6 @@ export default function HeroSection() {
 
     return (
         <section className="relative w-full h-svh bg-background overflow-hidden max-h-[100svh]">
-            {/* Ambient Background Glow */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background z-0" />
             
             <Carousel
@@ -131,13 +131,12 @@ export default function HeroSection() {
                                     />
                                 )}
                                 
-                                {/* Deep Contrast Gradients */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
                                 <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent hidden lg:block" />
                                 <div className="absolute inset-0 bg-black/40 lg:bg-black/5" />
                                 
-                                {/* Content Area - Elevated for Visibility */}
-                                <div className="absolute bottom-[15%] md:bottom-[25%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-5xl z-20">
+                                {/* Content Area - Corrected Vertical Anchor for 100% Visibility */}
+                                <div className="absolute bottom-[20%] md:bottom-[30%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-5xl z-20">
                                     <div className="space-y-4 md:space-y-8">
                                         <div className="flex items-center gap-2 md:gap-3 animate-in fade-in slide-in-from-left-10 duration-700">
                                             <Badge className="bg-primary font-black uppercase text-[8px] md:text-xs px-2 md:px-3 py-1 rounded-sm shadow-lg shadow-primary/20">Featured</Badge>
