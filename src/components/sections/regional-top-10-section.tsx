@@ -30,8 +30,10 @@ export default function RegionalTop10Section() {
             setIsLoading(true);
             try {
                 // Discover the 10 most popular movies in the selected region
+                // with_watch_monetization_types ensures we fetch what's actually trending in that specific territory's services
                 const results = await discoverMovies({ 
                     watch_region: activeRegion, 
+                    with_watch_monetization_types: 'flatrate|free|rent|buy',
                     sort_by: 'popularity.desc' 
                 });
                 setMovies(results.slice(0, 10));

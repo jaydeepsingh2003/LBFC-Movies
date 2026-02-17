@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Movie, MovieDetails, Person, PersonDetails, TVShow, TVShowDetails, WatchProvider } from "./tmdb";
@@ -82,9 +83,9 @@ export async function getTvShowDetails(tvId: number): Promise<TVShowDetails> {
   return response.json();
 }
 
-export async function getPopularMovies(): Promise<Movie[]> {
+export async function getPopularMovies(region?: string): Promise<Movie[]> {
   if (!TMDB_API_KEY) return [];
-  const url = `/api/tmdb/3/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+  const url = `/api/tmdb/3/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1${region ? `&region=${region}` : ''}`;
   const response = await fetch(url);
   const data = await response.json();
   return data.results;
@@ -169,6 +170,7 @@ export async function discoverMovies(options: {
   keywords?: string;
   with_watch_providers?: string;
   watch_region?: string;
+  with_watch_monetization_types?: string;
   with_original_language?: string;
   sort_by?: string;
 }, totalPages: number = 1): Promise<Movie[]> {
@@ -188,6 +190,7 @@ export async function discoverMovies(options: {
     if (options.keywords) params.append('with_keywords', options.keywords);
     if (options.with_watch_providers) params.append('with_watch_providers', options.with_watch_providers);
     if (options.watch_region) params.append('watch_region', options.watch_region);
+    if (options.with_watch_monetization_types) params.append('with_watch_monetization_types', options.with_watch_monetization_types);
     if (options.with_original_language) params.append('with_original_language', options.with_original_language);
 
     const url = `/api/tmdb/3/discover/movie?${params.toString()}`;
@@ -208,6 +211,7 @@ export async function discoverTvShows(options: {
   keywords?: string;
   with_watch_providers?: string;
   watch_region?: string;
+  with_watch_monetization_types?: string;
   with_original_language?: string;
 }, totalPages: number = 1): Promise<TVShow[]> {
   if (!TMDB_API_KEY) return [];
@@ -226,6 +230,7 @@ export async function discoverTvShows(options: {
     if (options.keywords) params.append('with_keywords', options.keywords);
     if (options.with_watch_providers) params.append('with_watch_providers', options.with_watch_providers);
     if (options.watch_region) params.append('watch_region', options.watch_region);
+    if (options.with_watch_monetization_types) params.append('with_watch_monetization_types', options.with_watch_monetization_types);
   
     const url = `/api/tmdb/3/discover/tv?${params.toString()}`;
     const response = await fetch(url);
