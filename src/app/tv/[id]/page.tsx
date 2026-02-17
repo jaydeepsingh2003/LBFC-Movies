@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -110,7 +109,8 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
 
   return (
     <div className="relative min-h-svh bg-background">
-      <div className="relative h-[50vh] md:h-[80vh] w-full overflow-hidden">
+      {/* Background Hero Section */}
+      <div className="relative h-[60vh] md:h-[85vh] w-full overflow-hidden">
         {show.backdropUrl && (
             <Image 
                 src={show.backdropUrl} 
@@ -120,14 +120,16 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                 priority 
             />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-transparent to-transparent hidden md:block" />
         <div className="absolute top-6 left-4 md:left-8 z-20">
             <Button onClick={() => window.history.back()} variant="ghost" className="glass-card rounded-full gap-2 text-white hover:bg-primary transition-all px-4 md:px-6 py-4 md:py-6 font-bold uppercase tracking-widest text-[10px] md:text-xs">
                 <ChevronLeft className="size-4 md:size-5" /> Back
             </Button>
         </div>
-        <div className="absolute bottom-[10%] md:bottom-[15%] left-4 md:left-12 lg:left-24 max-w-4xl z-20 pointer-events-none">
+
+        {/* Title positioned higher to avoid overlap */}
+        <div className="absolute bottom-[20%] md:bottom-[35%] left-4 md:left-12 lg:left-24 max-w-4xl z-20 pointer-events-none">
             <div className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-10 duration-700">
                 <div className="flex flex-wrap items-center gap-2 md:gap-3">
                     <Badge className="bg-primary font-black uppercase text-[8px] md:text-[10px] px-2 md:px-3 py-1 rounded-sm shadow-lg shadow-primary/20">Original Series</Badge>
@@ -144,9 +146,11 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
         </div>
       </div>
 
-      <div className="content-container relative -mt-20 md:-mt-48 pb-20 z-30 px-4 md:px-8 lg:px-12">
+      {/* Content Grid with reduced negative margin */}
+      <div className="content-container relative -mt-10 md:-mt-24 pb-20 z-30 px-4 md:px-8 lg:px-12">
         <div className="flex flex-col lg:flex-row gap-8 md:gap-12 lg:gap-20">
           <div className="w-full lg:w-[400px] flex-shrink-0 space-y-6 md:space-y-10">
+            {/* Small Thumbnail Sidebar */}
             <div className="relative aspect-[2/3] w-[200px] md:w-full mx-auto md:mx-0 rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] border-2 border-white/10 glass-card group">
                 {show.posterUrl && <Image src={show.posterUrl} alt={show.name} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
