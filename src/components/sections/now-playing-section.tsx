@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from "react";
@@ -37,14 +38,14 @@ export default function NowPlayingSection() {
     }, []);
 
     return (
-        <section className="py-6 space-y-8 border-b border-white/5">
+        <section className="py-4 space-y-8 border-b border-white/5">
             <div className="space-y-1">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
-                        <Ticket className="text-yellow-500 size-6 md:size-7" />
+                    <div className="p-2 bg-yellow-400/10 rounded-lg border border-yellow-400/20">
+                        <Ticket className="text-yellow-400 size-6 md:size-7" />
                     </div>
                     <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter uppercase text-white mb-0">
-                        In <span className="text-yellow-500">Theaters</span>
+                        In <span className="text-yellow-400">Theaters</span>
                     </h2>
                 </div>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] ml-12 md:ml-14">Global blockbusters and regional hits playing in cinemas near you.</p>

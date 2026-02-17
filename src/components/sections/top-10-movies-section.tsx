@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from "react";
@@ -30,7 +31,7 @@ export default function Top10MoviesSection() {
 
     if (isLoading) {
         return (
-            <div className="py-6 space-y-8">
+            <div className="py-4 space-y-8">
                 <Skeleton className="h-10 w-64" />
                 <div className="flex gap-6 overflow-hidden">
                     {[...Array(5)].map((_, i) => (
@@ -42,7 +43,7 @@ export default function Top10MoviesSection() {
     }
 
     return (
-        <section className="py-6 space-y-8 border-b border-white/5 relative">
+        <section className="py-4 space-y-8 border-b border-white/5 relative">
             <div className="flex items-center gap-3">
                 <div className="p-2 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
                     <Trophy className="text-yellow-500 size-6 md:size-8" />

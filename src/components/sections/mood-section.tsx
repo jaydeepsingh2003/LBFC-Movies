@@ -89,7 +89,7 @@ export default function MoodSection() {
   }, [handleMoodSelect]);
 
   return (
-    <section className="py-6 space-y-8 border-b border-white/5">
+    <section className="py-4 space-y-8 border-b border-white/5">
       <div className="flex items-center gap-3">
         <div className="p-2 bg-yellow-400/10 rounded-lg border border-yellow-400/20">
             <Smile className="text-yellow-400 size-6 md:size-7" />

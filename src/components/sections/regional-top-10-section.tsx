@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from "react";
@@ -45,7 +46,7 @@ export default function RegionalTop10Section() {
     const activeRegionLabel = REGIONS.find(r => r.code === activeRegion)?.label;
 
     return (
-        <section className="py-6 space-y-8 border-b border-white/5 relative">
+        <section className="py-4 space-y-8 border-b border-white/5 relative">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -84,7 +85,7 @@ export default function FavoriteArtistsSection() {
   };
 
   return (
-    <section className="py-6 space-y-8 border-b border-white/5">
+    <section className="py-4 space-y-8 border-b border-white/5">
       <div className="flex items-center gap-3">
         <div className="p-2 bg-primary/10 rounded-lg border border-primary/20">
             <Star className="text-primary size-6 md:size-7 fill-primary" />

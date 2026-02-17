@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from "react";
@@ -37,7 +38,7 @@ export default function UpcomingSection() {
 
     if (isLoading) {
         return (
-             <div className="py-6 space-y-4">
+             <div className="py-4 space-y-4">
                 <Skeleton className="h-8 w-1/4" />
                  <div className="flex gap-4 overflow-x-auto pb-4">
                     {[...Array(7)].map((_, i) => (
@@ -49,7 +50,7 @@ export default function UpcomingSection() {
     }
 
     return (
-        <section className="py-6 space-y-8 border-b border-white/5">
+        <section className="py-4 space-y-8 border-b border-white/5">
             <div className="flex items-center gap-3">
                 <div className="p-2 bg-green-500/10 rounded-lg border border-green-500/20">
                     <Calendar className="text-green-500 size-6 md:size-7" />

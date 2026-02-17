@@ -246,6 +246,18 @@ export async function discoverTvShows(options: {
   return allTvShows;
 }
 
+export async function getCollection(collectionId: number): Promise<any> {
+  if (!TMDB_API_KEY) return null;
+  const url = `/api/tmdb/3/collection/${collectionId}?api_key=${TMDB_API_KEY}&language=en-US`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    return null;
+  }
+}
+
 export async function getWatchProviders(): Promise<WatchProvider[]> {
   if (!TMDB_API_KEY) return [];
   const url = `/api/tmdb/3/watch/providers/movie?api_key=${TMDB_API_KEY}&language=en-US&watch_region=IN`;
