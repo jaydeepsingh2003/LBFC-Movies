@@ -7,6 +7,7 @@ import {
     signOut,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
+    updateProfile,
     type User
 } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -61,6 +62,23 @@ export async function syncUserProfile(user: User) {
     }
 }
 
+export async function updateUserProfile(user: User, data: { displayName?: string, photoURL?: string }) {
+    const db = getFirestore();
+    const userRef = doc(db, 'users', user.uid);
+    
+    // Update Auth Profile
+    await updateProfile(user, {
+        displayName: data.displayName,
+        photoURL: data.photoURL
+    });
+    
+    // Update Firestore
+    await setDoc(userRef, {
+        ...data,
+        updatedAt: serverTimestamp(),
+    }, { merge: true });
+}
+
 export const loginWithGoogle = async () => {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
@@ -70,7 +88,6 @@ export const loginWithGoogle = async () => {
             await syncUserProfile(result.user);
         }
     } catch (error) {
-        // Errors like MFA will be caught by the caller handleGoogleLogin
         throw error;
     }
 };

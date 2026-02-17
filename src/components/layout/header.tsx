@@ -3,15 +3,19 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Film, LogOut, Settings, User, Bell, Shield, Zap, Sparkles, Activity, CheckCircle2 } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Film, LogOut, Settings, User, Bell, Shield, Zap, Sparkles, Activity, CheckCircle2, Loader2, Save } from "lucide-react"
 import { MovieSearch } from "../movie-search"
-import { useUser, logout } from "@/firebase/auth/auth-client";
+import { useUser, logout, updateUserProfile } from "@/firebase/auth/auth-client";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { allNavItems } from "./sidebar-nav";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 export function DesktopNav() {
     const pathname = usePathname();
@@ -58,8 +62,19 @@ export function DesktopNav() {
 export function Header() {
     const { user, isLoading } = useUser();
     const router = useRouter();
+    const { toast } = useToast();
     const [isClient, setIsClient] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const [notifications, setNotifications] = useState([
+        { id: 1, title: 'Vault Entry Confirmed', desc: 'Secure login detected from a new browser.', time: '2m ago', icon: Shield, color: 'text-blue-400' },
+        { id: 2, title: 'New Trending Drop', desc: 'Top 10 Global Hits have been updated.', time: '1h ago', icon: Zap, color: 'text-yellow-400' },
+        { id: 3, title: 'Welcome to LBFC', desc: 'Start your cinematic journey in the vault.', time: '2h ago', icon: Sparkles, color: 'text-primary' },
+    ]);
+
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [newDisplayName, setNewDisplayName] = useState("");
+    const [newPhotoURL, setNewPhotoURL] = useState("");
+    const [isUpdating, setIsUpdating] = useState(false);
 
     useEffect(() => {
         setIsClient(true);
@@ -68,16 +83,41 @@ export function Header() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    useEffect(() => {
+        if (user) {
+            setNewDisplayName(user.displayName || "");
+            setNewPhotoURL(user.photoURL || "");
+        }
+    }, [user]);
+
     const handleLogout = async () => {
         await logout();
         router.push('/login');
     };
 
-    const notifications = [
-        { id: 1, title: 'Vault Entry Confirmed', desc: 'Secure login detected from a new browser.', time: '2m ago', icon: Shield, color: 'text-blue-400' },
-        { id: 2, title: 'New Trending Drop', desc: 'Top 10 Global Hits have been updated.', time: '1h ago', icon: Zap, color: 'text-yellow-400' },
-        { id: 3, title: 'Welcome to LBFC', desc: 'Start your cinematic journey in the vault.', time: '2h ago', icon: Sparkles, color: 'text-primary' },
-    ];
+    const handleClearArchive = () => {
+        setNotifications([]);
+        toast({ title: "Archive Purged", description: "All vault activity has been cleared." });
+    };
+
+    const handleUpdateProfile = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user) return;
+        
+        setIsUpdating(true);
+        try {
+            await updateUserProfile(user, {
+                displayName: newDisplayName,
+                photoURL: newPhotoURL
+            });
+            toast({ title: "Vault Profile Updated", description: "Your cinematic identity has been saved." });
+            setIsSettingsOpen(false);
+        } catch (error: any) {
+            toast({ variant: "destructive", title: "Update Failed", description: error.message });
+        } finally {
+            setIsUpdating(false);
+        }
+    };
 
     return (
         <header className={cn(
@@ -114,7 +154,9 @@ export function Header() {
                                 <DropdownMenuTrigger asChild>
                                     <button className="text-muted-foreground hover:text-white transition-all relative p-2 rounded-full hover:bg-white/5 group">
                                         <Bell className="size-5 group-hover:scale-110 transition-transform" />
-                                        <span className="absolute top-1.5 right-1.5 size-2.5 bg-primary rounded-full border-2 border-black animate-pulse" />
+                                        {notifications.length > 0 && (
+                                            <span className="absolute top-1.5 right-1.5 size-2.5 bg-primary rounded-full border-2 border-black animate-pulse" />
+                                        )}
                                     </button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-80 glass-panel mt-2 border-white/10 p-0 overflow-hidden" align="end">
@@ -123,26 +165,39 @@ export function Header() {
                                             <Activity className="size-4 text-primary" />
                                             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">Vault Activity</h3>
                                         </div>
-                                        <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-white/10">3 New</Badge>
+                                        <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-white/10">{notifications.length} New</Badge>
                                     </div>
                                     <div className="max-h-[350px] overflow-y-auto no-scrollbar">
-                                        {notifications.map((notif) => (
-                                            <DropdownMenuItem key={notif.id} className="p-4 focus:bg-white/5 border-b border-white/5 last:border-0 cursor-pointer flex items-start gap-4 transition-colors">
-                                                <div className={cn("mt-1 p-2 rounded-xl bg-white/5 shrink-0", notif.color)}>
-                                                    <notif.icon className="size-4" />
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center justify-between gap-2">
-                                                        <p className="text-[11px] font-bold text-white leading-none">{notif.title}</p>
-                                                        <span className="text-[9px] text-muted-foreground whitespace-nowrap">{notif.time}</span>
+                                        {notifications.length > 0 ? (
+                                            notifications.map((notif) => (
+                                                <DropdownMenuItem key={notif.id} className="p-4 focus:bg-white/5 border-b border-white/5 last:border-0 cursor-pointer flex items-start gap-4 transition-colors">
+                                                    <div className={cn("mt-1 p-2 rounded-xl bg-white/5 shrink-0", notif.color)}>
+                                                        <notif.icon className="size-4" />
                                                     </div>
-                                                    <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">{notif.desc}</p>
-                                                </div>
-                                            </DropdownMenuItem>
-                                        ))}
+                                                    <div className="space-y-1">
+                                                        <div className="flex items-center justify-between gap-2">
+                                                            <p className="text-[11px] font-bold text-white leading-none">{notif.title}</p>
+                                                            <span className="text-[9px] text-muted-foreground whitespace-nowrap">{notif.time}</span>
+                                                        </div>
+                                                        <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">{notif.desc}</p>
+                                                    </div>
+                                                </DropdownMenuItem>
+                                            ))
+                                        ) : (
+                                            <div className="p-10 text-center space-y-2">
+                                                <CheckCircle2 className="size-8 text-muted-foreground/20 mx-auto" />
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Archive is Clear</p>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="p-3 bg-white/5 text-center">
-                                        <button className="text-[9px] font-black uppercase tracking-[0.2em] text-primary hover:underline">Clear Archive</button>
+                                        <button 
+                                            onClick={handleClearArchive}
+                                            disabled={notifications.length === 0}
+                                            className="text-[9px] font-black uppercase tracking-[0.2em] text-primary hover:underline disabled:opacity-30"
+                                        >
+                                            Clear Archive
+                                        </button>
                                     </div>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -178,7 +233,10 @@ export function Header() {
                                                 <span className="text-[11px] font-black uppercase tracking-widest">My Archive</span>
                                             </Link>
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem className="rounded-lg cursor-pointer focus:bg-primary/10 py-3">
+                                        <DropdownMenuItem 
+                                            className="rounded-lg cursor-pointer focus:bg-primary/10 py-3"
+                                            onClick={() => setIsSettingsOpen(true)}
+                                        >
                                             <Settings className="mr-3 h-4 w-4 text-primary" />
                                             <span className="text-[11px] font-black uppercase tracking-widest">Command Center</span>
                                         </DropdownMenuItem>
@@ -198,6 +256,52 @@ export function Header() {
                     )}
                 </div>
             </div>
+
+            {/* Profile Settings Dialog */}
+            <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+                <DialogContent className="glass-panel border-white/10 text-white rounded-[2rem] sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-headline font-black uppercase tracking-tighter">Command Center</DialogTitle>
+                        <DialogDescription className="text-muted-foreground text-xs uppercase font-bold tracking-widest">Manage your cinematic identity.</DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleUpdateProfile} className="space-y-6 py-4">
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Display Name</Label>
+                                <Input 
+                                    id="name" 
+                                    value={newDisplayName} 
+                                    onChange={(e) => setNewDisplayName(e.target.value)}
+                                    className="bg-white/5 border-white/10 h-12 rounded-xl focus:border-primary transition-all"
+                                    placeholder="Enter your name"
+                                    disabled={isUpdating}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="photo" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Profile Photo URL</Label>
+                                <Input 
+                                    id="photo" 
+                                    value={newPhotoURL} 
+                                    onChange={(e) => setNewPhotoURL(e.target.value)}
+                                    className="bg-white/5 border-white/10 h-12 rounded-xl focus:border-primary transition-all"
+                                    placeholder="https://images.unsplash.com/..."
+                                    disabled={isUpdating}
+                                />
+                            </div>
+                        </div>
+                        <DialogFooter className="pt-4">
+                            <Button 
+                                type="submit" 
+                                className="w-full h-14 bg-primary hover:bg-primary/90 rounded-xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all hover:scale-[1.02]"
+                                disabled={isUpdating}
+                            >
+                                {isUpdating ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
+                                Update Identity
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </header>
     )
 }
