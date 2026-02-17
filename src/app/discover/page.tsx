@@ -235,9 +235,9 @@ export default function DiscoverPage() {
           </div>
         )}
 
-        {/* Discovery Tools Tier */}
-        <section className="space-y-4 pt-12 border-t border-white/5">
-            <div className="flex items-center gap-3">
+        {/* Discovery Tools Tier - ZERO GAP PREMIUM INTEGRATION */}
+        <section className="pt-12 border-t border-white/5 space-y-0">
+            <div className="flex items-center gap-3 mb-8">
                 <div className="p-2 bg-primary/10 rounded-lg">
                     <Sparkles className="size-6 text-primary" />
                 </div>
