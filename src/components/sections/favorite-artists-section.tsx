@@ -84,7 +84,7 @@ export default function FavoriteArtistsSection() {
   };
 
   return (
-    <section className="py-12 space-y-8 border-b border-white/5">
+    <section className="py-8 space-y-8 border-b border-white/5">
       <div className="flex items-center gap-3">
         <div className="p-2 bg-primary/10 rounded-lg border border-primary/20">
             <Star className="text-primary size-6 md:size-7 fill-primary" />

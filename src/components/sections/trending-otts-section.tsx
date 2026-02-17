@@ -70,7 +70,7 @@ export default function TrendingOttsSection() {
   }, [activePlatform]);
 
   return (
-    <section className="py-12 space-y-8 border-b border-white/5">
+    <section className="py-8 space-y-8 border-b border-white/5">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1">
           <div className="flex items-center gap-3">

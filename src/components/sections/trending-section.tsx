@@ -37,7 +37,7 @@ export default function TrendingSection() {
 
     if (isLoading) {
          return (
-             <div className="py-12 space-y-4">
+             <div className="py-8 space-y-4">
                 <Skeleton className="h-8 w-1/4" />
                 <div className="flex gap-4 overflow-x-auto pb-4">
                     {[...Array(7)].map((_, i) => (
@@ -49,7 +49,7 @@ export default function TrendingSection() {
     }
 
     return (
-        <section className="py-12 space-y-8 border-b border-white/5">
+        <section className="py-8 space-y-8 border-b border-white/5">
             <div className="flex items-center gap-3">
                 <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/20">
                     <TrendingUp className="text-red-500 size-6 md:size-7" />
