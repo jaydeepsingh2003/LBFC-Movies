@@ -5,12 +5,13 @@ import { useUser } from '@/firebase/auth/auth-client';
 import { BottomNav } from './bottom-nav';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useUser();
   const router = useRouter();
+  const pathname = usePathname();
   const isMobile = useIsMobile();
   const [isClient, setIsClient] = useState(false);
 
@@ -19,14 +20,15 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   // GLOBAL SECURITY GUARD: Redirect to login if not authenticated
+  // This satisfies the requirement that links opened on new devices must start with login
   useEffect(() => {
-    if (isClient && !isLoading && !user) {
+    if (isClient && !isLoading && !user && pathname !== '/login') {
       router.push('/login');
     }
-  }, [isClient, isLoading, user, router]);
+  }, [isClient, isLoading, user, router, pathname]);
 
-  // Premium Loading State during Auth Verification
-  if (!isClient || isLoading || (!user && isClient)) {
+  // Premium Loading State during Auth Verification or Redirect
+  if (!isClient || isLoading || (!user && pathname !== '/login')) {
     return (
       <div className="flex flex-col justify-center items-center h-svh bg-background gap-6">
         <div className="relative">

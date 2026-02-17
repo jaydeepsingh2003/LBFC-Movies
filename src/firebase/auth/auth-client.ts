@@ -1,4 +1,3 @@
-
 'use client';
 
 import { 
@@ -71,7 +70,7 @@ export const loginWithGoogle = async () => {
             await syncUserProfile(result.user);
         }
     } catch (error) {
-        console.error("Error signing in with Google", error);
+        // Errors like MFA will be caught by the caller handleGoogleLogin
         throw error;
     }
 };

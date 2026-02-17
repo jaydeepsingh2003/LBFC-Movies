@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
@@ -75,7 +74,7 @@ export default function LoginPage() {
     try {
       if (isSignUp) {
         await signUpWithEmail(email, password);
-        toast({ title: "Account created!", description: "You've been signed in." });
+        toast({ title: "Account created!", description: "You've been signed in to the Vault." });
       } else {
         await signInWithEmail(email, password);
       }
