@@ -13,19 +13,16 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isClubMember(clubId) {
-      return exists(/databases/$(database)/documents/movie-clubs/$(clubId)/members/$(request.auth.uid));
-    }
-
-    function isClubAdmin(clubId) {
-      let memberRole = get(/databases/$(database)/documents/movie-clubs/$(clubId)/members/$(request.auth.uid)).data.role;
-      return memberRole == 'admin' || memberRole == 'creator';
-    }
-
     // USERS collection
     match /users/{userId} {
       allow read: if true;
       allow write: if isOwner(userId);
+
+      // LOGIN ALERTS sub-collection
+      match /loginAlerts/{alertId} {
+        allow create: if isOwner(userId);
+        allow read: if isOwner(userId);
+      }
 
       // SAVED MOVIES sub-collection
       match /savedMovies/{movieId} {
@@ -72,39 +69,6 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
-    }
-    
-    // MOVIE CLUBS collection
-    match /movie-clubs/{clubId} {
-      allow read: if resource.data.isPublic == true || isClubMember(clubId);
-      allow create: if isSignedIn() && request.resource.data.creatorId == request.auth.uid;
-      allow update: if isClubAdmin(clubId);
-      allow delete: if resource.data.creatorId == request.auth.uid;
-
-      // MEMBERS sub-collection
-      match /members/{userId} {
-        allow read: if isClubMember(clubId);
-        // Allow user to join a public club, or allow admin to add members.
-        allow create: if (request.resource.data.role == 'member' && get(/databases/$(database)/documents/movie-clubs/$(clubId)).data.isPublic == true && isOwner(userId)) || isClubAdmin(clubId);
-        // Admins can remove members (except creator), users can remove themselves.
-        allow delete: if (isClubAdmin(clubId) && get(/databases/$(database)/documents/movie-clubs/$(clubId)/members/$(userId)).data.role != 'creator') || isOwner(userId);
-        // Only admins can change roles, but cannot change creator role.
-        allow update: if isClubAdmin(clubId) && get(/databases/$(database)/documents/movie-clubs/$(clubId)/members/$(userId)).data.role != 'creator';
-      }
-
-      // POSTS sub-collection
-      match /posts/{postId} {
-        allow read: if isClubMember(clubId);
-        allow create: if isClubMember(clubId) && request.resource.data.authorId == request.auth.uid;
-        allow update, delete: if isOwner(request.resource.data.authorId) || isClubAdmin(clubId);
-      }
-      
-      // RECOMMENDATIONS sub-collection
-      match /recommendations/{recommendationId} {
-        allow read: if isClubMember(clubId);
-        allow create: if isClubMember(clubId) && request.resource.data.recommendedById == request.auth.uid;
-        allow delete: if isOwner(resource.data.recommendedById) || isClubAdmin(clubId);
-      }
     }
   }
 }

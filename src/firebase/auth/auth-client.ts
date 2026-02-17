@@ -1,3 +1,4 @@
+
 'use client';
 
 import { 
@@ -11,29 +12,54 @@ import {
 } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useFirebaseApp } from '@/firebase';
-import { doc, setDoc, getFirestore } from 'firebase/firestore';
+import { doc, setDoc, getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { generateLoginAlertEmail } from '@/ai/flows/generate-login-alert-email';
 
 export function useUser() {
     const app = useFirebaseApp();
     const auth = getAuth(app);
     const [user, loading, error] = useAuthState(auth);
 
-    // Removed automatic setDoc from hook to prevent Firestore quota exhaustion (resource-exhausted).
-    // User profile sync now happens only on explicit auth events (login/signup).
-    
     return { user, isLoading: loading, error };
 }
 
 async function syncUserProfile(user: User) {
     const db = getFirestore();
     const userRef = doc(db, 'users', user.uid);
-    const displayName = user.displayName || user.email?.split('@')[0];
+    const displayName = user.displayName || user.email?.split('@')[0] || 'Enthusiast';
+    
+    // Sync profile
     await setDoc(userRef, {
         uid: user.uid,
         email: user.email,
         displayName: displayName,
         photoURL: user.photoURL,
+        lastLogin: serverTimestamp(),
     }, { merge: true });
+
+    // Trigger AI Email Alert signal
+    try {
+        const emailContent = await generateLoginAlertEmail({
+            displayName,
+            email: user.email || '',
+            timestamp: new Date().toLocaleString(),
+        });
+
+        const alertRef = collection(db, `users/${user.uid}/loginAlerts`);
+        await addDoc(alertRef, {
+            to: user.email,
+            message: {
+                subject: emailContent.subject,
+                text: emailContent.text,
+                html: emailContent.html,
+            },
+            createdAt: serverTimestamp(),
+            userId: user.uid,
+            status: 'pending' // For 'Trigger Email' extension
+        });
+    } catch (error) {
+        console.error("Login notification failed to queue:", error);
+    }
 }
 
 export const loginWithGoogle = async () => {
