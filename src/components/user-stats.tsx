@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -7,8 +6,8 @@ import { collection, getDocs } from 'firebase/firestore';
 import { getMovieDetails } from '@/lib/tmdb.client';
 import type { MovieDetails } from '@/lib/tmdb';
 import { Bar, BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Loader2, TrendingUp, History, PieChart } from 'lucide-react';
 import { ChartContainer, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 
 interface UserStatsProps {
@@ -120,7 +119,7 @@ export function UserStats({ userId }: UserStatsProps) {
       .sort((a, b) => parseInt(a.decade) - parseInt(b.decade));
 
     const ratingData = Object.entries(ratingDistribution)
-        .map(([rating, count]) => ({ rating: `${rating} Star`, count }))
+        .map(([rating, count]) => ({ rating: `${rating} ★`, count }))
         .sort((a, b) => parseInt(a.rating) - parseInt(b.rating));
 
 
@@ -138,70 +137,85 @@ export function UserStats({ userId }: UserStatsProps) {
 
   if (!stats) {
     return (
-        <Card className="text-center py-12">
+        <Card className="text-center py-20 bg-secondary/10 border-white/5 rounded-[2rem]">
             <CardContent>
-                <p className="text-muted-foreground">No rating data available to generate stats.</p>
+                <PieChart className="mx-auto size-12 text-muted-foreground/20 mb-4" />
+                <p className="text-muted-foreground font-black uppercase tracking-widest text-[10px]">No rating intelligence available.</p>
             </CardContent>
         </Card>
     );
   }
 
   return (
-    <div className="space-y-8">
-        <Card>
-            <CardHeader>
-                <CardTitle>Favorite Genres</CardTitle>
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 pb-20">
+        <Card className="glass-panel border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
+            <CardHeader className="flex flex-row items-center justify-between pb-8">
+                <div className="space-y-1">
+                    <CardTitle className="text-xl font-black uppercase tracking-tight text-white">Genre Affinity</CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-widest">Distribution of cinematic categories</CardDescription>
+                </div>
+                <div className="p-2 bg-primary/10 rounded-xl"><PieChart className="size-5 text-primary" /></div>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                    <BarChart accessibilityLayer data={stats.genreData}>
-                        <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+                    <BarChart accessibilityLayer data={stats.genreData} layout="vertical" margin={{ left: 20 }}>
+                        <XAxis type="number" hide />
+                        <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} width={80} />
                         <Tooltip
-                            cursor={{ fill: 'hsl(var(--secondary))' }}
+                            cursor={{ fill: 'hsl(var(--secondary))', opacity: 0.4 }}
                             content={<ChartTooltipContent hideLabel />}
                         />
-                        <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="count" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} barSize={24} />
                     </BarChart>
                 </ChartContainer>
             </CardContent>
         </Card>
 
-        <Card>
-            <CardHeader>
-                <CardTitle>Ratings by Decade</CardTitle>
-            </CardHeader>
-            <CardContent>
-                 <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                    <LineChart accessibilityLayer data={stats.decadeData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                        <XAxis dataKey="decade" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} domain={[0, 10]} />
-                        <Tooltip content={<ChartTooltipContent hideLabel />} />
-                        <Line type="monotone" dataKey="averageRating" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4, fill: 'hsl(var(--primary))' }} activeDot={{ r: 8 }} />
-                    </LineChart>
-                </ChartContainer>
-            </CardContent>
-        </Card>
+        <div className="space-y-8">
+            <Card className="glass-panel border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
+                <CardHeader className="flex flex-row items-center justify-between pb-8">
+                    <div className="space-y-1">
+                        <CardTitle className="text-xl font-black uppercase tracking-tight text-white">Legacy Pulse</CardTitle>
+                        <CardDescription className="text-[10px] uppercase font-bold tracking-widest">Average ratings by release decade</CardDescription>
+                    </div>
+                    <div className="p-2 bg-blue-400/10 rounded-xl"><History className="size-5 text-blue-400" /></div>
+                </CardHeader>
+                <CardContent>
+                    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                        <LineChart accessibilityLayer data={stats.decadeData}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} opacity={0.1} />
+                            <XAxis dataKey="decade" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
+                            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} domain={[0, 10]} />
+                            <Tooltip content={<ChartTooltipContent hideLabel />} />
+                            <Line type="monotone" dataKey="averageRating" stroke="hsl(var(--primary))" strokeWidth={3} dot={{ r: 4, fill: 'hsl(var(--primary))', strokeWidth: 0 }} activeDot={{ r: 6, fill: '#fff' }} />
+                        </LineChart>
+                    </ChartContainer>
+                </CardContent>
+            </Card>
 
-        <Card>
-            <CardHeader>
-                <CardTitle>Rating Distribution</CardTitle>
-            </CardHeader>
-            <CardContent>
-                 <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                    <BarChart accessibilityLayer data={stats.ratingData}>
-                        <XAxis dataKey="rating" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                        <Tooltip
-                            cursor={{ fill: 'hsl(var(--secondary))' }}
-                            content={<ChartTooltipContent hideLabel />}
-                        />
-                        <Bar dataKey="count" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                </ChartContainer>
-            </CardContent>
-        </Card>
+            <Card className="glass-panel border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
+                <CardHeader className="flex flex-row items-center justify-between pb-8">
+                    <div className="space-y-1">
+                        <CardTitle className="text-xl font-black uppercase tracking-tight text-white">Verdict Spread</CardTitle>
+                        <CardDescription className="text-[10px] uppercase font-bold tracking-widest">Global rating distribution</CardDescription>
+                    </div>
+                    <div className="p-2 bg-yellow-400/10 rounded-xl"><TrendingUp className="size-5 text-yellow-400" /></div>
+                </CardHeader>
+                <CardContent>
+                    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                        <BarChart accessibilityLayer data={stats.ratingData}>
+                            <XAxis dataKey="rating" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
+                            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
+                            <Tooltip
+                                cursor={{ fill: 'hsl(var(--secondary))', opacity: 0.4 }}
+                                content={<ChartTooltipContent hideLabel />}
+                            />
+                            <Bar dataKey="count" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                    </ChartContainer>
+                </CardContent>
+            </Card>
+        </div>
     </div>
   );
 }
