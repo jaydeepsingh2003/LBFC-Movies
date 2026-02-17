@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
@@ -105,7 +104,7 @@ export default function MusicPage() {
     // Initial load with default category
     const defaultCat = MUSIC_CATEGORIES[0];
     handleSearch(defaultCat.query);
-  }, []);
+  }, [handleSearch, MUSIC_CATEGORIES]);
 
   const renderContent = () => {
     if (isSearching) {
@@ -120,7 +119,7 @@ export default function MusicPage() {
       );
     }
 
-    if (videoResults && videoResults.results.length > 0) {
+    if (videoResults && videoResults.results && videoResults.results.length > 0) {
       return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-6">
           {videoResults.results.map(video => (
@@ -258,7 +257,7 @@ export default function MusicPage() {
                 </div>
                 {searchQuery ? `Results for "${searchQuery}"` : `${activeCategory} Trending`}
             </h2>
-            {videoResults && (
+            {videoResults && videoResults.results && (
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-tighter bg-secondary/40 px-3 py-1 rounded-md">
                     {videoResults.results.length} Videos Indexed
                 </span>
