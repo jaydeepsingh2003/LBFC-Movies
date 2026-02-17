@@ -79,12 +79,6 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
     }
   };
 
-  const handleMoreInfo = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    router.push(`/movie/${id}`);
-  };
-
   const handleShare = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -100,7 +94,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         await navigator.share(shareData);
       } else {
         await navigator.clipboard.writeText(shareData.url);
-        toast({ title: "Link Copied", description: "Link copied to clipboard." });
+        toast({ title: "Link Copied", description: "Movie link copied to clipboard." });
       }
     } catch (error) {
       console.error("Error sharing:", error);
@@ -131,35 +125,16 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         </div>
       )}
 
-      {/* Action Overlay - Always visible icons on mobile for usability */}
       <div className={cn(
         "absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent transition-all duration-500 z-10",
         isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
       )}>
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
-          <Button 
-            variant="secondary" 
-            size="icon" 
-            className="h-8 w-8 md:h-9 md:w-9 rounded-full glass-card bg-black/40 hover:bg-primary hover:text-white border-none shadow-lg backdrop-blur-md" 
-            onClick={handleSaveMovie}
-          >
-            <Bookmark className="size-3 md:size-4" />
+          <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-primary hover:text-white border-none shadow-lg backdrop-blur-md" onClick={handleSaveMovie}>
+            <Bookmark className="size-3.5" />
           </Button>
-          <Button 
-            variant="secondary" 
-            size="icon" 
-            className="h-8 w-8 md:h-9 md:w-9 rounded-full glass-card bg-black/40 hover:bg-white hover:text-black border-none shadow-lg backdrop-blur-md" 
-            onClick={handleMoreInfo}
-          >
-            <Info className="size-3 md:size-4" />
-          </Button>
-          <Button 
-            variant="secondary" 
-            size="icon" 
-            className="h-8 w-8 md:h-9 md:w-9 rounded-full glass-card bg-black/40 hover:bg-blue-500 hover:text-white border-none shadow-lg backdrop-blur-md" 
-            onClick={handleShare}
-          >
-            <Share2 className="size-3 md:size-4" />
+          <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-blue-500 hover:text-white border-none shadow-lg backdrop-blur-md" onClick={handleShare}>
+            <Share2 className="size-3.5" />
           </Button>
         </div>
 

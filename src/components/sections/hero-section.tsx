@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -31,7 +30,6 @@ export default function HeroSection() {
         async function fetchHeroMovies() {
             setIsLoading(true);
             try {
-                // Fetch the latest popular hits for the hero rotation
                 const popularMovies = await getPopularMovies();
                 if (!popularMovies || popularMovies.length === 0) {
                     setMovies([]);
@@ -135,8 +133,7 @@ export default function HeroSection() {
                                 <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent hidden lg:block" />
                                 <div className="absolute inset-0 bg-black/40 lg:bg-black/5" />
                                 
-                                {/* Content Area - Corrected Vertical Anchor for 100% Visibility */}
-                                <div className="absolute bottom-[20%] md:bottom-[30%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-5xl z-20">
+                                <div className="absolute bottom-[30%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-5xl z-20">
                                     <div className="space-y-4 md:space-y-8">
                                         <div className="flex items-center gap-2 md:gap-3 animate-in fade-in slide-in-from-left-10 duration-700">
                                             <Badge className="bg-primary font-black uppercase text-[8px] md:text-xs px-2 md:px-3 py-1 rounded-sm shadow-lg shadow-primary/20">Featured</Badge>
@@ -146,7 +143,7 @@ export default function HeroSection() {
                                             <div className="flex items-center gap-1 text-white/80 font-bold text-[10px] md:text-sm">
                                                 <span>{new Date(movie.release_date).getFullYear()}</span>
                                                 <span>•</span>
-                                                <span className="text-primary font-black">{movie.vote_average.toFixed(1)} Score</span>
+                                                <span className="text-primary font-black">{movie.vote_average.toFixed(1)} Rating</span>
                                             </div>
                                         </div>
                                         

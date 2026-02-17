@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Loader2, Music, Search, Youtube, Play, Sparkles, Globe, Disc } from 'lucide-react';
+import { Loader2, Music, Search, Youtube, Play, Sparkles, Globe, Disc, Mic, MicOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import { advancedMovieSearch, type AdvancedMovieSearchOutput } from '@/ai/flows/advanced-movie-search';
@@ -10,9 +11,11 @@ import Image from 'next/image';
 import { useVideoPlayer } from '@/context/video-provider';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 export default function MusicPage() {
   const currentYear = useMemo(() => new Date().getFullYear(), []);
+  const { toast } = useToast();
   
   const MUSIC_CATEGORIES = useMemo(() => [
     { label: 'Global Hits', query: `latest global music hits ${currentYear}` },
@@ -33,12 +36,12 @@ export default function MusicPage() {
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [videoResults, setVideoResults] = useState<AdvancedMovieSearchOutput | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const { setVideoId } = useVideoPlayer();
 
   const handleSearch = useCallback(async (query: string) => {
     setIsSearching(true);
     try {
-      // Use AI to find the best music matches
       const results = await advancedMovieSearch({ query: `${query} official music video` });
       setVideoResults(results);
     } catch (error) {
@@ -49,27 +52,44 @@ export default function MusicPage() {
     }
   }, []);
 
-  // Handle category selection
   const handleCategoryClick = (category: typeof MUSIC_CATEGORIES[0]) => {
-    setSearchQuery(''); // Clear manual search when clicking category
+    setSearchQuery('');
     setActiveCategory(category.label);
     handleSearch(category.query);
   };
 
-  // Effect for manual search
+  const handleVoiceSearch = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({ title: "Not Supported", description: "Voice search is not supported in your browser." });
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => setIsListening(false);
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setSearchQuery(transcript);
+      setActiveCategory('');
+      handleSearch(transcript);
+    };
+    recognition.start();
+  };
+
   useEffect(() => {
     if (debouncedSearchQuery) {
-      setActiveCategory(''); // De-select category when typing
+      setActiveCategory('');
       handleSearch(debouncedSearchQuery);
     } else if (!activeCategory) {
-        // If query is cleared and no category is active, reset to default
         const defaultCat = MUSIC_CATEGORIES[0];
         setActiveCategory(defaultCat.label);
         handleSearch(defaultCat.query);
     }
   }, [debouncedSearchQuery, handleSearch, activeCategory, MUSIC_CATEGORIES]);
 
-  // Initial fetch
   useEffect(() => {
     const defaultCat = MUSIC_CATEGORIES[0];
     handleSearch(defaultCat.query);
@@ -146,7 +166,6 @@ export default function MusicPage() {
 
   return (
     <div className="min-h-screen py-6 px-4 md:px-8 lg:px-12 w-full max-w-[2400px] mx-auto space-y-12">
-      {/* Header Section */}
       <header className="space-y-10">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
           <div className="space-y-4">
@@ -158,23 +177,32 @@ export default function MusicPage() {
               Sonic <span className="text-primary">Discovery</span>
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl font-medium">
-              Explore real-time trending hits and movie soundtracks. 
-              Powered by deep YouTube indexing for up-to-the-minute global insights.
+              Explore real-time trending hits and movie soundtracks powered by deep YouTube indexing.
             </p>
           </div>
 
-          <div className="relative w-full lg:w-[450px] group">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-            <Input
-              placeholder="Search artists, tracks, or cultural hits..."
-              className="pl-14 h-16 bg-secondary/40 border-white/5 rounded-2xl text-lg font-medium focus:ring-primary/50 transition-all border-2"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          <div className="relative w-full lg:w-[450px] group flex items-center gap-3">
+            <div className="relative flex-1">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                <Input
+                placeholder="Find tracks or artists..."
+                className="pl-14 pr-12 h-16 bg-secondary/40 border-white/5 rounded-2xl text-lg font-medium focus:ring-primary/50 transition-all border-2"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button 
+                    onClick={handleVoiceSearch}
+                    className={cn(
+                        "absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all duration-300",
+                        isListening ? "bg-primary text-white animate-pulse" : "text-muted-foreground hover:text-white hover:bg-white/10"
+                    )}
+                >
+                    {isListening ? <MicOff className="size-5" /> : <Mic className="size-5" />}
+                </button>
+            </div>
           </div>
         </div>
 
-        {/* Dynamic Category Chips */}
         <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2 text-muted-foreground">
                 <Globe className="size-4" />
@@ -200,7 +228,6 @@ export default function MusicPage() {
         </div>
       </header>
 
-      {/* Main Content Gallery */}
       <section className="space-y-8 animate-in fade-in duration-700">
         <div className="flex items-center justify-between border-b border-white/5 pb-6">
             <h2 className="font-headline text-2xl font-bold flex items-center gap-3">
@@ -211,7 +238,7 @@ export default function MusicPage() {
             </h2>
             {videoResults && (
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-tighter bg-secondary/40 px-3 py-1 rounded-md">
-                    Live from YouTube • {videoResults.results.length} Videos
+                    {videoResults.results.length} Videos Indexed
                 </span>
             )}
         </div>

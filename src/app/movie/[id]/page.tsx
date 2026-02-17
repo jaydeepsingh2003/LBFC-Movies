@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -145,7 +144,6 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
 
   return (
     <div className="relative min-h-svh bg-background">
-      {/* 4K Background Hero Section */}
       <div className="relative h-[65vh] md:h-[90vh] w-full overflow-hidden">
         {movie.backdropUrl && (
             <Image 
@@ -166,7 +164,6 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
             </Button>
         </div>
 
-        {/* Elevated Title Positioning - Middle Anchor for 100% legibility */}
         <div className="absolute bottom-[50%] left-4 md:left-12 lg:left-24 max-w-4xl z-20 pointer-events-none">
             <div className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-10 duration-700">
                 <div className="flex flex-wrap items-center gap-2 md:gap-3">
@@ -188,7 +185,6 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
         </div>
       </div>
 
-      {/* Main Content Grid - Precise Layered Overlap */}
       <div className="content-container relative -mt-40 pb-20 z-30 px-4 md:px-8 lg:px-12">
         <div className="flex flex-col lg:flex-row gap-8 md:gap-12 lg:gap-20">
           <div className="w-full lg:w-[400px] flex-shrink-0 space-y-6 md:space-y-10">
