@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -51,10 +50,14 @@ export default function DashboardPage() {
           {/* Global High Impact Section */}
           <Top10MoviesSection />
           
-          {/* Tightly Aligned Regional, OTT and Theater Tier */}
-          <div className="space-y-16">
+          {/* High-Fidelity Tightly Aligned Regional & OTT Tier */}
+          <div className="space-y-0">
             <RegionalTop10Section />
             <TrendingOttsSection />
+          </div>
+          
+          {/* In Theaters follow-up with tight spacing */}
+          <div className="-mt-8">
             <NowPlayingSection />
           </div>
           
