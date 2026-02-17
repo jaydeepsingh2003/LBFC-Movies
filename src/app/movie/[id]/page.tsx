@@ -104,6 +104,26 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
     }
   };
 
+  const handleShare = async () => {
+    if (!movie) return;
+    const shareData = {
+      title: movie.title,
+      text: `Check out ${movie.title} on LBFC!`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast({ title: "Link Copied", description: "Movie link copied to clipboard." });
+      }
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex flex-col justify-center items-center h-svh gap-6 bg-background">
@@ -145,18 +165,18 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
             </Button>
         </div>
 
-        {/* Elevated Title Position - Perfect Visibility */}
-        <div className="absolute bottom-[45%] left-4 md:left-12 lg:left-24 max-w-4xl z-20 pointer-events-none">
+        {/* Corrected Title Position - No occlusion */}
+        <div className="absolute bottom-[50%] left-4 md:left-12 lg:left-24 max-w-4xl z-20 pointer-events-none">
             <div className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-10 duration-700">
                 <div className="flex flex-wrap items-center gap-2 md:gap-3">
                     <Badge className="bg-primary font-black uppercase text-[8px] md:text-[10px] px-2 md:px-3 py-1 rounded-sm shadow-lg shadow-primary/20">Cinema Featured</Badge>
                     <div className="flex items-center gap-1 md:gap-1.5 text-yellow-400 font-black text-[10px] md:text-sm bg-black/60 backdrop-blur-xl px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-white/10 shadow-2xl">
                         <Star className="size-3 md:size-4 fill-current" />
-                        {movie.vote_average.toFixed(1)} <span className="opacity-50 font-medium ml-1">TMDB</span>
+                        {movie.vote_average.toFixed(1)}
                     </div>
                     <div className="flex items-center gap-1.5 text-blue-400 font-black text-[10px] md:text-sm bg-black/60 backdrop-blur-xl px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-white/10 shadow-2xl">
                         <Award className="size-3 md:size-4" />
-                        {Math.round(movie.popularity)} <span className="opacity-50 font-medium ml-1">Rank</span>
+                        {Math.round(movie.popularity)}
                     </div>
                     <Badge variant="outline" className="border-white/20 text-white font-bold backdrop-blur-md uppercase tracking-widest text-[8px] md:text-[10px]">ULTRA HD 4K</Badge>
                 </div>
@@ -167,8 +187,8 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
         </div>
       </div>
 
-      {/* Main Content Grid - Deep Premium Negative Margin */}
-      <div className="content-container relative -mt-64 pb-20 z-30 px-4 md:px-8 lg:px-12">
+      {/* Main Content Grid - Corrected overlap for visibility */}
+      <div className="content-container relative -mt-40 pb-20 z-30 px-4 md:px-8 lg:px-12">
         <div className="flex flex-col lg:flex-row gap-8 md:gap-12 lg:gap-20">
           <div className="w-full lg:w-[400px] flex-shrink-0 space-y-6 md:space-y-10">
             {/* High-Fidelity Poster Card */}
@@ -193,7 +213,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                         <Bookmark className={cn("mr-2 md:mr-3 size-5 md:size-7 transition-all", isSaved && "fill-primary text-primary")} /> 
                         {isSaved ? 'In Playlist' : 'Save Title'}
                     </Button>
-                    <Button variant="outline" className="rounded-2xl md:rounded-[2.5rem] h-14 w-14 md:h-20 md:w-20 glass-card border-white/10 hover:bg-white hover:text-black transition-colors flex-shrink-0">
+                    <Button onClick={handleShare} variant="outline" className="rounded-2xl md:rounded-[2.5rem] h-14 w-14 md:h-20 md:w-20 glass-card border-white/10 hover:bg-white hover:text-black transition-colors flex-shrink-0">
                         <Share2 className="size-5 md:size-7" />
                     </Button>
                 </div>

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { Tv, Play, Info, Loader2, Star, Bookmark } from 'lucide-react';
+import { Tv, Play, Info, Loader2, Star, Bookmark, Share2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useVideoPlayer } from '@/context/video-provider';
 import { getTvShowVideos } from '@/lib/tmdb.client';
@@ -84,6 +84,28 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
     router.push(`/tv/${id}`);
   };
 
+  const handleShare = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const shareData = {
+      title: title,
+      text: `Check out ${title} on LBFC!`,
+      url: `${window.location.origin}/tv/${id}`,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareData.url);
+        toast({ title: "Link Copied", description: "Link copied to clipboard." });
+      }
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  };
+
   return (
     <div 
       onClick={handleNavigateToDetails}
@@ -129,6 +151,14 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
             onClick={handleMoreInfo}
           >
             <Info className="size-3 md:size-4" />
+          </Button>
+          <Button 
+            variant="secondary" 
+            size="icon" 
+            className="h-8 w-8 md:h-9 md:w-9 rounded-full glass-card bg-black/40 hover:bg-blue-500 hover:text-white border-none shadow-lg backdrop-blur-md" 
+            onClick={handleShare}
+          >
+            <Share2 className="size-3 md:size-4" />
           </Button>
         </div>
 

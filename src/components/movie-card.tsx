@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { Film, Play, Bookmark, Star, Info, Loader2 } from 'lucide-react';
+import { Film, Play, Bookmark, Star, Info, Loader2, Share2 } from 'lucide-react';
 import { useVideoPlayer } from '@/context/video-provider';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
@@ -85,6 +85,28 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
     router.push(`/movie/${id}`);
   };
 
+  const handleShare = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const shareData = {
+      title: title,
+      text: `Check out ${title} on LBFC!`,
+      url: `${window.location.origin}/movie/${id}`,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareData.url);
+        toast({ title: "Link Copied", description: "Link copied to clipboard." });
+      }
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  };
+
   return (
     <div 
       onClick={handleNavigateToDetails}
@@ -100,7 +122,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
             fill 
             className="object-cover" 
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 15vw"
-            quality={90} // High quality setting for posters
+            quality={90}
         />
       ) : (
         <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
@@ -130,6 +152,14 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
             onClick={handleMoreInfo}
           >
             <Info className="size-3 md:size-4" />
+          </Button>
+          <Button 
+            variant="secondary" 
+            size="icon" 
+            className="h-8 w-8 md:h-9 md:w-9 rounded-full glass-card bg-black/40 hover:bg-blue-500 hover:text-white border-none shadow-lg backdrop-blur-md" 
+            onClick={handleShare}
+          >
+            <Share2 className="size-3 md:size-4" />
           </Button>
         </div>
 
