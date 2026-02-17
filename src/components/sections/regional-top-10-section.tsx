@@ -9,7 +9,6 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { MovieCard } from "../movie-card";
 import { MapPin } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
 
 const REGIONS = [
     { label: 'India', code: 'IN' },
@@ -29,11 +28,9 @@ export default function RegionalTop10Section() {
         const fetchRegionalTop10 = async () => {
             setIsLoading(true);
             try {
-                // Discover the 10 most popular movies in the selected region
-                // with_watch_monetization_types ensures we fetch what's actually trending in that specific territory's services
+                // Using with_origin_country ensures we see ACTUAL regional cinema (e.g. Indian movies for India)
                 const results = await discoverMovies({ 
-                    watch_region: activeRegion, 
-                    with_watch_monetization_types: 'flatrate|free|rent|buy',
+                    with_origin_country: activeRegion, 
                     sort_by: 'popularity.desc' 
                 });
                 setMovies(results.slice(0, 10));
@@ -59,7 +56,7 @@ export default function RegionalTop10Section() {
                         <h2 className="font-headline text-2xl md:text-4xl font-black tracking-tighter uppercase text-white">
                             Top 10 in <span className="text-blue-500">{activeRegionLabel}</span>
                         </h2>
-                        <p className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Trending titles in this territory</p>
+                        <p className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Trending titles from this region</p>
                     </div>
                 </div>
 
@@ -91,7 +88,6 @@ export default function RegionalTop10Section() {
                             {movies.map((movie, index) => (
                                 <CarouselItem key={movie.id} className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 pl-4 md:pl-8">
                                     <div className="relative group">
-                                        {/* Stylized Rank Number Background */}
                                         <div className="absolute -left-4 md:-left-8 bottom-0 z-0 select-none pointer-events-none">
                                             <span className="text-[120px] md:text-[200px] font-black leading-none text-transparent" 
                                                   style={{ WebkitTextStroke: '2px rgba(255,255,255,0.15)' }}>
@@ -99,7 +95,6 @@ export default function RegionalTop10Section() {
                                             </span>
                                         </div>
                                         
-                                        {/* Offset Content Card */}
                                         <div className="relative z-10 pl-10 md:pl-16 transform transition-all duration-500 group-hover:-translate-y-3 group-hover:scale-[1.02]">
                                             <MovieCard 
                                                 id={movie.id} 

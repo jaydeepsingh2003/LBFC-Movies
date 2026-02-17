@@ -145,7 +145,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
 
   return (
     <div className="relative min-h-svh bg-background">
-      {/* Background Hero Section */}
+      {/* 4K Background Hero Section */}
       <div className="relative h-[65vh] md:h-[90vh] w-full overflow-hidden">
         {movie.backdropUrl && (
             <Image 
@@ -166,7 +166,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
             </Button>
         </div>
 
-        {/* Corrected Title Position - Elevated for 100% visibility */}
+        {/* Elevated Title Positioning for 100% legibility */}
         <div className="absolute bottom-[50%] left-4 md:left-12 lg:left-24 max-w-4xl z-20 pointer-events-none">
             <div className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-10 duration-700">
                 <div className="flex flex-wrap items-center gap-2 md:gap-3">
@@ -188,11 +188,10 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
         </div>
       </div>
 
-      {/* Main Content Grid - Corrected overlap for perfect visibility */}
+      {/* Main Content Grid - Refined overlap offset */}
       <div className="content-container relative -mt-40 pb-20 z-30 px-4 md:px-8 lg:px-12">
         <div className="flex flex-col lg:flex-row gap-8 md:gap-12 lg:gap-20">
           <div className="w-full lg:w-[400px] flex-shrink-0 space-y-6 md:space-y-10">
-            {/* High-Fidelity Poster Card */}
             <div className="relative aspect-[2/3] w-[220px] md:w-full mx-auto md:mx-0 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.8)] border-2 border-white/10 glass-card group">
                 {movie.posterUrl && <Image src={movie.posterUrl} alt={movie.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" unoptimized />}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -204,7 +203,6 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                 </div>
             </div>
             
-            {/* Primary Action Buttons */}
             <div className="grid grid-cols-1 gap-3 md:gap-5">
                 <Button onClick={() => trailer && handlePlayVideo(trailer.key)} disabled={!trailer} size="lg" className="rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 font-black text-lg md:text-2xl shadow-2xl shadow-primary/30 group bg-white text-black hover:bg-white/90">
                     <Play className="mr-2 md:mr-3 size-5 md:size-7 fill-current transition-transform group-hover:scale-110" /> Watch Trailer

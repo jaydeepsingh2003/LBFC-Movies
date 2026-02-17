@@ -4,7 +4,6 @@
 import { Movie, MovieDetails, Person, PersonDetails, TVShow, TVShowDetails, WatchProvider } from "./tmdb";
 
 const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
-// Upgraded to high-fidelity resolutions
 const TMDB_IMAGE_BASE_URL_POSTER = 'https://image.tmdb.org/t/p/w780'; 
 const TMDB_IMAGE_BASE_URL_BACKDROP = 'https://image.tmdb.org/t/p/original'; 
 const TMDB_IMAGE_BASE_URL_LOGO = 'https://image.tmdb.org/t/p/w500';
@@ -172,6 +171,7 @@ export async function discoverMovies(options: {
   watch_region?: string;
   with_watch_monetization_types?: string;
   with_original_language?: string;
+  with_origin_country?: string;
   sort_by?: string;
 }, totalPages: number = 1): Promise<Movie[]> {
   if (!TMDB_API_KEY) return [];
@@ -192,6 +192,7 @@ export async function discoverMovies(options: {
     if (options.watch_region) params.append('watch_region', options.watch_region);
     if (options.with_watch_monetization_types) params.append('with_watch_monetization_types', options.with_watch_monetization_types);
     if (options.with_original_language) params.append('with_original_language', options.with_original_language);
+    if (options.with_origin_country) params.append('with_origin_country', options.with_origin_country);
 
     const url = `/api/tmdb/3/discover/movie?${params.toString()}`;
     const response = await fetch(url);
@@ -213,6 +214,7 @@ export async function discoverTvShows(options: {
   watch_region?: string;
   with_watch_monetization_types?: string;
   with_original_language?: string;
+  with_origin_country?: string;
 }, totalPages: number = 1): Promise<TVShow[]> {
   if (!TMDB_API_KEY) return [];
   let allTvShows: TVShow[] = [];
@@ -231,6 +233,7 @@ export async function discoverTvShows(options: {
     if (options.with_watch_providers) params.append('with_watch_providers', options.with_watch_providers);
     if (options.watch_region) params.append('watch_region', options.watch_region);
     if (options.with_watch_monetization_types) params.append('with_watch_monetization_types', options.with_watch_monetization_types);
+    if (options.with_origin_country) params.append('with_origin_country', options.with_origin_country);
   
     const url = `/api/tmdb/3/discover/tv?${params.toString()}`;
     const response = await fetch(url);
