@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -131,8 +132,8 @@ export default function HeroSection() {
                                 <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-transparent hidden lg:block" />
                                 <div className="absolute inset-0 bg-black/40 lg:bg-black/10" />
                                 
-                                <div className="absolute bottom-[15%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-6xl z-20 pointer-events-none">
-                                    <div className="space-y-6 md:space-y-10 pointer-events-auto">
+                                <div className="absolute bottom-[12%] md:bottom-[15%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-7xl z-20 pointer-events-none">
+                                    <div className="space-y-4 md:space-y-8 pointer-events-auto">
                                         <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-10 duration-700">
                                             <Badge className="bg-primary font-black uppercase text-[10px] md:text-xs px-3 py-1.5 rounded-sm shadow-xl shadow-primary/20 flex items-center gap-2">
                                                 <Flame className="size-3.5 fill-current" /> Featured Selection
@@ -146,17 +147,17 @@ export default function HeroSection() {
                                             </div>
                                         </div>
                                         
-                                        <h1 className="font-headline text-5xl sm:text-7xl md:text-9xl font-black tracking-tighter text-white leading-[0.85] drop-shadow-[0_15px_15px_rgba(0,0,0,0.6)] animate-in fade-in slide-in-from-bottom-10 duration-700 delay-100 uppercase">
+                                        <h1 className="font-headline text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter text-white leading-[0.9] drop-shadow-[0_15px_15px_rgba(0,0,0,0.6)] animate-in fade-in slide-in-from-bottom-10 duration-700 delay-100 uppercase break-words max-w-5xl">
                                             {movie.title}
                                         </h1>
                                         
-                                        <p className="text-sm md:text-2xl text-white/95 line-clamp-2 md:line-clamp-3 max-w-3xl font-medium leading-relaxed drop-shadow-2xl animate-in fade-in slide-in-from-bottom-12 duration-700 delay-200 italic opacity-90">
+                                        <p className="text-sm md:text-xl lg:text-2xl text-white/95 line-clamp-2 md:line-clamp-3 max-w-3xl font-medium leading-relaxed drop-shadow-2xl animate-in fade-in slide-in-from-bottom-12 duration-700 delay-200 italic opacity-90">
                                             {movie.overview}
                                         </p>
                                         
-                                        <div className="flex flex-wrap gap-4 md:gap-6 pt-4 md:pt-10 animate-in fade-in slide-in-from-bottom-16 duration-700 delay-300">
+                                        <div className="flex flex-wrap gap-4 md:gap-6 pt-2 md:pt-6 animate-in fade-in slide-in-from-bottom-16 duration-700 delay-300">
                                             <button 
-                                                className="bg-white text-black hover:bg-white/90 font-black rounded-full px-8 md:px-14 h-14 md:h-20 shadow-[0_20px_50px_rgba(255,255,255,0.2)] transition-all hover:scale-105 active:scale-95 text-xs md:text-xl flex items-center gap-4 group" 
+                                                className="bg-white text-black hover:bg-white/90 font-black rounded-full px-8 md:px-14 h-12 md:h-20 shadow-[0_20px_50px_rgba(255,255,255,0.2)] transition-all hover:scale-105 active:scale-95 text-xs md:text-xl flex items-center gap-4 group" 
                                                 onClick={(e) => handlePlayTrailer(e, movie.trailerUrl)}
                                             >
                                                 <div className="bg-black rounded-full p-2 group-hover:bg-primary transition-colors">
@@ -165,7 +166,7 @@ export default function HeroSection() {
                                                 Watch Trailer
                                             </button>
                                             
-                                            <Link href={`/movie/${movie.id}`} className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-3xl border border-white/10 font-bold rounded-full px-8 md:px-14 h-14 md:h-20 transition-all hover:scale-105 active:scale-95 text-xs md:text-xl flex items-center gap-4 shadow-2xl">
+                                            <Link href={`/movie/${movie.id}`} className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-3xl border border-white/10 font-bold rounded-full px-8 md:px-14 h-12 md:h-20 transition-all hover:scale-105 active:scale-95 text-xs md:text-xl flex items-center gap-4 shadow-2xl">
                                                 <Info className="size-5 md:size-7 text-primary" /> More Info
                                             </Link>
                                         </div>
