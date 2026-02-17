@@ -5,7 +5,7 @@ import { getMovieDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client
 import type { MovieDetails, Movie } from '@/lib/tmdb';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, TrendingUp, Users } from 'lucide-react';
+import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, TrendingUp, Users, Award } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
@@ -21,7 +21,6 @@ import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { MovieCarousel } from '@/components/movie-carousel';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { getExternalRatings, type ExternalRatingsOutput } from '@/ai/flows/get-external-ratings';
 
 interface MovieDetailsWithMedia extends MovieDetails {
   posterUrl: string | null;
@@ -40,7 +39,6 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
   const firestore = useFirestore();
   const { toast } = useToast();
   const [movie, setMovie] = useState<MovieDetailsWithMedia | null>(null);
-  const [externalRatings, setExternalRatings] = useState<ExternalRatingsOutput | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { setVideoId } = useVideoPlayer();
   const [similarMovies, setSimilarMovies] = useState<MovieWithPoster[]>([]);
@@ -65,11 +63,6 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
           backdropUrl: getBackdropUrl(movieDetails.backdrop_path),
         };
         setMovie(movieWithMedia);
-
-        // Fetch external ratings via AI flow (Pulse)
-        getExternalRatings({ movieTitle: movieDetails.title })
-            .then(setExternalRatings)
-            .catch(err => console.error("External ratings failed", err));
 
         const similarMoviesPromises = movieDetails.similar.results.slice(0, 12).map(async (m) => {
             return {
@@ -151,27 +144,19 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
             </Button>
         </div>
 
-        {/* Elevated Title Position for Premium Layering */}
+        {/* Elevated Title Position */}
         <div className="absolute bottom-[45%] left-4 md:left-12 lg:left-24 max-w-4xl z-20 pointer-events-none">
             <div className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-10 duration-700">
                 <div className="flex flex-wrap items-center gap-2 md:gap-3">
                     <Badge className="bg-primary font-black uppercase text-[8px] md:text-[10px] px-2 md:px-3 py-1 rounded-sm shadow-lg shadow-primary/20">Cinema Featured</Badge>
                     <div className="flex items-center gap-1 md:gap-1.5 text-yellow-400 font-black text-[10px] md:text-sm bg-black/60 backdrop-blur-xl px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-white/10 shadow-2xl">
                         <Star className="size-3 md:size-4 fill-current" />
-                        {movie.vote_average.toFixed(1)}
+                        {movie.vote_average.toFixed(1)} <span className="opacity-50 font-medium ml-1">TMDB</span>
                     </div>
-                    {externalRatings && (
-                        <>
-                            <div className="flex items-center gap-1.5 text-yellow-500 font-black text-[10px] md:text-sm bg-black/60 backdrop-blur-xl px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-white/10 shadow-2xl">
-                                <span className="text-[8px] uppercase opacity-70 mr-1">IMDb</span>
-                                {externalRatings.imdb}
-                            </div>
-                            <div className="flex items-center gap-1.5 text-red-500 font-black text-[10px] md:text-sm bg-black/60 backdrop-blur-xl px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-white/10 shadow-2xl">
-                                <span className="text-[8px] uppercase opacity-70 mr-1">RT</span>
-                                {externalRatings.rottenTomatoes}
-                            </div>
-                        </>
-                    )}
+                    <div className="flex items-center gap-1.5 text-blue-400 font-black text-[10px] md:text-sm bg-black/60 backdrop-blur-xl px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-white/10 shadow-2xl">
+                        <Award className="size-3 md:size-4" />
+                        {Math.round(movie.popularity)} <span className="opacity-50 font-medium ml-1">Popularity</span>
+                    </div>
                     <Badge variant="outline" className="border-white/20 text-white font-bold backdrop-blur-md uppercase tracking-widest text-[8px] md:text-[10px]">ULTRA HD 4K</Badge>
                 </div>
                 <h1 className="font-headline text-4xl sm:text-6xl md:text-9xl font-black tracking-tighter text-white leading-[0.85] drop-shadow-[0_15px_15px_rgba(0,0,0,0.6)]">
@@ -181,7 +166,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
         </div>
       </div>
 
-      {/* Main Content Grid - Deep Negative Margin for Premium Overlap */}
+      {/* Main Content Grid - Deep Negative Margin */}
       <div className="content-container relative -mt-64 pb-20 z-30 px-4 md:px-8 lg:px-12">
         <div className="flex flex-col lg:flex-row gap-8 md:gap-12 lg:gap-20">
           <div className="w-full lg:w-[400px] flex-shrink-0 space-y-6 md:space-y-10">
@@ -237,7 +222,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                         <div className="flex items-center gap-4 md:gap-8 bg-white/5 px-4 md:px-8 py-2 md:py-4 rounded-xl md:rounded-[2rem] border border-white/10 backdrop-blur-md text-white/80">
                             <div className="flex items-center gap-2">
                                 <Calendar className="size-4 md:size-5 text-primary" />
-                                <span className="tracking-tight">{new Date(movie.release_date).getFullYear()}</span>
+                                <span className="tracking-tight">{movie.release_date ? new Date(movie.release_date).getFullYear() : 'TBA'}</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <Clock className="size-4 md:size-5 text-primary" />
