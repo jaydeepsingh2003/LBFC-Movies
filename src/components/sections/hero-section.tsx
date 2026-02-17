@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -126,65 +127,49 @@ export default function HeroSection() {
                                         className="object-cover object-center transition-opacity duration-1000 animate-in fade-in duration-[1500ms]"
                                         priority
                                         sizes="100vw"
-                                        unoptimized // Using original high-res directly for "4K" feel
+                                        unoptimized
                                     />
                                 )}
                                 
-                                {/* Complex Layered Gradients for Visibility */}
+                                {/* Deep Contrast Gradients */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
                                 <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent hidden lg:block" />
                                 <div className="absolute inset-0 bg-black/40 lg:bg-black/5" />
                                 
-                                {/* Content Area */}
-                                <div className="absolute bottom-[12%] md:bottom-[20%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-5xl z-20">
+                                {/* Content Area - Elevated for Visibility */}
+                                <div className="absolute bottom-[15%] md:bottom-[25%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-5xl z-20">
                                     <div className="space-y-4 md:space-y-8">
-                                        {/* Metadata Row */}
                                         <div className="flex items-center gap-2 md:gap-3 animate-in fade-in slide-in-from-left-10 duration-700">
-                                            <Badge className="bg-primary font-black uppercase text-[8px] md:text-xs px-2 md:px-3 py-1 rounded-sm shadow-lg shadow-primary/20">Cinema Featured</Badge>
+                                            <Badge className="bg-primary font-black uppercase text-[8px] md:text-xs px-2 md:px-3 py-1 rounded-sm shadow-lg shadow-primary/20">Featured</Badge>
                                             <Badge variant="outline" className="border-white/40 text-white font-bold backdrop-blur-md text-[8px] md:text-xs uppercase tracking-widest">
                                                 Ultra HD 4K
                                             </Badge>
                                             <div className="flex items-center gap-1 text-white/80 font-bold text-[10px] md:text-sm">
                                                 <span>{new Date(movie.release_date).getFullYear()}</span>
                                                 <span>•</span>
-                                                <span className="text-primary">{movie.vote_average.toFixed(1)} Rating</span>
+                                                <span className="text-primary font-black">{movie.vote_average.toFixed(1)} Score</span>
                                             </div>
                                         </div>
                                         
-                                        {/* Fluid Title */}
                                         <h1 className="font-headline text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[0.85] drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] animate-in fade-in slide-in-from-bottom-10 duration-700 delay-100">
                                             {movie.title}
                                         </h1>
                                         
-                                        {/* Adaptive Overview */}
                                         <p className="text-xs md:text-xl text-white/90 line-clamp-2 md:line-clamp-3 max-w-2xl font-medium leading-relaxed drop-shadow-xl animate-in fade-in slide-in-from-bottom-12 duration-700 delay-200">
                                             {movie.overview}
                                         </p>
                                         
-                                        {/* Primary Actions */}
                                         <div className="flex flex-wrap gap-3 md:gap-5 pt-2 md:pt-6 animate-in fade-in slide-in-from-bottom-16 duration-700 delay-300">
-                                            <Button 
-                                                size="lg" 
-                                                className="bg-white text-black hover:bg-white/90 font-black rounded-full px-6 md:px-12 h-12 md:h-16 shadow-2xl transition-all hover:scale-105 active:scale-95 text-xs md:text-lg" 
+                                            <button 
+                                                className="bg-white text-black hover:bg-white/90 font-black rounded-full px-6 md:px-12 h-12 md:h-16 shadow-2xl transition-all hover:scale-105 active:scale-95 text-xs md:text-lg flex items-center gap-3" 
                                                 onClick={(e) => handlePlayTrailer(e, movie.trailerUrl)}
                                             >
-                                                <Play className="mr-2 md:mr-3 size-4 md:size-6 fill-current" /> Watch Trailer
-                                            </Button>
+                                                <Play className="size-4 md:size-6 fill-current" /> Watch Trailer
+                                            </button>
                                             
-                                            <Button 
-                                                size="lg" 
-                                                variant="secondary" 
-                                                className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-2xl border border-white/10 font-bold rounded-full px-6 md:px-12 h-12 md:h-16 transition-all hover:scale-105 active:scale-95 text-xs md:text-lg" 
-                                                asChild
-                                            >
-                                                <Link href={`/movie/${movie.id}`}>
-                                                    <Info className="mr-2 md:mr-3 size-4 md:size-6" /> More Info
-                                                </Link>
-                                            </Button>
-                                            
-                                            <Button size="icon" variant="outline" className="rounded-full h-12 w-12 md:h-16 md:w-16 border-white/20 bg-white/5 backdrop-blur-md hover:bg-white/20 text-white hidden sm:flex transition-all">
-                                                <Plus className="size-5 md:size-7" />
-                                            </Button>
+                                            <Link href={`/movie/${movie.id}`} className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-2xl border border-white/10 font-bold rounded-full px-6 md:px-12 h-12 md:h-16 transition-all hover:scale-105 active:scale-95 text-xs md:text-lg flex items-center gap-3">
+                                                <Info className="size-4 md:size-6" /> More Info
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>

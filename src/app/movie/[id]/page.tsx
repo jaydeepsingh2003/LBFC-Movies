@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -165,11 +166,11 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
             </Button>
         </div>
 
-        {/* Corrected Title Position - No occlusion */}
+        {/* Corrected Title Position - Elevated for 100% visibility */}
         <div className="absolute bottom-[50%] left-4 md:left-12 lg:left-24 max-w-4xl z-20 pointer-events-none">
             <div className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-10 duration-700">
                 <div className="flex flex-wrap items-center gap-2 md:gap-3">
-                    <Badge className="bg-primary font-black uppercase text-[8px] md:text-[10px] px-2 md:px-3 py-1 rounded-sm shadow-lg shadow-primary/20">Cinema Featured</Badge>
+                    <Badge className="bg-primary font-black uppercase text-[8px] md:text-[10px] px-2 md:px-3 py-1 rounded-sm shadow-lg shadow-primary/20">Featured Cinema</Badge>
                     <div className="flex items-center gap-1 md:gap-1.5 text-yellow-400 font-black text-[10px] md:text-sm bg-black/60 backdrop-blur-xl px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-white/10 shadow-2xl">
                         <Star className="size-3 md:size-4 fill-current" />
                         {movie.vote_average.toFixed(1)}
@@ -187,7 +188,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
         </div>
       </div>
 
-      {/* Main Content Grid - Corrected overlap for visibility */}
+      {/* Main Content Grid - Corrected overlap for perfect visibility */}
       <div className="content-container relative -mt-40 pb-20 z-30 px-4 md:px-8 lg:px-12">
         <div className="flex flex-col lg:flex-row gap-8 md:gap-12 lg:gap-20">
           <div className="w-full lg:w-[400px] flex-shrink-0 space-y-6 md:space-y-10">

@@ -20,6 +20,7 @@ import MovieMatchmakerSection from '@/components/movie-matchmaker-section';
 import NowPlayingSection from '@/components/sections/now-playing-section';
 import UpcomingSection from '@/components/sections/upcoming-section';
 import TrendingOttsSection from '@/components/sections/trending-otts-section';
+import Top10MoviesSection from '@/components/sections/top-10-movies-section';
 
 export default function DashboardPage() {
   const { user, isLoading } = useUser();
@@ -41,28 +42,36 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
-      {/* Hero Section is full-bleed and fits the screen height minus navbar */}
+      {/* Hero Section is full-bleed and fits the screen height */}
       <HeroSection />
       
-      {/* Scrollable content container with proper padding and layout */}
+      {/* Content Gallery */}
       <div className="space-y-16 py-12 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto w-full">
+          {/* High Impact Sections First */}
+          <Top10MoviesSection />
           <TrendingOttsSection />
+          
           <NowPlayingSection />
           <UpcomingSection />
+          
           <FranchiseFocusSection />
+          
           <div className="grid grid-cols-1 gap-16">
             <ForYouSection />
             <TrendingSection />
           </div>
+          
           <div className="space-y-16">
             <HindiMoviesSection />
             <KannadaMoviesSection />
             <TamilMoviesSection />
             <TeluguMoviesSection />
           </div>
+          
           <MoodSection />
           <FavoriteArtistsSection />
           <LanguagePicksSection />
+          
           <div className="pt-8 border-t border-primary/10">
             <MovieMatchmakerSection />
           </div>
