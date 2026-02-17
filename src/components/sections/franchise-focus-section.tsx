@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,6 +5,7 @@ import { getMovieVideos, getPosterUrl, searchMovies } from "@/lib/tmdb.client";
 import { MovieCarousel } from "../movie-carousel";
 import { Movie } from "@/lib/tmdb";
 import { Skeleton } from "../ui/skeleton";
+import { Layers } from "lucide-react";
 
 interface MovieWithPoster extends Partial<Movie> {
   posterUrl: string | null;
@@ -68,7 +68,7 @@ export default function FranchiseFocusSection() {
 
     if (isLoading) {
          return (
-             <div className="space-y-4">
+             <div className="py-12 space-y-4">
                 <Skeleton className="h-8 w-1/4" />
                 <div className="flex gap-4">
                     {[...Array(10)].map((_, i) => (
@@ -79,5 +79,20 @@ export default function FranchiseFocusSection() {
         )
     }
 
-    return <MovieCarousel title="Franchise Focus" movies={moviesData} />;
+    return (
+        <section className="py-12 space-y-8 border-b border-white/5">
+            <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-400/10 rounded-lg border border-blue-400/20">
+                    <Layers className="text-blue-400 size-6 md:size-7" />
+                </div>
+                <div className="space-y-1">
+                    <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter uppercase text-white mb-0">
+                        Franchise <span className="text-blue-400">Focus</span>
+                    </h2>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Deep dives into the worlds most successful cinematic universes.</p>
+                </div>
+            </div>
+            <MovieCarousel title="" movies={moviesData} />
+        </section>
+    );
 }

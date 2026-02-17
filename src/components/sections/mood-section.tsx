@@ -73,22 +73,27 @@ export default function MoodSection() {
   }
 
   return (
-    <section className="space-y-6">
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 text-primary">
-            <Smile className="size-6" />
-            <h2 className="font-headline text-2xl font-bold tracking-tight">What's Your Mood?</h2>
+    <section className="py-12 space-y-8 border-b border-white/5">
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-yellow-400/10 rounded-lg border border-yellow-400/20">
+            <Smile className="text-yellow-400 size-6 md:size-7" />
         </div>
-        <p className="text-muted-foreground">Select a mood to get instant cinematic recommendations.</p>
+        <div className="space-y-1">
+            <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter uppercase text-white mb-0">
+                Emotional <span className="text-yellow-400">Atmosphere</span>
+            </h2>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Select a vibe to architect your perfect cinematic session.</p>
+        </div>
       </div>
+
       <div className="flex flex-wrap gap-2">
         {moods.map((mood) => (
           <Button
             key={mood}
             variant="outline"
             className={cn(
-              "transition-all rounded-full px-6",
-              selectedMood === mood && "bg-primary text-primary-foreground border-primary"
+              "transition-all rounded-full px-6 py-6 font-bold uppercase tracking-widest text-[10px] border-white/10 glass-panel",
+              selectedMood === mood && "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105"
             )}
             onClick={() => handleMoodSelect(mood)}
             disabled={isLoading && selectedMood === mood}
@@ -111,7 +116,9 @@ export default function MoodSection() {
       )}
       
       {recommendations.length > 0 && selectedMood && (
-        <MovieCarousel title={`For a ${selectedMood} Mood`} movies={recommendations} />
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <MovieCarousel title={`Perfect matches for ${selectedMood}`} movies={recommendations} />
+        </div>
       )}
     </section>
   )

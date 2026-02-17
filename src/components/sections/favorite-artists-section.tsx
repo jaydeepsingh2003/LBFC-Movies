@@ -4,9 +4,9 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { getFavoriteArtistsDirectorsRecommendations } from "@/ai/flows/favorite-artists-directors"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2, Film, Users, Star } from "lucide-react"
+import { Loader2, Film, Star } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { MovieCarousel } from "../movie-carousel"
 import { getPosterUrl, searchMovies, getMovieVideos } from "@/lib/tmdb.client"
 import { Movie } from "@/lib/tmdb"
@@ -84,46 +84,44 @@ export default function FavoriteArtistsSection() {
   };
 
   return (
-    <section className="space-y-6">
-      <div className="space-y-2">
-        <h2 className="font-headline text-2xl font-bold tracking-tight flex items-center gap-2">
-            <Star className="text-primary size-6 fill-primary" />
-            From Your Favorites
-        </h2>
-        <p className="text-muted-foreground">Discover titles centered around your chosen actors and directors.</p>
+    <section className="py-12 space-y-8 border-b border-white/5">
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-primary/10 rounded-lg border border-primary/20">
+            <Star className="text-primary size-6 md:size-7 fill-primary" />
+        </div>
+        <div className="space-y-1">
+            <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter uppercase text-white mb-0">
+                Talent <span className="text-primary">Spotlight</span>
+            </h2>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Discover curated titles based on your favorite actors and directors.</p>
+        </div>
       </div>
       
-      <Card className="border-white/5 bg-secondary/20">
-        <CardHeader>
-          <CardTitle>Find Movies by Artists</CardTitle>
-          <CardDescription>Enter your favorite stars or directors to discover their work.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="actors" className="text-sm font-medium text-muted-foreground">Favorite Actors</label>
+      <Card className="border-white/5 bg-secondary/20 rounded-[2rem] overflow-hidden backdrop-blur-xl">
+        <CardContent className="p-8 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Favorite Actors</label>
               <Input 
-                id="actors" 
                 value={favoriteActors} 
                 onChange={e => setFavoriteActors(e.target.value)} 
                 placeholder="e.g., Tom Hanks, Meryl Streep" 
-                className="mt-1.5" 
+                className="h-14 bg-background/50 border-white/10 rounded-xl font-bold" 
                 disabled={isLoading}
               />
             </div>
-            <div>
-              <label htmlFor="directors" className="text-sm font-medium text-muted-foreground">Favorite Directors</label>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Favorite Directors</label>
               <Input 
-                id="directors" 
                 value={favoriteDirectors} 
                 onChange={e => setFavoriteDirectors(e.target.value)} 
                 placeholder="e.g., Christopher Nolan, Greta Gerwig" 
-                className="mt-1.5" 
+                className="h-14 bg-background/50 border-white/10 rounded-xl font-bold" 
                 disabled={isLoading}
               />
             </div>
           </div>
-          <Button onClick={handleGetRecommendations} disabled={isLoading} className="rounded-full px-8">
+          <Button onClick={handleGetRecommendations} disabled={isLoading} className="rounded-full px-10 h-14 font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20">
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Film className="mr-2 h-4 w-4" />}
             Get Recommendations
           </Button>
@@ -142,7 +140,9 @@ export default function FavoriteArtistsSection() {
       )}
 
       {recommendations.length > 0 && (
-        <MovieCarousel title="Spotlight Recommendations" movies={recommendations} />
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <MovieCarousel title="Artist-Based Selections" movies={recommendations} />
+        </div>
       )}
     </section>
   )

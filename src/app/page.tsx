@@ -45,38 +45,34 @@ export default function DashboardPage() {
       {/* Hero Section is full-bleed and fits the screen height */}
       <HeroSection />
       
-      {/* Content Gallery */}
-      <div className="space-y-24 py-12 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto w-full">
-          {/* Global High Impact Section */}
+      {/* Content Gallery with Zero Gap Alignment */}
+      <div className="space-y-0 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto w-full">
+          {/* Global High Impact */}
           <Top10MoviesSection />
           
-          {/* High-Fidelity Zero-Gap Tier: Regional, OTT, and In Theaters */}
-          <div className="space-y-0">
-            <RegionalTop10Section />
-            <TrendingOttsSection />
-            <NowPlayingSection />
-          </div>
+          {/* Dense High-Fidelity Tier */}
+          <RegionalTop10Section />
+          <TrendingOttsSection />
+          <NowPlayingSection />
           
           <UpcomingSection />
           <FranchiseFocusSection />
           
-          <div className="grid grid-cols-1 gap-24">
-            <ForYouSection />
-            <TrendingSection />
-          </div>
+          <ForYouSection />
+          <TrendingSection />
           
-          <div className="space-y-24">
-            <HindiMoviesSection />
-            <KannadaMoviesSection />
-            <TamilMoviesSection />
-            <TeluguMoviesSection />
-          </div>
+          {/* Regional Cinema Tier */}
+          <HindiMoviesSection />
+          <KannadaMoviesSection />
+          <TamilMoviesSection />
+          <TeluguMoviesSection />
           
+          {/* Discovery Tools */}
           <MoodSection />
           <FavoriteArtistsSection />
           <LanguagePicksSection />
           
-          <div className="pt-16 border-t border-primary/10">
+          <div className="py-16">
             <MovieMatchmakerSection />
           </div>
       </div>

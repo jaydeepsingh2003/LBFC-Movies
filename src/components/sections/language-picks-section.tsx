@@ -91,29 +91,35 @@ export default function LanguagePicksSection() {
   };
 
   return (
-    <section className="space-y-6">
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 text-primary">
-            <Languages className="size-6" />
-            <h2 className="font-headline text-2xl font-bold tracking-tight">Picks In Your Language</h2>
+    <section className="py-12 space-y-8 border-b border-white/5">
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-blue-400/10 rounded-lg border border-blue-400/20">
+            <Languages className="size-6 md:size-7 text-blue-400" />
         </div>
-        <p className="text-muted-foreground">Discover top-rated movies in the languages you prefer.</p>
+        <div className="space-y-1">
+            <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter uppercase text-white mb-0">
+                Linguistic <span className="text-blue-400">Frontiers</span>
+            </h2>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Explore premium titles from global cultures in your preferred languages.</p>
+        </div>
       </div>
-      <div className="flex flex-wrap gap-4 items-center bg-secondary/30 p-4 rounded-xl border border-white/5">
+
+      <div className="flex flex-wrap gap-4 items-center bg-secondary/30 p-6 rounded-2xl border border-white/5 backdrop-blur-md">
         {availableLanguages.map(lang => (
-          <div key={lang} className="flex items-center space-x-2">
+          <div key={lang} className="flex items-center space-x-3 group cursor-pointer">
             <Checkbox
               id={`lang-${lang}`}
               checked={selectedLanguages.includes(lang)}
               onCheckedChange={() => handleLanguageChange(lang)}
+              className="border-white/20 data-[state=checked]:bg-blue-400 data-[state=checked]:border-blue-400"
             />
-            <Label htmlFor={`lang-${lang}`} className="font-medium cursor-pointer text-sm">{lang}</Label>
+            <Label htmlFor={`lang-${lang}`} className="font-black cursor-pointer text-[10px] uppercase tracking-widest text-muted-foreground group-hover:text-white transition-colors">{lang}</Label>
           </div>
         ))}
       </div>
-      <Button onClick={handleGetPicks} disabled={isLoading} className="rounded-full px-8">
+      <Button onClick={handleGetPicks} disabled={isLoading} className="rounded-full px-10 h-14 font-black uppercase tracking-widest text-xs bg-blue-400 hover:bg-blue-500 text-black shadow-xl shadow-blue-400/20">
         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Globe className="mr-2 h-4 w-4" />}
-        Find Movies
+        Architect Catalog
       </Button>
 
       {isLoading && (
@@ -128,7 +134,9 @@ export default function LanguagePicksSection() {
       )}
 
       {recommendations.length > 0 && (
-        <MovieCarousel title={`Top Picks in ${selectedLanguages.join(', ')}`} movies={recommendations} />
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <MovieCarousel title={`Premium picks in ${selectedLanguages.join(', ')}`} movies={recommendations} />
+        </div>
       )}
     </section>
   );

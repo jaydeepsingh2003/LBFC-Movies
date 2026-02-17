@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from "react";
@@ -38,10 +37,10 @@ export default function NowPlayingSection() {
     }, []);
 
     return (
-        <section className="space-y-8">
+        <section className="py-12 space-y-8 border-b border-white/5">
             <div className="space-y-1">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-yellow-500/10 rounded-lg">
+                    <div className="p-2 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
                         <Ticket className="text-yellow-500 size-6 md:size-7" />
                     </div>
                     <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter uppercase text-white mb-0">

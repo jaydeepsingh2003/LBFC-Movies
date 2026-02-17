@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from "react";
@@ -31,7 +30,7 @@ export default function Top10MoviesSection() {
 
     if (isLoading) {
         return (
-            <div className="space-y-8">
+            <div className="py-12 space-y-8">
                 <Skeleton className="h-10 w-64" />
                 <div className="flex gap-6 overflow-hidden">
                     {[...Array(5)].map((_, i) => (
@@ -43,23 +42,26 @@ export default function Top10MoviesSection() {
     }
 
     return (
-        <section className="space-y-8">
+        <section className="py-12 space-y-8 border-b border-white/5 relative">
             <div className="flex items-center gap-3">
-                <div className="p-2 bg-yellow-500/10 rounded-lg">
+                <div className="p-2 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
                     <Trophy className="text-yellow-500 size-6 md:size-8" />
                 </div>
-                <h2 className="font-headline text-2xl md:text-4xl font-black tracking-tighter uppercase text-white">
-                    Top 10 <span className="text-yellow-500">Global Hits</span>
-                </h2>
+                <div className="space-y-1">
+                    <h2 className="font-headline text-2xl md:text-4xl font-black tracking-tighter uppercase text-white mb-0">
+                        Top 10 <span className="text-yellow-500">Global Hits</span>
+                    </h2>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">The most watched cinematic masterpieces worldwide today.</p>
+                </div>
             </div>
 
             <Carousel opts={{ align: 'start', loop: false, dragFree: true }} className="w-full">
                 <CarouselContent className="-ml-4 md:-ml-8">
                     {movies.map((movie, index) => (
                         <CarouselItem key={movie.id} className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 pl-4 md:pl-8">
-                            <div className="relative group h-full">
+                            <div className="relative group h-full py-4">
                                 <div className={cn(
-                                    "absolute bottom-0 z-0 select-none pointer-events-none transition-all duration-500",
+                                    "absolute bottom-4 z-0 select-none pointer-events-none transition-all duration-500",
                                     index === 9 ? "-left-12 md:-left-20" : "-left-4 md:-left-8"
                                 )}>
                                     <span className={cn(
