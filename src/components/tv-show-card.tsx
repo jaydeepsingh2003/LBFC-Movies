@@ -93,7 +93,14 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
       )}
     >
       {posterUrl ? (
-        <Image src={posterUrl} alt={title} fill className="object-cover" sizes="(max-width: 768px) 50vw, 15vw" />
+        <Image 
+            src={posterUrl} 
+            alt={title} 
+            fill 
+            className="object-cover" 
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 15vw"
+            quality={90}
+        />
       ) : (
         <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
           <Tv className="w-12 h-12 text-muted-foreground/30 mb-2" />

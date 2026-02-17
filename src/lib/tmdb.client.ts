@@ -3,9 +3,10 @@
 import { Movie, MovieDetails, Person, PersonDetails, TVShow, TVShowDetails, WatchProvider } from "./tmdb";
 
 const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
-const TMDB_IMAGE_BASE_URL_POSTER = 'https://image.tmdb.org/t/p/w500';
-const TMDB_IMAGE_BASE_URL_BACKDROP = 'https://image.tmdb.org/t/p/w1280';
-const TMDB_IMAGE_BASE_URL_LOGO = 'https://image.tmdb.org/t/p/w200';
+// Upgraded to high-fidelity resolutions
+const TMDB_IMAGE_BASE_URL_POSTER = 'https://image.tmdb.org/t/p/w780'; 
+const TMDB_IMAGE_BASE_URL_BACKDROP = 'https://image.tmdb.org/t/p/original'; 
+const TMDB_IMAGE_BASE_URL_LOGO = 'https://image.tmdb.org/t/p/w500';
 
 interface TmdbVideo {
   id: string;

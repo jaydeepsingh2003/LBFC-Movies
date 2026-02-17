@@ -94,7 +94,14 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
       )}
     >
       {posterUrl ? (
-        <Image src={posterUrl} alt={title} fill className="object-cover" sizes="(max-width: 768px) 50vw, 15vw" />
+        <Image 
+            src={posterUrl} 
+            alt={title} 
+            fill 
+            className="object-cover" 
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 15vw"
+            quality={90} // High quality setting for posters
+        />
       ) : (
         <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
           <Film className="w-12 h-12 text-muted-foreground/30 mb-2" />

@@ -99,7 +99,7 @@ export default function HeroSection() {
     if (movies.length === 0) return null;
 
     return (
-        <section className="relative w-full h-svh bg-background overflow-hidden">
+        <section className="relative w-full h-svh bg-background overflow-hidden max-h-[100svh]">
             {/* Ambient Background Glow */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background z-0" />
             
@@ -126,6 +126,7 @@ export default function HeroSection() {
                                         className="object-cover object-center transition-opacity duration-1000 animate-in fade-in duration-[1500ms]"
                                         priority
                                         sizes="100vw"
+                                        unoptimized // Using original high-res directly for "4K" feel
                                     />
                                 )}
                                 
