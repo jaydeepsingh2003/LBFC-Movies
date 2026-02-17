@@ -9,6 +9,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { MovieCard } from "../movie-card";
 import { MapPin } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
 const REGIONS = [
     { label: 'India', code: 'IN' },
@@ -28,7 +29,7 @@ export default function RegionalTop10Section() {
         const fetchRegionalTop10 = async () => {
             setIsLoading(true);
             try {
-                // Using with_origin_country for real-time regional cinema
+                // Fetch authentic regional movies produced in that origin country
                 const results = await discoverMovies({ 
                     with_origin_country: activeRegion, 
                     sort_by: 'popularity.desc' 
@@ -87,9 +88,16 @@ export default function RegionalTop10Section() {
                         <CarouselContent className="-ml-4 md:-ml-8">
                             {movies.map((movie, index) => (
                                 <CarouselItem key={movie.id} className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 pl-4 md:pl-8">
-                                    <div className="relative group">
-                                        <div className="absolute -left-4 md:-left-8 bottom-0 z-0 select-none pointer-events-none">
-                                            <span className="text-[120px] md:text-[200px] font-black leading-none text-transparent" 
+                                    <div className="relative group h-full">
+                                        {/* Ranked Number Overlay - Corrected for double-digit visibility */}
+                                        <div className={cn(
+                                            "absolute bottom-0 z-0 select-none pointer-events-none transition-all duration-500",
+                                            index === 9 ? "-left-12 md:-left-20" : "-left-4 md:-left-8"
+                                        )}>
+                                            <span className={cn(
+                                                "text-[120px] md:text-[200px] font-black leading-none text-transparent",
+                                                index === 9 && "tracking-tighter"
+                                            )} 
                                                   style={{ WebkitTextStroke: '2px rgba(255,255,255,0.15)' }}>
                                                 {index + 1}
                                             </span>

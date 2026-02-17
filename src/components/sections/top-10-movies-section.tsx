@@ -8,6 +8,7 @@ import { Skeleton } from "../ui/skeleton";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
 import { MovieCard } from "../movie-card";
 import { Trophy } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Top10MoviesSection() {
     const [movies, setMovies] = useState<Movie[]>([]);
@@ -60,9 +61,16 @@ export default function Top10MoviesSection() {
                 <CarouselContent className="-ml-4 md:-ml-8">
                     {movies.map((movie, index) => (
                         <CarouselItem key={movie.id} className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 pl-4 md:pl-8">
-                            <div className="relative group">
-                                <div className="absolute -left-4 md:-left-8 bottom-0 z-0 select-none pointer-events-none">
-                                    <span className="text-[120px] md:text-[200px] font-black leading-none text-transparent" 
+                            <div className="relative group h-full">
+                                {/* Ranked Number Overlay - Corrected for double-digit visibility */}
+                                <div className={cn(
+                                    "absolute bottom-0 z-0 select-none pointer-events-none transition-all duration-500",
+                                    index === 9 ? "-left-12 md:-left-20" : "-left-4 md:-left-8"
+                                )}>
+                                    <span className={cn(
+                                        "text-[120px] md:text-[200px] font-black leading-none text-transparent",
+                                        index === 9 && "tracking-tighter"
+                                    )} 
                                           style={{ WebkitTextStroke: '2px rgba(255,255,255,0.15)' }}>
                                         {index + 1}
                                     </span>
