@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-import { Loader2, Smile, Sparkles } from "lucide-react"
+import { Loader2, Smile } from "lucide-react"
 import { getPosterUrl, discoverMovies, discoverTvShows } from "@/lib/tmdb.client"
 import { Skeleton } from "../ui/skeleton"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
