@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Loader2, Music, Search, Youtube, Play, Headphones, Globe, Disc, Mic, MicOff } from 'lucide-react';
+import { Loader2, Music, Search, Youtube, Play, Headphones, Globe, Disc, Mic, MicOff, TrendingUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import { advancedMovieSearch, type AdvancedMovieSearchOutput } from '@/ai/flows/advanced-movie-search';
@@ -19,14 +19,12 @@ export default function MusicPage() {
   
   const MUSIC_CATEGORIES = useMemo(() => [
     { label: 'Global Hits', query: `latest global music hits ${currentYear}` },
-    { label: 'Hindi', query: `trending hindi music videos ${currentYear}` },
-    { label: 'Soundtracks', query: `official movie soundtracks ${currentYear} high quality` },
-    { label: 'Tamil', query: `trending tamil hits ${currentYear}` },
-    { label: 'Telugu', query: `trending telugu hits ${currentYear}` },
-    { label: 'Kannada', query: `trending kannada hits ${currentYear}` },
+    { label: 'Hindi Trending', query: `trending hindi music videos ${currentYear}` },
+    { label: 'Official Soundtracks', query: `official movie soundtracks ${currentYear} high quality` },
+    { label: 'Tamil Hits', query: `trending tamil hits ${currentYear}` },
+    { label: 'Telugu Hits', query: `trending telugu hits ${currentYear}` },
     { label: 'K-Pop', query: 'latest kpop music videos trending' },
     { label: 'Latin', query: 'latest latin music hits' },
-    { label: 'French', query: 'musique française trending' },
     { label: 'Japanese', query: 'trending japanese music' },
     { label: 'Punjabi', query: `trending punjabi hits ${currentYear}` },
   ], [currentYear]);
@@ -42,6 +40,7 @@ export default function MusicPage() {
   const handleSearch = useCallback(async (query: string) => {
     setIsSearching(true);
     try {
+      // Ensure the search is dynamic and includes the "official music video" context
       const results = await advancedMovieSearch({ query: `${query} official music video` });
       setVideoResults(results);
     } catch (error) {
@@ -101,10 +100,9 @@ export default function MusicPage() {
   }, [debouncedSearchQuery, handleSearch]);
 
   useEffect(() => {
-    // Initial load with default category
-    const defaultCat = MUSIC_CATEGORIES[0];
-    handleSearch(defaultCat.query);
-  }, [handleSearch, MUSIC_CATEGORIES]);
+    // Initial real-time fetch for the default category
+    handleSearch(MUSIC_CATEGORIES[0].query);
+  }, []);
 
   const renderContent = () => {
     if (isSearching) {
@@ -125,7 +123,7 @@ export default function MusicPage() {
           {videoResults.results.map(video => (
             <Card
               key={video.videoId}
-              className="overflow-hidden cursor-pointer group bg-secondary/20 border-white/5 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10"
+              className="overflow-hidden cursor-pointer group bg-secondary/20 border-white/5 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 rounded-2xl"
               onClick={() => setVideoId(video.videoId)}
             >
               <CardContent className="p-0">
@@ -143,7 +141,7 @@ export default function MusicPage() {
                     </div>
                   </div>
                   <div className="absolute top-2 left-2">
-                    <Badge className="bg-black/60 backdrop-blur-md border-white/10 text-[10px] uppercase font-bold px-2 py-0.5">
+                    <Badge className="bg-black/60 backdrop-blur-md border-white/10 text-[10px] uppercase font-black px-2 py-0.5">
                         <Youtube className="size-3 mr-1 text-red-500 fill-current" /> YouTube
                     </Badge>
                   </div>
@@ -153,7 +151,7 @@ export default function MusicPage() {
                     {video.title}
                   </h3>
                   <div className="flex items-center justify-between">
-                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Official Video</p>
+                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Official Transmission</p>
                     <Music className="size-3 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>
@@ -167,9 +165,9 @@ export default function MusicPage() {
     return (
         <div className="flex flex-col items-center justify-center py-40 bg-secondary/10 rounded-[3rem] border-2 border-dashed border-white/5">
           <Search className="h-16 w-16 text-muted-foreground/20 mb-4" />
-          <h3 className="text-xl font-bold text-white tracking-tight">Vibe Not Found</h3>
-          <p className="text-muted-foreground mt-2 text-center max-w-sm px-6">
-            We couldn't find any music videos for "{searchQuery || activeCategory}". Try exploring a different language or artist.
+          <h3 className="text-xl font-bold text-white tracking-tight">Signal Lost</h3>
+          <p className="text-muted-foreground mt-2 text-center max-w-sm px-6 font-medium">
+            We couldn't locate any dynamic tracks for "{searchQuery || activeCategory}". Try searching for a global icon like "The Weeknd".
           </p>
         </div>
     );
@@ -182,13 +180,13 @@ export default function MusicPage() {
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-primary">
               <Headphones className="size-5" />
-              <span className="text-sm font-bold uppercase tracking-[0.2em]">Sonic Discovery Lounge</span>
+              <span className="text-sm font-black uppercase tracking-[0.3em]">Sonic Discovery Lounge</span>
             </div>
-            <h1 className="font-headline text-4xl md:text-6xl font-bold tracking-tight text-white">
+            <h1 className="font-headline text-4xl md:text-7xl font-black tracking-tighter text-white">
               Pulse <span className="text-primary">Discovery</span>
             </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl font-medium">
-              Explore real-time trending hits and movie soundtracks powered by deep YouTube indexing.
+            <p className="text-muted-foreground text-lg max-w-2xl font-medium leading-relaxed">
+              Real-time synchronization with global music trends and cinematic soundtracks.
             </p>
           </div>
 
@@ -196,8 +194,8 @@ export default function MusicPage() {
             <div className="relative flex-1">
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                 <Input
-                placeholder="Find tracks or artists..."
-                className="pl-14 pr-12 h-16 bg-secondary/40 border-white/5 rounded-2xl text-lg font-medium focus:ring-primary/50 transition-all border-2"
+                placeholder="Find tracks, artists, or movies..."
+                className="pl-14 pr-12 h-16 bg-secondary/40 border-white/5 rounded-2xl text-lg font-bold focus:ring-primary/50 transition-all border-2"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -205,7 +203,7 @@ export default function MusicPage() {
                     onClick={toggleVoiceSearch}
                     className={cn(
                         "absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all duration-300",
-                        isListening ? "bg-primary text-white animate-pulse" : "text-muted-foreground hover:text-white hover:bg-white/10"
+                        isListening ? "bg-primary text-white animate-pulse shadow-lg shadow-primary/50" : "text-muted-foreground hover:text-white hover:bg-white/10"
                     )}
                     title={isListening ? "Stop Listening" : "Voice Search"}
                 >
@@ -216,18 +214,21 @@ export default function MusicPage() {
         </div>
 
         {isListening && (
-          <div className="flex items-center gap-4 bg-primary/10 border border-primary/20 p-4 rounded-2xl animate-in fade-in slide-in-from-top-2">
-            <div className="size-8 bg-primary rounded-full flex items-center justify-center animate-pulse">
-              <Mic className="size-4 text-white" />
+          <div className="flex items-center gap-4 bg-primary/10 border border-primary/20 p-6 rounded-2xl animate-in fade-in slide-in-from-top-2">
+            <div className="size-10 bg-primary rounded-full flex items-center justify-center animate-pulse shadow-2xl shadow-primary/40">
+              <Mic className="size-5 text-white" />
             </div>
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-primary">Listening for sounds...</span>
+            <div className="space-y-1">
+                <span className="text-xs font-black uppercase tracking-[0.3em] text-primary block">Listening for Audio...</span>
+                <p className="text-[10px] text-muted-foreground font-bold uppercase">"Search for Interstellar Theme"</p>
+            </div>
           </div>
         )}
 
         <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2 text-muted-foreground">
                 <Globe className="size-4" />
-                <span className="text-xs font-bold uppercase tracking-widest">Global & Cinematic Hubs:</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Global & Cinematic Hubs:</span>
             </div>
             <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-2">
                 {MUSIC_CATEGORIES.map((cat) => (
@@ -235,13 +236,13 @@ export default function MusicPage() {
                         key={cat.label}
                         onClick={() => handleCategoryClick(cat)}
                         className={cn(
-                            "px-6 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all border flex items-center gap-2",
+                            "px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all border flex items-center gap-2",
                             activeCategory === cat.label
-                                ? "bg-primary border-primary text-white scale-105 shadow-lg shadow-primary/20"
+                                ? "bg-primary border-primary text-white scale-105 shadow-xl shadow-primary/20"
                                 : "bg-secondary/30 border-white/5 text-muted-foreground hover:bg-secondary/50 hover:text-white"
                         )}
                     >
-                        {cat.label === 'Soundtracks' && <Disc className="size-4" />}
+                        {cat.label.includes('Soundtracks') && <Disc className="size-4" />}
                         {cat.label}
                     </button>
                 ))}
@@ -249,18 +250,18 @@ export default function MusicPage() {
         </div>
       </header>
 
-      <section className="space-y-8 animate-in fade-in duration-700">
+      <section className="space-y-8 animate-in fade-in duration-1000">
         <div className="flex items-center justify-between border-b border-white/5 pb-6">
-            <h2 className="font-headline text-2xl font-bold flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                    <Music className="text-primary size-6" />
+            <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter flex items-center gap-3 uppercase">
+                <div className="p-2.5 bg-primary/10 rounded-xl">
+                    <TrendingUp className="text-primary size-6 md:size-7" />
                 </div>
-                {searchQuery ? `Results for "${searchQuery}"` : `${activeCategory} Trending`}
+                {searchQuery ? `Results for "${searchQuery}"` : `${activeCategory}`}
             </h2>
             {videoResults && videoResults.results && (
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-tighter bg-secondary/40 px-3 py-1 rounded-md">
-                    {videoResults.results.length} Videos Indexed
-                </span>
+                <Badge variant="outline" className="text-[10px] font-black border-white/10 px-4 py-1 rounded-full uppercase tracking-widest text-muted-foreground bg-secondary/20">
+                    {videoResults.results.length} Dynamic Sources
+                </Badge>
             )}
         </div>
         
