@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from 'react';
@@ -47,17 +48,17 @@ export default function DashboardPage() {
       
       {/* Content Gallery */}
       <div className="space-y-24 py-12 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto w-full">
-          {/* High Impact Sections First */}
+          {/* Global High Impact Section */}
           <Top10MoviesSection />
-          <RegionalTop10Section />
           
-          <div className="space-y-24 pt-8">
+          {/* Tightly Aligned Regional, OTT and Theater Tier */}
+          <div className="space-y-16">
+            <RegionalTop10Section />
             <TrendingOttsSection />
             <NowPlayingSection />
           </div>
           
           <UpcomingSection />
-          
           <FranchiseFocusSection />
           
           <div className="grid grid-cols-1 gap-24">
