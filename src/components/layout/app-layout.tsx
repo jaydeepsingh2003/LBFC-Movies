@@ -16,7 +16,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col bg-background selection:bg-primary/30">
-      {isClient && !isMobile && <Header />}
+      {/* Header is now always visible at the top, including mobile */}
+      {isClient && <Header />}
       <main className="flex-1 w-full max-w-[2000px] mx-auto pt-16 md:pt-18 pb-24 md:pb-12">
         {children}
       </main>

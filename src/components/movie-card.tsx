@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -13,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { saveMovieToPlaylist } from '@/firebase/firestore/playlists';
 import { useFirestore } from '@/firebase';
 import { getMovieVideos } from '@/lib/tmdb.client';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface MovieCardProps {
   id: number;
@@ -30,6 +30,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
   const firestore = useFirestore();
   const { toast } = useToast();
   const router = useRouter();
+  const isMobile = useIsMobile();
   const [isLoadingTrailer, setIsLoadingTrailer] = useState(false);
   const [cachedTrailer, setCachedTrailer] = useState<string | null>(initialTrailerUrl || null);
 
@@ -101,27 +102,31 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         </div>
       )}
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 z-10">
+      {/* Action Overlay - Always visible on mobile, hover only on desktop */}
+      <div className={cn(
+        "absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent transition-all duration-500 z-10",
+        isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+      )}>
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
-          <Button variant="secondary" size="icon" className="h-9 w-9 rounded-full glass-card hover:bg-primary hover:text-white border-none shadow-lg" onClick={handleSaveMovie}>
-            <Bookmark className="size-4" />
+          <Button variant="secondary" size="icon" className="h-8 w-8 md:h-9 md:w-9 rounded-full glass-card hover:bg-primary hover:text-white border-none shadow-lg" onClick={handleSaveMovie}>
+            <Bookmark className="size-3 md:size-4" />
           </Button>
-          <Button variant="secondary" size="icon" className="h-9 w-9 rounded-full glass-card hover:bg-white hover:text-black border-none shadow-lg" onClick={handleMoreInfo}>
-            <Info className="size-4" />
+          <Button variant="secondary" size="icon" className="h-8 w-8 md:h-9 md:w-9 rounded-full glass-card hover:bg-white hover:text-black border-none shadow-lg" onClick={handleMoreInfo}>
+            <Info className="size-3 md:size-4" />
           </Button>
         </div>
 
         <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="h-16 w-16 rounded-full bg-primary/90 flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-transform duration-500" onClick={handlePlayTrailer}>
-              {isLoadingTrailer ? <Loader2 className="size-8 text-white animate-spin" /> : <Play className="size-8 text-white fill-current ml-1" />}
+          <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-primary/90 flex items-center justify-center shadow-2xl scale-90 md:scale-75 group-hover:scale-100 transition-transform duration-500" onClick={handlePlayTrailer}>
+              {isLoadingTrailer ? <Loader2 className="size-6 md:size-8 text-white animate-spin" /> : <Play className="size-6 md:size-8 text-white fill-current ml-1" />}
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 p-4 w-full space-y-2 z-10">
-          <h3 className="font-headline text-sm font-black text-white leading-tight line-clamp-2 drop-shadow-lg group-hover:text-primary transition-colors">{title}</h3>
+        <div className="absolute bottom-0 left-0 p-3 md:p-4 w-full space-y-1 md:space-y-2 z-10">
+          <h3 className="font-headline text-xs md:text-sm font-black text-white leading-tight line-clamp-2 drop-shadow-lg group-hover:text-primary transition-colors">{title}</h3>
           <div className="flex items-center gap-2">
-              <Star className="size-3 text-yellow-400 fill-current" />
-              <span className="text-[10px] font-bold text-white/70 uppercase">Movie</span>
+              <Star className="size-2.5 md:size-3 text-yellow-400 fill-current" />
+              <span className="text-[8px] md:text-[10px] font-bold text-white/70 uppercase">Movie</span>
           </div>
         </div>
       </div>
