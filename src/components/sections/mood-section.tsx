@@ -3,63 +3,74 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
-import { MovieCarousel } from "@/components/movie-carousel"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { Loader2, Smile, Sparkles } from "lucide-react"
-import { getPosterUrl, searchMovies, getMovieVideos } from "@/lib/tmdb.client"
-import { Movie } from "@/lib/tmdb"
+import { getPosterUrl, discoverMovies, discoverTvShows } from "@/lib/tmdb.client"
 import { Skeleton } from "../ui/skeleton"
-import { getMoodBasedRecommendations } from "@/ai/flows/mood-based-recommendations"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
+import { MovieCard } from '../movie-card'
+import { TVShowCard } from '../tv-show-card'
 
 const moods = ["Thrilling", "Adventurous", "Happy", "Sad", "Romantic", "Epic", "Funny", "Nostalgic"];
 
-interface MovieWithPoster extends Movie {
+const MOOD_GENRES: Record<string, { movie: number[], tv: number[] }> = {
+  "Thrilling": { movie: [53, 28], tv: [10759, 80] },
+  "Adventurous": { movie: [12], tv: [10759] },
+  "Happy": { movie: [35, 10751], tv: [35] },
+  "Sad": { movie: [18], tv: [18] },
+  "Romantic": { movie: [10749], tv: [18] },
+  "Epic": { movie: [878, 10752], tv: [10765] },
+  "Funny": { movie: [35], tv: [35] },
+  "Nostalgic": { movie: [14, 16], tv: [10765] }
+};
+
+interface ContentItem {
+    id: number;
+    title: string;
     posterUrl: string | null;
+    type: 'movie' | 'tv';
+    overview?: string;
+    poster_path?: string | null;
 }
 
 export default function MoodSection() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null)
-  const [recommendations, setRecommendations] = useState<MovieWithPoster[]>([])
+  const [content, setContent] = useState<ContentItem[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
 
   const handleMoodSelect = useCallback(async (mood: string) => {
-    if (selectedMood === mood && recommendations.length > 0) return;
-    
     setSelectedMood(mood)
     setIsLoading(true)
-    setRecommendations([])
+    setContent([])
     try {
-      const result = await getMoodBasedRecommendations({ mood });
-      const movieTitles = result.movieSuggestions;
-      
-      const moviePromises = movieTitles.map(async (title) => {
-        const searchResults = await searchMovies(title);
-        const movie = searchResults.length > 0 ? searchResults[0] : null;
-        if (movie) {
-            const videos = await getMovieVideos(movie.id);
-            const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-            return {
-                ...movie,
-                posterUrl: getPosterUrl(movie.poster_path),
-                trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
-            } as MovieWithPoster;
-        }
-        return null;
-      });
+      const genres = MOOD_GENRES[mood];
+      const [movies, shows] = await Promise.all([
+        discoverMovies({ genreId: genres.movie[0], sort_by: 'popularity.desc' }),
+        discoverTvShows({ genreId: genres.tv[0], sortBy: 'popularity.desc' })
+      ]);
 
-      const moviesData = (await Promise.all(moviePromises)).filter((m): m is MovieWithPoster => m !== null);
+      const combined: ContentItem[] = [
+        ...movies.slice(0, 10).map(m => ({ 
+            id: m.id, 
+            title: m.title, 
+            posterUrl: getPosterUrl(m.poster_path), 
+            type: 'movie' as const,
+            overview: m.overview,
+            poster_path: m.poster_path
+        })),
+        ...shows.slice(0, 10).map(s => ({ 
+            id: s.id, 
+            title: s.name, 
+            posterUrl: getPosterUrl(s.poster_path), 
+            type: 'tv' as const,
+            overview: s.overview,
+            poster_path: s.poster_path
+        }))
+      ].sort(() => 0.5 - Math.random());
 
-      if (moviesData.length === 0) {
-          toast({
-              variant: "destructive",
-              title: "No matches found",
-              description: "We couldn't find matching movies for this mood in the live catalog.",
-          });
-      }
-
-      setRecommendations(moviesData);
+      setContent(combined);
 
     } catch (error) {
       console.error(error)
@@ -71,12 +82,11 @@ export default function MoodSection() {
     } finally {
       setIsLoading(false)
     }
-  }, [selectedMood, recommendations.length, toast]);
+  }, [toast]);
 
-  // Initial load "In Action"
   useEffect(() => {
     handleMoodSelect(moods[0]);
-  }, []);
+  }, [handleMoodSelect]);
 
   return (
     <section className="py-6 space-y-8 border-b border-white/5">
@@ -88,17 +98,17 @@ export default function MoodSection() {
             <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter uppercase text-white mb-0">
                 Emotional <span className="text-yellow-400">Atmosphere</span>
             </h2>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Select a vibe to architect your perfect cinematic session.</p>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Select a vibe to architect your perfect cinematic session from the TMDB global catalog.</p>
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
         {moods.map((mood) => (
           <Button
             key={mood}
             variant="outline"
             className={cn(
-              "transition-all rounded-full px-6 py-6 font-bold uppercase tracking-widest text-[10px] border-white/10 glass-panel",
+              "transition-all rounded-full px-6 py-6 font-bold uppercase tracking-widest text-[10px] border-white/10 glass-panel shrink-0",
               selectedMood === mood && "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105"
             )}
             onClick={() => handleMoodSelect(mood)}
@@ -110,22 +120,34 @@ export default function MoodSection() {
         ))}
       </div>
       
-      <div className="min-h-[350px]">
+      <div className="min-h-[350px] relative">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center h-[300px] gap-4">
-                <div className="relative">
-                    <Loader2 className="h-12 w-12 animate-spin text-yellow-400" />
-                    <Sparkles className="absolute -top-2 -right-2 text-yellow-400 size-4 animate-pulse" />
-                </div>
-                <p className="text-muted-foreground font-black tracking-widest uppercase text-[10px] animate-pulse">Scanning Archives for {selectedMood} vibe...</p>
+            <div className="flex gap-4 overflow-hidden">
+                {[...Array(7)].map((_, i) => (
+                    <Skeleton key={i} className="aspect-[2/3] w-40 md:w-56 flex-shrink-0 rounded-2xl" />
+                ))}
             </div>
-          ) : recommendations.length > 0 && selectedMood ? (
+          ) : content.length > 0 ? (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <MovieCarousel title="" movies={recommendations} />
+                <Carousel opts={{ align: 'start', loop: false, dragFree: true }} className="w-full">
+                    <CarouselContent className="-ml-4 md:-ml-6">
+                        {content.map((item) => (
+                            <CarouselItem key={`${item.type}-${item.id}`} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 2xl:basis-1/7 pl-4 md:pl-6">
+                                {item.type === 'movie' ? (
+                                    <MovieCard id={item.id} title={item.title} posterUrl={item.posterUrl} overview={item.overview} poster_path={item.poster_path} />
+                                ) : (
+                                    <TVShowCard id={item.id} title={item.title} posterUrl={item.posterUrl} overview={item.overview} poster_path={item.poster_path} />
+                                )}
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="hidden md:flex -left-12 h-12 w-12 glass-panel border-none hover:bg-primary shadow-2xl" />
+                    <CarouselNext className="hidden md:flex -right-12 h-12 w-12 glass-panel border-none hover:bg-primary shadow-2xl" />
+                </Carousel>
             </div>
           ) : (
             <div className="h-[300px] bg-secondary/10 rounded-[2rem] border-2 border-dashed border-white/5 flex items-center justify-center">
-                <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Select a mood to initialize transmission</p>
+                <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Calibrating TMDB connection...</p>
             </div>
           )}
       </div>

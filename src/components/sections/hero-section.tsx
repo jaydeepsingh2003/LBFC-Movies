@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -146,7 +147,7 @@ export default function HeroSection() {
                                             </div>
                                         </div>
                                         
-                                        <h1 className="font-headline text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter text-white leading-[0.9] drop-shadow-[0_15px_15px_rgba(0,0,0,0.6)] animate-in fade-in slide-in-from-bottom-10 duration-700 delay-100 uppercase break-words max-w-5xl">
+                                        <h1 className="font-headline text-4xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-black tracking-tighter text-white leading-[0.9] drop-shadow-[0_15px_15px_rgba(0,0,0,0.6)] animate-in fade-in slide-in-from-bottom-10 duration-700 delay-100 uppercase break-words max-w-5xl">
                                             {movie.title}
                                         </h1>
                                         
