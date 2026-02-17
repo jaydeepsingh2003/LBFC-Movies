@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
@@ -76,7 +75,7 @@ export default function MoodSection() {
       console.error(error)
       toast({
         variant: "destructive",
-        title: "Signal Lost",
+        title: "Atmosphere Unstable",
         description: "Failed to connect to the atmospheric discovery engine.",
       })
     } finally {
@@ -98,7 +97,7 @@ export default function MoodSection() {
             <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter uppercase text-white mb-0">
                 Emotional <span className="text-yellow-400">Atmosphere</span>
             </h2>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Select a vibe to architect your perfect cinematic session from the TMDB global catalog.</p>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Surgically indexed from the global catalog to match your exact vibe.</p>
         </div>
       </div>
 
@@ -108,7 +107,7 @@ export default function MoodSection() {
             key={mood}
             variant="outline"
             className={cn(
-              "transition-all rounded-full px-6 py-6 font-bold uppercase tracking-widest text-[10px] border-white/10 glass-panel shrink-0",
+              "transition-all rounded-full px-6 py-6 font-black uppercase tracking-widest text-[10px] border-white/10 glass-panel shrink-0",
               selectedMood === mood && "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105"
             )}
             onClick={() => handleMoodSelect(mood)}
@@ -147,7 +146,7 @@ export default function MoodSection() {
             </div>
           ) : (
             <div className="h-[300px] bg-secondary/10 rounded-[2rem] border-2 border-dashed border-white/5 flex items-center justify-center">
-                <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Calibrating TMDB connection...</p>
+                <p className="text-muted-foreground font-black uppercase tracking-widest text-[10px]">Syncing Archives...</p>
             </div>
           )}
       </div>

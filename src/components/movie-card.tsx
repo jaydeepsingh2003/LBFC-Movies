@@ -67,10 +67,10 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         setCachedTrailer(trailer.key);
         setVideoId(trailer.key);
       } else {
-        toast({ title: "Trailer Unavailable", description: "We couldn't find a preview for this title." });
+        toast({ title: "Trailer Unavailable" });
       }
     } catch (error) {
-      console.error("Error fetching trailer:", error);
+      console.error(error);
     } finally {
       setIsLoadingTrailer(false);
     }
@@ -88,7 +88,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
     try {
         if (isSaved) {
             await removeMovieFromPlaylist(firestore, user.uid, id);
-            toast({ title: "Removed from Vault", description: `${title} has been removed.` });
+            toast({ title: "Removed from Vault" });
         } else {
             await saveMovieToPlaylist(firestore, user.uid, { 
                 id, 
@@ -96,11 +96,10 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
                 overview: overview || '', 
                 poster_path: poster_path || null 
             });
-            toast({ title: "Added to Vault", description: `${title} is now in your collection.` });
+            toast({ title: "Added to Vault" });
         }
     } catch (error) {
-        console.error("Error toggling movie save:", error);
-        toast({ variant: "destructive", title: "Error", description: "Could not update your vault. Try again." });
+        console.error(error);
     }
   };
 
@@ -110,7 +109,6 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
     
     const shareData = {
       title: title,
-      text: `Check out ${title} on LBFC!`,
       url: `${window.location.origin}/movie/${id}`,
     };
 
@@ -119,10 +117,10 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         await navigator.share(shareData);
       } else {
         await navigator.clipboard.writeText(shareData.url);
-        toast({ title: "Link Copied", description: "Movie link copied to clipboard." });
+        toast({ title: "Link Copied" });
       }
     } catch (error) {
-      console.error("Error sharing:", error);
+      console.error(error);
     }
   };
 
@@ -139,13 +137,13 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
             alt={title} 
             fill 
             className="object-cover" 
-            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 15vw"
+            sizes="(max-width: 768px) 50vw, 25vw"
             quality={90}
         />
       ) : (
         <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
           <Film className="w-12 h-12 text-muted-foreground/30 mb-2" />
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{title}</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{title}</span>
         </div>
       )}
 

@@ -20,7 +20,6 @@ import RegionalTop10Section from '@/components/sections/regional-top-10-section'
 export default function DashboardPage() {
   const { user, isLoading } = useUser();
 
-  // Redirection logic moved to global AppLayout guard
   if (isLoading || !user) {
     return (
       <div className="flex justify-center items-center h-svh bg-background">
@@ -31,10 +30,9 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
-      {/* Hero Section is full-bleed */}
       <HeroSection />
       
-      {/* Content Gallery with Zero Gap Alignment */}
+      {/* Zero Gap Cinematic Gallery */}
       <div className="space-y-0 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto w-full">
           <Top10MoviesSection />
           <RegionalTop10Section />

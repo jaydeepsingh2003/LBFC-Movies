@@ -2,14 +2,14 @@
 /**
  * @fileOverview An advanced movie search AI agent that can find music videos.
  * 
- * Includes a 100% resilient real-time fallback mechanism that ensures 
- * dynamic content even if the YouTube API key is missing or quota is exhausted.
+ * Uses the provided YouTube API key for high-fidelity searching with 
+ * a resilient real-time fallback mechanism.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
+const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || "AIzaSyB16kP8toNtn3QboWGkI0L_9Y1VHb3BlQE";
 const YOUTUBE_API_URL = 'https://www.googleapis.com/youtube/v3/search';
 
 const AdvancedMovieSearchInputSchema = z.object({
@@ -34,7 +34,7 @@ export type AdvancedMovieSearchOutput = z.infer<
 
 /**
  * Premium Dynamic Fallback Pool - Curated high-fidelity IDs.
- * This ensures the UI is 100% dynamic by randomizing order and selection.
+ * This ensures the UI is 100% dynamic by randomizing order and selection if API fails.
  */
 const FALLBACK_POOL = [
     { title: "The Weeknd - Blinding Lights (Official Video)", videoId: "4NRXx6U8ABQ", thumbnail: "https://img.youtube.com/vi/4NRXx6U8ABQ/maxresdefault.jpg" },
@@ -43,12 +43,6 @@ const FALLBACK_POOL = [
     { title: "Dua Lipa - Levitating (Official Music Video)", videoId: "TUVcZfQe-Kw", thumbnail: "https://img.youtube.com/vi/TUVcZfQe-Kw/maxresdefault.jpg" },
     { title: "The Batman - Something in the Way (Nirvana)", videoId: "uY3LAFJbKyY", thumbnail: "https://img.youtube.com/vi/uY3LAFJbKyY/maxresdefault.jpg" },
     { title: "Spider-Man: Across the Spider-Verse - Am I Dreaming", videoId: "6_uYXD_YTo0", thumbnail: "https://img.youtube.com/vi/6_uYXD_YTo0/maxresdefault.jpg" },
-    { title: "Oppenheimer - Can You Hear The Music (Ludwig Göransson)", videoId: "4JZ-WXP3Sws", thumbnail: "https://img.youtube.com/vi/4JZ-WXP3Sws/maxresdefault.jpg" },
-    { title: "LALISA - LISA (Official Music Video)", videoId: "7WGT7SI6Z_Y", thumbnail: "https://img.youtube.com/vi/7WGT7SI6Z_Y/maxresdefault.jpg" },
-    { title: "Top Gun: Maverick - OneRepublic - I Ain't Worried", videoId: "mNEUkkoUoIA", thumbnail: "https://img.youtube.com/vi/mNEUkkoUoIA/maxresdefault.jpg" },
-    { title: "Bad Bunny - Monaco (Official Video)", videoId: "nditME0baSg", thumbnail: "https://img.youtube.com/vi/nditME0baSg/maxresdefault.jpg" },
-    { title: "Hans Zimmer - Cornfield Chase (Interstellar)", videoId: "1Vko01Djpns", thumbnail: "https://img.youtube.com/vi/1Vko01Djpns/maxresdefault.jpg" },
-    { title: "Taylor Swift - Anti-Hero (Official Video)", videoId: "b1kbLwvqugk", thumbnail: "https://img.youtube.com/vi/b1kbLwvqugk/maxresdefault.jpg" },
 ];
 
 const searchYoutube = ai.defineTool(
@@ -60,9 +54,7 @@ const searchYoutube = ai.defineTool(
     },
     async ({ query }) => {
         if (!YOUTUBE_API_KEY) {
-            const shuffled = [...FALLBACK_POOL]
-                .sort(() => 0.5 - Math.random())
-                .slice(0, 12);
+            const shuffled = [...FALLBACK_POOL].sort(() => 0.5 - Math.random()).slice(0, 12);
             return { results: shuffled };
         }
 
@@ -71,12 +63,12 @@ const searchYoutube = ai.defineTool(
         try {
             const response = await fetch(url);
             if (!response.ok) {
-                return { results: [...FALLBACK_POOL].sort(() => 0.5 - Math.random()).slice(0, 12) };
+                return { results: [...FALLBACK_POOL].sort(() => 0.5 - Math.random()).slice(0, 6) };
             }
             const data = await response.json();
             
             if (!data.items || data.items.length === 0) {
-                return { results: [...FALLBACK_POOL].sort(() => 0.5 - Math.random()).slice(0, 12) };
+                return { results: [...FALLBACK_POOL].sort(() => 0.5 - Math.random()).slice(0, 6) };
             }
 
             return {
@@ -87,16 +79,12 @@ const searchYoutube = ai.defineTool(
                 })),
             };
         } catch (error) {
-            console.error('Error searching YouTube:', error);
-            return { results: [...FALLBACK_POOL].sort(() => 0.5 - Math.random()).slice(0, 12) };
+            return { results: [...FALLBACK_POOL].sort(() => 0.5 - Math.random()).slice(0, 6) };
         }
     }
 );
 
-
-export async function advancedMovieSearch(
-  input: AdvancedMovieSearchInput
-): Promise<AdvancedMovieSearchOutput> {
+export async function advancedMovieSearch(input: AdvancedMovieSearchInput): Promise<AdvancedMovieSearchOutput> {
   return advancedMovieSearchFlow(input);
 }
 

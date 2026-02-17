@@ -66,10 +66,10 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
         setCachedTrailer(trailer.key);
         setVideoId(trailer.key);
       } else {
-        toast({ title: "Trailer Unavailable", description: "We couldn't find a preview for this show." });
+        toast({ title: "Trailer Unavailable" });
       }
     } catch (error) {
-      console.error("Error fetching TV trailer:", error);
+      console.error(error);
     } finally {
       setIsLoadingTrailer(false);
     }
@@ -80,14 +80,14 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
     e.stopPropagation();
     
     if (!user || !firestore) {
-        toast({ variant: "destructive", title: "Access Restricted", description: "Please sign in to curate your collection." });
+        toast({ variant: "destructive", title: "Access Restricted" });
         return;
     }
 
     try {
         if (isSaved) {
             await removeTvShowFromPlaylist(firestore, user.uid, id);
-            toast({ title: "Removed from Vault", description: `${title} has been removed.` });
+            toast({ title: "Removed from Vault" });
         } else {
             await saveTvShowToPlaylist(firestore, user.uid, { 
                 id, 
@@ -95,11 +95,10 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
                 overview: overview || '', 
                 poster_path: poster_path || null 
             });
-            toast({ title: "Added to Vault", description: `${title} is now in your series vault.` });
+            toast({ title: "Added to Vault" });
         }
     } catch (error) {
-        console.error("Error toggling TV save:", error);
-        toast({ variant: "destructive", title: "Error", description: "Could not update your vault. Try again." });
+        console.error(error);
     }
   };
 
@@ -109,7 +108,6 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
     
     const shareData = {
       title: title,
-      text: `Check out ${title} on LBFC!`,
       url: `${window.location.origin}/tv/${id}`,
     };
 
@@ -118,10 +116,10 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
         await navigator.share(shareData);
       } else {
         await navigator.clipboard.writeText(shareData.url);
-        toast({ title: "Link Copied", description: "Link copied to clipboard." });
+        toast({ title: "Link Copied" });
       }
     } catch (error) {
-      console.error("Error sharing:", error);
+      console.error(error);
     }
   };
 
@@ -138,13 +136,13 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
             alt={title} 
             fill 
             className="object-cover" 
-            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 15vw"
+            sizes="(max-width: 768px) 50vw, 25vw"
             quality={90}
         />
       ) : (
         <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
           <Tv className="w-12 h-12 text-muted-foreground/30 mb-2" />
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{title}</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{title}</span>
         </div>
       )}
 
@@ -183,7 +181,7 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
         </div>
 
         <div className="absolute bottom-0 left-0 p-3 md:p-4 w-full z-10 space-y-1 pointer-events-none">
-          <h3 className="font-headline text-xs md:text-sm font-bold text-white shadow-md line-clamp-2 leading-tight group-hover:text-primary transition-colors">{title}</h3>
+          <h3 className="font-headline text-xs md:text-sm font-black text-white line-clamp-2 leading-tight group-hover:text-primary transition-colors">{title}</h3>
           <div className="flex items-center gap-2 mt-1">
               <Star className="size-2.5 md:size-3 text-yellow-400 fill-current" />
               <span className="text-[8px] md:text-[10px] font-bold text-white/70 uppercase tracking-widest">Series</span>

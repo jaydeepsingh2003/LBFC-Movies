@@ -19,15 +19,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     setIsClient(true);
   }, []);
 
-  // GLOBAL SECURITY GUARD: Redirect to login if not authenticated
-  // This satisfies the requirement that links opened on new devices must start with login
+  // GLOBAL SECURITY GUARD
   useEffect(() => {
     if (isClient && !isLoading && !user && pathname !== '/login') {
       router.push('/login');
     }
   }, [isClient, isLoading, user, router, pathname]);
 
-  // Premium Loading State during Auth Verification or Redirect
   if (!isClient || isLoading || (!user && pathname !== '/login')) {
     return (
       <div className="flex flex-col justify-center items-center h-svh bg-background gap-6">
@@ -42,7 +40,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col bg-background selection:bg-primary/30">
-      {/* Header is always visible at the top */}
       <Header />
       <main className="flex-1 w-full max-w-[2000px] mx-auto pt-16 md:pt-18 pb-24 md:pb-12">
         {children}
