@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Film, LogOut, Settings, User, Bell } from "lucide-react"
+import { Film, LogOut, Settings, User, Bell, Shield, Zap, Sparkles, Activity, CheckCircle2 } from "lucide-react"
 import { MovieSearch } from "../movie-search"
 import { useUser, logout } from "@/firebase/auth/auth-client";
 import Link from "next/link";
@@ -11,6 +11,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { allNavItems } from "./sidebar-nav";
+import { Badge } from "@/components/ui/badge";
 
 export function DesktopNav() {
     const pathname = usePathname();
@@ -72,6 +73,12 @@ export function Header() {
         router.push('/login');
     };
 
+    const notifications = [
+        { id: 1, title: 'Vault Entry Confirmed', desc: 'Secure login detected from a new browser.', time: '2m ago', icon: Shield, color: 'text-blue-400' },
+        { id: 2, title: 'New Trending Drop', desc: 'Top 10 Global Hits have been updated.', time: '1h ago', icon: Zap, color: 'text-yellow-400' },
+        { id: 3, title: 'Welcome to LBFC', desc: 'Start your cinematic journey in the vault.', time: '2h ago', icon: Sparkles, color: 'text-primary' },
+    ];
+
     return (
         <header className={cn(
             "fixed top-0 z-50 w-full transition-all duration-500 h-16 md:h-18",
@@ -102,14 +109,49 @@ export function Header() {
                         <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-secondary animate-pulse" />
                     ) : user ? (
                         <div className="flex items-center gap-2 md:gap-4">
-                            <button className="hidden sm:block text-muted-foreground hover:text-white transition-colors relative">
-                                <Bell className="size-5" />
-                                <span className="absolute -top-1 -right-1 size-2 bg-primary rounded-full border-2 border-black" />
-                            </button>
+                            {/* Premium Notification Hub */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <button className="relative h-8 w-8 md:h-9 md:w-9 rounded-full focus:outline-none ring-2 ring-primary/20 hover:ring-primary transition-all overflow-hidden">
-                                        <Avatar className="h-full w-full">
+                                    <button className="text-muted-foreground hover:text-white transition-all relative p-2 rounded-full hover:bg-white/5 group">
+                                        <Bell className="size-5 group-hover:scale-110 transition-transform" />
+                                        <span className="absolute top-1.5 right-1.5 size-2.5 bg-primary rounded-full border-2 border-black animate-pulse" />
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-80 glass-panel mt-2 border-white/10 p-0 overflow-hidden" align="end">
+                                    <div className="p-4 border-b border-white/5 flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <Activity className="size-4 text-primary" />
+                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">Vault Activity</h3>
+                                        </div>
+                                        <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-white/10">3 New</Badge>
+                                    </div>
+                                    <div className="max-h-[350px] overflow-y-auto no-scrollbar">
+                                        {notifications.map((notif) => (
+                                            <DropdownMenuItem key={notif.id} className="p-4 focus:bg-white/5 border-b border-white/5 last:border-0 cursor-pointer flex items-start gap-4 transition-colors">
+                                                <div className={cn("mt-1 p-2 rounded-xl bg-white/5 shrink-0", notif.color)}>
+                                                    <notif.icon className="size-4" />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <p className="text-[11px] font-bold text-white leading-none">{notif.title}</p>
+                                                        <span className="text-[9px] text-muted-foreground whitespace-nowrap">{notif.time}</span>
+                                                    </div>
+                                                    <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">{notif.desc}</p>
+                                                </div>
+                                            </DropdownMenuItem>
+                                        ))}
+                                    </div>
+                                    <div className="p-3 bg-white/5 text-center">
+                                        <button className="text-[9px] font-black uppercase tracking-[0.2em] text-primary hover:underline">Clear Archive</button>
+                                    </div>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+
+                            {/* User Command Center */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button className="relative h-8 w-8 md:h-9 md:w-9 rounded-full focus:outline-none ring-2 ring-primary/20 hover:ring-primary transition-all overflow-hidden group">
+                                        <Avatar className="h-full w-full group-hover:scale-110 transition-transform">
                                             {user.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
                                             <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px] md:text-xs">
                                                 {user.displayName?.charAt(0) || <User size={14}/>}
@@ -117,33 +159,35 @@ export function Header() {
                                         </Avatar>
                                     </button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-64 glass-panel mt-2 border-white/10" align="end">
-                                    <DropdownMenuLabel className="font-normal p-4">
-                                        <div className="flex flex-col space-y-1">
-                                            <p className="text-sm font-bold leading-none">{user.displayName || 'Cinema Enthusiast'}</p>
-                                            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                                <DropdownMenuContent className="w-64 glass-panel mt-2 border-white/10 p-2" align="end">
+                                    <DropdownMenuLabel className="font-normal p-3">
+                                        <div className="flex flex-col space-y-2">
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-sm font-bold leading-none text-white">{user.displayName || 'Cinema Enthusiast'}</p>
+                                                <CheckCircle2 className="size-3 text-blue-400" />
+                                            </div>
+                                            <p className="text-[10px] leading-none text-muted-foreground truncate">{user.email}</p>
+                                            <Badge className="w-fit bg-primary/10 text-primary border-primary/20 text-[8px] font-black uppercase tracking-[0.2em] py-1">Cinema Architect</Badge>
                                         </div>
                                     </DropdownMenuLabel>
-                                    <DropdownMenuSeparator className="bg-white/10" />
-                                    <DropdownMenuGroup className="p-2">
-                                        <DropdownMenuItem asChild className="rounded-lg cursor-pointer focus:bg-primary/10">
+                                    <DropdownMenuSeparator className="bg-white/10 mx-2" />
+                                    <DropdownMenuGroup className="space-y-1">
+                                        <DropdownMenuItem asChild className="rounded-lg cursor-pointer focus:bg-primary/10 py-3">
                                             <Link href={`/profile/${user.uid}`}>
                                                 <User className="mr-3 h-4 w-4 text-primary" />
-                                                <span className="font-medium">My Profile</span>
+                                                <span className="text-[11px] font-black uppercase tracking-widest">My Archive</span>
                                             </Link>
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem className="rounded-lg cursor-pointer focus:bg-primary/10">
+                                        <DropdownMenuItem className="rounded-lg cursor-pointer focus:bg-primary/10 py-3">
                                             <Settings className="mr-3 h-4 w-4 text-primary" />
-                                            <span className="font-medium">Settings</span>
+                                            <span className="text-[11px] font-black uppercase tracking-widest">Command Center</span>
                                         </DropdownMenuItem>
                                     </DropdownMenuGroup>
-                                    <DropdownMenuSeparator className="bg-white/10" />
-                                    <div className="p-2">
-                                        <DropdownMenuItem onClick={handleLogout} className="rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
-                                            <LogOut className="mr-3 h-4 w-4" />
-                                            <span className="font-bold">Log out</span>
-                                        </DropdownMenuItem>
-                                    </div>
+                                    <DropdownMenuSeparator className="bg-white/10 mx-2" />
+                                    <DropdownMenuItem onClick={handleLogout} className="rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer py-3">
+                                        <LogOut className="mr-3 h-4 w-4" />
+                                        <span className="text-[11px] font-black uppercase tracking-widest">Sever Secure Link</span>
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
