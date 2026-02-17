@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Film, Play, Bookmark, Star, Info, Loader2, Share2 } from 'lucide-react';
@@ -9,10 +9,12 @@ import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import { useUser } from '@/firebase/auth/auth-client';
 import { useToast } from '@/hooks/use-toast';
-import { saveMovieToPlaylist } from '@/firebase/firestore/playlists';
+import { saveMovieToPlaylist, removeMovieFromPlaylist } from '@/firebase/firestore/playlists';
 import { useFirestore } from '@/firebase';
 import { getMovieVideos } from '@/lib/tmdb.client';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { doc } from 'firebase/firestore';
+import { useDocumentData } from 'react-firebase-hooks/firestore';
 
 interface MovieCardProps {
   id: number;
@@ -33,6 +35,14 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
   const isMobile = useIsMobile();
   const [isLoadingTrailer, setIsLoadingTrailer] = useState(false);
   const [cachedTrailer, setCachedTrailer] = useState<string | null>(initialTrailerUrl || null);
+
+  // Smart saved status detection
+  const savedRef = useMemo(() => 
+    user && firestore ? doc(firestore, `users/${user.uid}/savedMovies/${id}`) : null
+  , [firestore, user, id]);
+  
+  const [savedDoc, isSavedLoading] = useDocumentData(savedRef);
+  const isSaved = !!savedDoc;
 
   const handleNavigateToDetails = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -66,18 +76,31 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
     }
   };
 
-  const handleSaveMovie = async (e: React.MouseEvent) => {
+  const handleToggleSave = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
     if (!user || !firestore) {
         toast({ variant: "destructive", title: "Access Restricted", description: "Please sign in to curate your collection." });
         return;
     }
+
     try {
-        await saveMovieToPlaylist(firestore, user.uid, { id, title, overview: overview || '', poster_path: poster_path || null });
-        toast({ title: "Added to Vault", description: `${title} is now in your collection.` });
+        if (isSaved) {
+            await removeMovieFromPlaylist(firestore, user.uid, id);
+            toast({ title: "Removed from Vault", description: `${title} has been removed.` });
+        } else {
+            await saveMovieToPlaylist(firestore, user.uid, { 
+                id, 
+                title, 
+                overview: overview || '', 
+                poster_path: poster_path || null 
+            });
+            toast({ title: "Added to Vault", description: `${title} is now in your collection.` });
+        }
     } catch (error) {
-        console.error("Error saving movie:", error);
+        console.error("Error toggling movie save:", error);
+        toast({ variant: "destructive", title: "Error", description: "Could not update your vault. Try again." });
     }
   };
 
@@ -131,8 +154,17 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
       )}>
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
-          <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-primary hover:text-white border-none shadow-lg backdrop-blur-md" onClick={handleSaveMovie}>
-            <Bookmark className="size-3.5" />
+          <Button 
+            variant="secondary" 
+            size="icon" 
+            className={cn(
+                "h-8 w-8 rounded-full glass-card border-none shadow-lg backdrop-blur-md transition-all",
+                isSaved ? "bg-primary text-white" : "bg-black/40 hover:bg-primary hover:text-white"
+            )} 
+            onClick={handleToggleSave}
+            disabled={isSavedLoading}
+          >
+            <Bookmark className={cn("size-3.5", isSaved && "fill-current")} />
           </Button>
           <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-blue-500 hover:text-white border-none shadow-lg backdrop-blur-md" onClick={handleShare}>
             <Share2 className="size-3.5" />
