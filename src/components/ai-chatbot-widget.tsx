@@ -1,8 +1,7 @@
-
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Bot, Loader2, Send, Sparkles, User, X } from "lucide-react";
+import { Bot, Loader2, Send, MessageSquareText, User, X } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -86,7 +85,7 @@ export function AiChatbotWidget() {
         onClick={() => setIsOpen(true)}
         aria-label="Open AI Chatbot"
       >
-        <Sparkles className="h-8 w-8 text-primary-foreground" />
+        <MessageSquareText className="h-8 w-8 text-primary-foreground" />
       </Button>
 
       <Sheet open={isOpen} onOpenChange={setIsOpen}>

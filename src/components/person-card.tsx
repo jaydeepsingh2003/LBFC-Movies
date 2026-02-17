@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent } from './ui/card';
-import { User, Sparkles } from 'lucide-react';
+import { User, Award } from 'lucide-react';
 import { getPosterUrl } from '@/lib/tmdb.client';
 import type { Person } from '@/lib/tmdb';
 import { cn } from '@/lib/utils';
@@ -39,7 +39,7 @@ export function PersonCard({ person, className }: PersonCardProps) {
           
           <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
               <div className="bg-primary p-2 rounded-xl shadow-lg">
-                  <Sparkles className="size-4 text-white" />
+                  <Award className="size-4 text-white" />
               </div>
           </div>
         </div>

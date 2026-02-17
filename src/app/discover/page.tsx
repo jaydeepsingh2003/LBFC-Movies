@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { MovieCard } from '@/components/movie-card';
 import { TVShowCard } from '@/components/tv-show-card';
 import { discoverMovies, discoverTvShows, getPosterUrl, getMovieVideos, getTvShowVideos } from '@/lib/tmdb.client';
-import { Loader2, Search, Clapperboard, Monitor, Sparkles, Filter } from 'lucide-react';
+import { Loader2, Search, Clapperboard, Monitor, Compass, Filter } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 
@@ -126,12 +126,12 @@ export default function DiscoverPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-primary">
-                <Sparkles className="size-5" />
-                <span className="text-sm font-bold uppercase tracking-[0.2em]">Explore Catalog</span>
+                <Compass className="size-5" />
+                <span className="text-sm font-bold uppercase tracking-[0.2em]">Global Catalog</span>
             </div>
             <h1 className="font-headline text-4xl md:text-6xl font-bold tracking-tight text-white">Discover</h1>
             <p className="text-muted-foreground text-lg max-w-2xl font-medium">
-              Precision tools to find exactly what you're in the mood for.
+              Precision tools to find exactly what you're in the mood for across all origins.
             </p>
           </div>
           
@@ -187,7 +187,7 @@ export default function DiscoverPage() {
                 <Loader2 className="h-16 w-16 animate-spin text-primary" />
                 <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full animate-pulse" />
             </div>
-            <p className="text-muted-foreground animate-pulse font-bold tracking-widest uppercase text-xs">Curating your results...</p>
+            <p className="text-muted-foreground animate-pulse font-bold tracking-widest uppercase text-xs">Accessing Archives...</p>
           </div>
         ) : results.length > 0 ? (
             <div className="space-y-8">

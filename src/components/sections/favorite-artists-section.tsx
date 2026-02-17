@@ -1,11 +1,10 @@
-
 "use client"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { getFavoriteArtistsDirectorsRecommendations } from "@/ai/flows/favorite-artists-directors"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2, Film, Users } from "lucide-react"
+import { Loader2, Film, Users, Star } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { MovieCarousel } from "../movie-carousel"
@@ -40,13 +39,11 @@ export default function FavoriteArtistsSection() {
       const actors = favoriteActors.split(',').map(s => s.trim()).filter(Boolean);
       const directors = favoriteDirectors.split(',').map(s => s.trim()).filter(Boolean);
 
-      // AI generates relevant titles based on input artists
       const result = await getFavoriteArtistsDirectorsRecommendations({ 
         favoriteActors: actors,
         favoriteDirectors: directors 
       });
       
-      // Fetch full TMDB records for each recommendation
       const moviePromises = result.recommendations.map(async (title) => {
         const searchResults = await searchMovies(title);
         const movie = searchResults.length > 0 ? searchResults[0] : null;
@@ -90,10 +87,10 @@ export default function FavoriteArtistsSection() {
     <section className="space-y-6">
       <div className="space-y-2">
         <h2 className="font-headline text-2xl font-bold tracking-tight flex items-center gap-2">
-            <Users className="text-primary size-6" />
+            <Star className="text-primary size-6 fill-primary" />
             From Your Favorites
         </h2>
-        <p className="text-muted-foreground">Get recommendations based on actors and directors you love.</p>
+        <p className="text-muted-foreground">Discover titles centered around your chosen actors and directors.</p>
       </div>
       
       <Card className="border-white/5 bg-secondary/20">
@@ -145,7 +142,7 @@ export default function FavoriteArtistsSection() {
       )}
 
       {recommendations.length > 0 && (
-        <MovieCarousel title="Based on Your Favorites" movies={recommendations} />
+        <MovieCarousel title="Spotlight Recommendations" movies={recommendations} />
       )}
     </section>
   )

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { getPopularPeople, searchPeople } from '@/lib/tmdb.client';
 import type { Person } from '@/lib/tmdb';
 import { PersonCard } from '@/components/person-card';
-import { Loader2, Search, Users, Sparkles, Filter, Mic, MicOff } from 'lucide-react';
+import { Loader2, Search, Users, UserCheck, Filter, Mic, MicOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import { cn } from '@/lib/utils';
@@ -81,8 +81,8 @@ export default function PeoplePage() {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-primary">
-                <Users className="size-5" />
-                <span className="text-sm font-bold uppercase tracking-[0.3em]">Talent Archive</span>
+                <UserCheck className="size-5" />
+                <span className="text-sm font-bold uppercase tracking-[0.3em]">Verified Talent Archive</span>
             </div>
             <h1 className="font-headline text-4xl md:text-7xl font-black tracking-tighter text-white">
               {debouncedSearchQuery ? 'Discovery' : 'Popular'} <span className="text-primary">People</span>

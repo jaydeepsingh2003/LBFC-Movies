@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from "react"
@@ -6,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { MovieCarousel } from "@/components/movie-carousel"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-import { Loader2 } from "lucide-react"
+import { Loader2, Smile } from "lucide-react"
 import { getPosterUrl, searchMovies, getMovieVideos } from "@/lib/tmdb.client"
 import { Movie } from "@/lib/tmdb"
 import { Skeleton } from "../ui/skeleton"
@@ -31,11 +30,9 @@ export default function MoodSection() {
     setIsLoading(true)
     setRecommendations([])
     try {
-      // Fetch dynamic recommendations from AI
       const result = await getMoodBasedRecommendations({ mood });
       const movieTitles = result.movieSuggestions;
       
-      // Fetch full movie data from TMDB for each title
       const moviePromises = movieTitles.map(async (title) => {
         const searchResults = await searchMovies(title);
         const movie = searchResults.length > 0 ? searchResults[0] : null;
@@ -78,8 +75,11 @@ export default function MoodSection() {
   return (
     <section className="space-y-6">
       <div className="space-y-2">
-        <h2 className="font-headline text-2xl font-bold tracking-tight">What's Your Mood?</h2>
-        <p className="text-muted-foreground">Select a mood to get instant recommendations.</p>
+        <div className="flex items-center gap-2 text-primary">
+            <Smile className="size-6" />
+            <h2 className="font-headline text-2xl font-bold tracking-tight">What's Your Mood?</h2>
+        </div>
+        <p className="text-muted-foreground">Select a mood to get instant cinematic recommendations.</p>
       </div>
       <div className="flex flex-wrap gap-2">
         {moods.map((mood) => (

@@ -9,8 +9,9 @@ import { useCollection } from 'react-firebase-hooks/firestore';
 import { collection } from 'firebase/firestore';
 import { MovieCard } from '@/components/movie-card';
 import { TVShowCard } from '@/components/tv-show-card';
-import { getPosterUrl } from '@/lib/tmdb.client';
-import { Loader2, Film, Wand2, Monitor, Clapperboard, Sparkles, LayoutGrid, Bookmark } from 'lucide-react';
+import { getPosterUrl, discoverMovies } from '@/lib/tmdb.client';
+import type { Movie } from '@/lib/tmdb';
+import { Loader2, Film, Library, Monitor, Clapperboard, LayoutGrid, Bookmark, Search, Filter } from 'lucide-react';
 import Link from 'next/link';
 import {
   Card,
@@ -20,7 +21,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { generateSmartPlaylist, type SmartPlaylistOutput } from '@/ai/flows/smart-playlists';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
@@ -40,22 +40,34 @@ export default function PlaylistsPage() {
   const [savedMoviesSnapshot, moviesLoading] = useCollection(savedMoviesQuery);
   const [savedTvShowsSnapshot, tvLoading] = useCollection(savedTvShowsQuery);
   
-  const [criteria, setCriteria] = useState({ genre: 'Cyberpunk', mood: 'Existential', description: 'movies like Blade Runner' });
-  const [playlist, setPlaylist] = useState<SmartPlaylistOutput | null>(null);
+  const [criteria, setCriteria] = useState({ genre: '', keywords: '' });
+  const [playlistMovies, setPlaylistMovies] = useState<Movie[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleGenerate = async () => {
+  const handleCurate = async () => {
     setIsGenerating(true);
-    setPlaylist(null);
+    setPlaylistMovies([]);
     try {
-      const result = await generateSmartPlaylist({ ...criteria, playlistLength: 10 });
-      setPlaylist(result);
+      // Fetch directly from TMDB based on criteria
+      const results = await discoverMovies({
+        keywords: criteria.keywords || undefined,
+        sort_by: 'popularity.desc',
+      });
+      
+      setPlaylistMovies(results.slice(0, 10));
+      
+      if (results.length === 0) {
+        toast({
+          title: 'No Matches Found',
+          description: 'Try adjusting your vibe parameters.',
+        });
+      }
     } catch (error) {
       console.error(error);
       toast({
         variant: 'destructive',
-        title: 'Architectural Failure',
-        description: 'The AI could not curate your request. Check your connectivity.',
+        title: 'Curation Failed',
+        description: 'Could not connect to the movie database.',
       });
     } finally {
       setIsGenerating(false);
@@ -106,12 +118,12 @@ export default function PlaylistsPage() {
     <div className="space-y-16 py-8 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto min-h-screen">
       <header className="space-y-6">
         <div className="flex items-center gap-2 text-primary">
-            <Sparkles className="size-5" />
-            <span className="text-sm font-bold uppercase tracking-[0.3em]">Intelligence Core</span>
+            <Library className="size-5" />
+            <span className="text-sm font-bold uppercase tracking-[0.3em]">Personal Archive</span>
         </div>
         <h1 className="font-headline text-4xl md:text-7xl font-black tracking-tighter text-white">Your <span className="text-primary">Vault</span></h1>
         <p className="text-muted-foreground text-lg md:text-xl max-w-3xl font-medium leading-relaxed">
-          The epicenter of your cinematic taste. Manage saved transmissions and deploy AI agents to architect themed playlists.
+          The epicenter of your cinematic taste. Manage saved transmissions and architect themed marathons using real-time database queries.
         </p>
       </header>
 
@@ -189,36 +201,34 @@ export default function PlaylistsPage() {
           <header className="space-y-4">
               <div className="flex items-center gap-3">
                   <div className="p-3 bg-primary/10 rounded-2xl border border-primary/20">
-                    <Wand2 className="size-8 text-primary" />
+                    <Search className="size-8 text-primary" />
                   </div>
-                  <h2 className="font-headline text-3xl md:text-5xl font-black tracking-tighter text-white uppercase">AI Curator</h2>
+                  <h2 className="font-headline text-3xl md:text-5xl font-black tracking-tighter text-white uppercase">Vault Curator</h2>
               </div>
               <p className="text-muted-foreground text-lg font-medium max-w-2xl">
-                  Describe a feeling, a vibe, or a hyper-specific genre to let our AI architect a unique cinematic marathon.
+                  Filter the global catalog to architect a unique cinematic marathon tailored to your current preferences.
               </p>
           </header>
 
           <Card className="bg-gradient-to-br from-secondary/40 via-background to-background border-white/5 rounded-[3rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.5)] backdrop-blur-3xl">
             <CardContent className="p-8 md:p-16 space-y-10">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-                    <div className="space-y-4">
-                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Genre Selection</label>
-                        <Input value={criteria.genre} onChange={e => setCriteria({...criteria, genre: e.target.value})} placeholder="e.g., Cyberpunk" className="h-16 bg-black/40 border-white/10 rounded-2xl text-lg font-bold focus:ring-primary/20 focus:border-primary transition-all" disabled={isGenerating}/>
-                    </div>
-                    <div className="space-y-4">
-                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Atmospheric Mood</label>
-                        <Input value={criteria.mood} onChange={e => setCriteria({...criteria, mood: e.target.value})} placeholder="e.g., Existential" className="h-16 bg-black/40 border-white/10 rounded-2xl text-lg font-bold focus:ring-primary/20 focus:border-primary transition-all" disabled={isGenerating}/>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                     <div className="space-y-4">
                         <label className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Vibe Parameters</label>
-                        <Input value={criteria.description} onChange={e => setCriteria({...criteria, description: e.target.value})} placeholder="e.g., movies like Blade Runner" className="h-16 bg-black/40 border-white/10 rounded-2xl text-lg font-bold focus:ring-primary/20 focus:border-primary transition-all" disabled={isGenerating}/>
+                        <Input 
+                          value={criteria.keywords} 
+                          onChange={e => setCriteria({...criteria, keywords: e.target.value})} 
+                          placeholder="e.g., Cyberpunk, time travel, noir" 
+                          className="h-16 bg-black/40 border-white/10 rounded-2xl text-lg font-bold focus:ring-primary/20 focus:border-primary transition-all" 
+                          disabled={isGenerating}
+                        />
                     </div>
-                </div>
-                <div className="flex justify-center md:justify-start">
-                    <Button onClick={handleGenerate} disabled={isGenerating} size="lg" className="h-16 px-12 rounded-full font-black text-lg shadow-2xl shadow-primary/30 transition-all hover:scale-105 active:scale-95 bg-white text-black hover:bg-white/90">
-                        {isGenerating ? <Loader2 className="mr-3 h-6 w-6 animate-spin" /> : <Sparkles className="mr-3 h-6 w-6" />}
-                        Generate Intelligence Playlist
-                    </Button>
+                    <div className="flex items-end">
+                        <Button onClick={handleCurate} disabled={isGenerating} size="lg" className="h-16 w-full md:w-auto px-12 rounded-full font-black text-lg shadow-2xl shadow-primary/30 transition-all hover:scale-105 active:scale-95 bg-white text-black hover:bg-white/90">
+                            {isGenerating ? <Loader2 className="mr-3 h-6 w-6 animate-spin" /> : <Filter className="mr-3 h-6 w-6" />}
+                            Curate Marathon
+                        </Button>
+                    </div>
                 </div>
             </CardContent>
           </Card>
@@ -226,38 +236,26 @@ export default function PlaylistsPage() {
           <div className="min-h-[200px]">
               {isGenerating && (
                   <Card className="rounded-[3rem] bg-secondary/10 animate-pulse border-none p-12">
-                      <div className="h-12 w-1/2 bg-white/5 rounded-2xl mb-8"></div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-                          {[...Array(10)].map((_, i) => <div key={i} className="h-16 bg-white/5 rounded-2xl"></div>)}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+                          {[...Array(5)].map((_, i) => <div key={i} className="aspect-[2/3] bg-white/5 rounded-2xl"></div>)}
                       </div>
                   </Card>
               )}
 
-              {playlist && (
+              {playlistMovies.length > 0 && (
                   <div className="animate-in fade-in slide-in-from-bottom-10 duration-1000">
-                    <Card className="bg-gradient-to-br from-primary/20 via-background to-background border-primary/20 rounded-[3rem] shadow-2xl overflow-hidden relative">
-                        <div className="absolute top-0 right-0 size-64 bg-primary/10 blur-[100px] rounded-full -mr-32 -mt-32" />
-                        <CardHeader className="p-10 md:p-16 space-y-6 relative z-10">
-                            <CardTitle className="font-headline text-4xl md:text-6xl text-white font-black tracking-tighter uppercase">
-                                {playlist.playlistTitle}
-                            </CardTitle>
-                            <CardDescription className="text-xl md:text-2xl text-muted-foreground font-medium leading-relaxed italic border-l-4 border-primary pl-8 max-w-4xl">
-                                "{playlist.description}"
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="px-10 md:px-16 pb-16 relative z-10">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                                {playlist.movieTitles.map((title, index) => (
-                                    <div key={index} className="flex items-center gap-5 p-6 bg-white/5 border border-white/5 rounded-3xl hover:bg-white/10 hover:border-primary/30 transition-all group shadow-xl">
-                                        <div className="size-10 rounded-2xl bg-primary/20 flex items-center justify-center text-primary font-black text-xs group-hover:bg-primary group-hover:text-white transition-all shadow-lg">
-                                            {String(index + 1).padStart(2, '0')}
-                                        </div>
-                                        <span className="font-black text-sm lg:text-lg text-white group-hover:text-primary transition-colors line-clamp-1 uppercase tracking-tight">{title}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-6 md:gap-8">
+                        {playlistMovies.map((movie) => (
+                            <MovieCard
+                                key={movie.id}
+                                id={movie.id}
+                                title={movie.title}
+                                posterUrl={getPosterUrl(movie.poster_path)}
+                                overview={movie.overview}
+                                poster_path={movie.poster_path}
+                            />
+                        ))}
+                    </div>
                   </div>
               )}
           </div>

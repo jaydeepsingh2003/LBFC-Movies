@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getWatchProviders, getLogoUrl } from '@/lib/tmdb.client';
 import type { WatchProvider } from '@/lib/tmdb';
-import { Loader2, Sparkles, Globe, Tv, ChevronRight } from 'lucide-react';
+import { Loader2, Cast, Globe, Tv, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function MyOttsPage() {
@@ -61,7 +61,7 @@ export default function MyOttsPage() {
           
           <div className="hidden lg:flex items-center gap-4 bg-secondary/20 border border-white/5 p-4 rounded-3xl backdrop-blur-xl">
               <div className="size-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                  <Sparkles className="size-6 text-primary" />
+                  <Cast className="size-6 text-primary" />
               </div>
               <div>
                   <p className="text-xs font-black uppercase tracking-widest text-white">{platforms.length} Providers</p>

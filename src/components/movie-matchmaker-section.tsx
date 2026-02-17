@@ -1,11 +1,10 @@
-
 'use client';
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, Shuffle, Sparkles } from 'lucide-react';
+import { Loader2, Shuffle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { movieMatchmaker } from '@/ai/flows/movie-matchmaker';
 import { getPosterUrl, searchMovies as searchTmdb, getMovieVideos } from '@/lib/tmdb.client';
@@ -36,10 +35,7 @@ export default function MovieMatchmakerSection() {
     setResult(null);
 
     try {
-      // Call AI to find the perfect cinematic bridge
       const aiResult = await movieMatchmaker({ movie1, movie2 });
-      
-      // Fetch the actual movie data from TMDB
       const searchResults = await searchTmdb(aiResult.recommendation);
       const movie = searchResults.length > 0 ? searchResults[0] : null;
 
@@ -69,7 +65,7 @@ export default function MovieMatchmakerSection() {
         description: 'Failed to find a movie match. Please try again.',
       });
     } finally {
-      setIsLoading(false);
+      setIsGenerating(false);
     }
   };
 
@@ -77,7 +73,7 @@ export default function MovieMatchmakerSection() {
     <section className="space-y-6">
       <div className="space-y-2">
         <h2 className="font-headline text-2xl font-bold tracking-tight flex items-center gap-2">
-            <Sparkles className="text-primary size-6" />
+            <Shuffle className="text-primary size-6" />
             Movie Matchmaker
         </h2>
         <p className="text-muted-foreground">Find the perfect movie that sits between two of your favorites.</p>

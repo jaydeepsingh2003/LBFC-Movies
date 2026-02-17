@@ -3,7 +3,7 @@
 import * as React from "react"
 import Autoplay from "embla-carousel-autoplay"
 import { Button } from "@/components/ui/button";
-import { Info, Play, Plus } from "lucide-react";
+import { Info, Play, Plus, Flame } from "lucide-react";
 import Image from 'next/image';
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import { getPopularMovies, getMovieVideos, getBackdropUrl } from "@/lib/tmdb.client";
@@ -136,7 +136,9 @@ export default function HeroSection() {
                                 <div className="absolute bottom-[30%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-5xl z-20">
                                     <div className="space-y-4 md:space-y-8">
                                         <div className="flex items-center gap-2 md:gap-3 animate-in fade-in slide-in-from-left-10 duration-700">
-                                            <Badge className="bg-primary font-black uppercase text-[8px] md:text-xs px-2 md:px-3 py-1 rounded-sm shadow-lg shadow-primary/20">Featured</Badge>
+                                            <Badge className="bg-primary font-black uppercase text-[8px] md:text-xs px-2 md:px-3 py-1 rounded-sm shadow-lg shadow-primary/20 flex items-center gap-1.5">
+                                                <Flame className="size-3" /> Trending
+                                            </Badge>
                                             <Badge variant="outline" className="border-white/40 text-white font-bold backdrop-blur-md text-[8px] md:text-xs uppercase tracking-widest">
                                                 Ultra HD 4K
                                             </Badge>

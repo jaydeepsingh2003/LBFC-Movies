@@ -1,8 +1,7 @@
-
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Loader2, Music, Search, Youtube, Play, Sparkles, Globe, Disc, Mic, MicOff } from 'lucide-react';
+import { Loader2, Music, Search, Youtube, Play, Headphones, Globe, Disc, Mic, MicOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import { advancedMovieSearch, type AdvancedMovieSearchOutput } from '@/ai/flows/advanced-movie-search';
@@ -185,11 +184,11 @@ export default function MusicPage() {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-primary">
-              <Sparkles className="size-5" />
-              <span className="text-sm font-bold uppercase tracking-[0.2em]">Global Music Lounge</span>
+              <Headphones className="size-5" />
+              <span className="text-sm font-bold uppercase tracking-[0.2em]">Sonic Discovery Lounge</span>
             </div>
             <h1 className="font-headline text-4xl md:text-6xl font-bold tracking-tight text-white">
-              Sonic <span className="text-primary">Discovery</span>
+              Pulse <span className="text-primary">Discovery</span>
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl font-medium">
               Explore real-time trending hits and movie soundtracks powered by deep YouTube indexing.

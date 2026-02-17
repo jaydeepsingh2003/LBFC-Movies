@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from "react"
@@ -7,7 +6,7 @@ import { MovieCarousel } from "@/components/movie-carousel"
 import { useToast } from "@/hooks/use-toast"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { Loader2, Globe } from "lucide-react"
+import { Loader2, Globe, Languages } from "lucide-react"
 import { Movie } from "@/lib/tmdb"
 import { getPosterUrl, searchMovies, getMovieVideos } from "@/lib/tmdb.client"
 import { Skeleton } from "../ui/skeleton"
@@ -45,7 +44,6 @@ export default function LanguagePicksSection() {
     setIsLoading(true);
     setRecommendations([]);
     try {
-      // Call AI flow to get relevant movie titles for the selected languages
       const result = await languageBasedMoviePicks({ 
           languages: selectedLanguages,
           numberOfRecommendations: 12
@@ -53,7 +51,6 @@ export default function LanguagePicksSection() {
       
       const movieTitles = result.movieRecommendations;
       
-      // Fetch full TMDB data for these titles
       const moviePromises = movieTitles.map(async (title) => {
         const searchResults = await searchMovies(title);
         const movie = searchResults.length > 0 ? searchResults[0] : null;
@@ -96,7 +93,10 @@ export default function LanguagePicksSection() {
   return (
     <section className="space-y-6">
       <div className="space-y-2">
-        <h2 className="font-headline text-2xl font-bold tracking-tight">Picks In Your Language</h2>
+        <div className="flex items-center gap-2 text-primary">
+            <Languages className="size-6" />
+            <h2 className="font-headline text-2xl font-bold tracking-tight">Picks In Your Language</h2>
+        </div>
         <p className="text-muted-foreground">Discover top-rated movies in the languages you prefer.</p>
       </div>
       <div className="flex flex-wrap gap-4 items-center bg-secondary/30 p-4 rounded-xl border border-white/5">
