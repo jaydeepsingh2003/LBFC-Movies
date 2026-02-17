@@ -133,6 +133,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                 fill 
                 className="object-cover transition-transform duration-1000 scale-105" 
                 priority 
+                unoptimized
             />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
@@ -144,7 +145,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
             </Button>
         </div>
 
-        {/* Elevated Title Position */}
+        {/* Elevated Title Position - Perfect Visibility */}
         <div className="absolute bottom-[45%] left-4 md:left-12 lg:left-24 max-w-4xl z-20 pointer-events-none">
             <div className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-10 duration-700">
                 <div className="flex flex-wrap items-center gap-2 md:gap-3">
@@ -155,7 +156,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                     </div>
                     <div className="flex items-center gap-1.5 text-blue-400 font-black text-[10px] md:text-sm bg-black/60 backdrop-blur-xl px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-white/10 shadow-2xl">
                         <Award className="size-3 md:size-4" />
-                        {Math.round(movie.popularity)} <span className="opacity-50 font-medium ml-1">Popularity</span>
+                        {Math.round(movie.popularity)} <span className="opacity-50 font-medium ml-1">Rank</span>
                     </div>
                     <Badge variant="outline" className="border-white/20 text-white font-bold backdrop-blur-md uppercase tracking-widest text-[8px] md:text-[10px]">ULTRA HD 4K</Badge>
                 </div>
@@ -166,13 +167,13 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
         </div>
       </div>
 
-      {/* Main Content Grid - Deep Negative Margin */}
+      {/* Main Content Grid - Deep Premium Negative Margin */}
       <div className="content-container relative -mt-64 pb-20 z-30 px-4 md:px-8 lg:px-12">
         <div className="flex flex-col lg:flex-row gap-8 md:gap-12 lg:gap-20">
           <div className="w-full lg:w-[400px] flex-shrink-0 space-y-6 md:space-y-10">
             {/* High-Fidelity Poster Card */}
             <div className="relative aspect-[2/3] w-[220px] md:w-full mx-auto md:mx-0 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.8)] border-2 border-white/10 glass-card group">
-                {movie.posterUrl && <Image src={movie.posterUrl} alt={movie.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />}
+                {movie.posterUrl && <Image src={movie.posterUrl} alt={movie.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" unoptimized />}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     {trailer && (
                         <Button variant="outline" className="rounded-full h-16 w-16 md:h-24 md:w-24 p-0 border-white/20 bg-white/10 backdrop-blur-md hover:bg-primary hover:text-white transition-all scale-75 group-hover:scale-100 duration-500" onClick={() => handlePlayVideo(trailer.key)}>
