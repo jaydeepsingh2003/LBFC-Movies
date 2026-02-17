@@ -3,7 +3,9 @@
 
 import { Movie, MovieDetails, Person, PersonDetails, TVShow, TVShowDetails, WatchProvider } from "./tmdb";
 
-const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+// Hardcoded fallback key to ensure the app works during setup
+const FALLBACK_KEY = "2dc0bd12c7bd63b2c691d3a64f3a3db7";
+const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY || FALLBACK_KEY;
 const TMDB_IMAGE_BASE_URL_POSTER = 'https://image.tmdb.org/t/p/w780'; 
 const TMDB_IMAGE_BASE_URL_BACKDROP = 'https://image.tmdb.org/t/p/original'; 
 const TMDB_IMAGE_BASE_URL_LOGO = 'https://image.tmdb.org/t/p/w500';

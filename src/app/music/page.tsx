@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
@@ -46,7 +47,7 @@ export default function MusicPage() {
       setVideoResults(results);
     } catch (error) {
       console.error("Error searching youtube", error);
-      setVideoResults(null);
+      setVideoResults({ results: [] });
     } finally {
       setIsSearching(false);
     }
@@ -97,17 +98,14 @@ export default function MusicPage() {
     if (debouncedSearchQuery) {
       setActiveCategory('');
       handleSearch(debouncedSearchQuery);
-    } else if (!activeCategory) {
-        const defaultCat = MUSIC_CATEGORIES[0];
-        setActiveCategory(defaultCat.label);
-        handleSearch(defaultCat.query);
     }
-  }, [debouncedSearchQuery, handleSearch, activeCategory, MUSIC_CATEGORIES]);
+  }, [debouncedSearchQuery, handleSearch]);
 
   useEffect(() => {
+    // Initial load with default category
     const defaultCat = MUSIC_CATEGORIES[0];
     handleSearch(defaultCat.query);
-  }, [handleSearch, MUSIC_CATEGORIES]);
+  }, []);
 
   const renderContent = () => {
     if (isSearching) {
@@ -172,7 +170,7 @@ export default function MusicPage() {
           <Search className="h-16 w-16 text-muted-foreground/20 mb-4" />
           <h3 className="text-xl font-bold text-white tracking-tight">Vibe Not Found</h3>
           <p className="text-muted-foreground mt-2 text-center max-w-sm px-6">
-            We couldn't find any music videos for "{debouncedSearchQuery || searchQuery}". Try exploring a different language or artist.
+            We couldn't find any music videos for "{searchQuery || activeCategory}". Try exploring a different language or artist.
           </p>
         </div>
     );
@@ -258,7 +256,7 @@ export default function MusicPage() {
                 <div className="p-2 bg-primary/10 rounded-lg">
                     <Music className="text-primary size-6" />
                 </div>
-                {debouncedSearchQuery ? `Results for "${debouncedSearchQuery}"` : `${activeCategory} Trending`}
+                {searchQuery ? `Results for "${searchQuery}"` : `${activeCategory} Trending`}
             </h2>
             {videoResults && (
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-tighter bg-secondary/40 px-3 py-1 rounded-md">

@@ -1,5 +1,6 @@
 
 import { cn } from "@/lib/utils"
+import { Layers } from "lucide-react"
 
 export function MyOttsIcon({ className, ...props }: React.SVGProps<SVGSVGElement>) {
   return (
@@ -16,16 +17,9 @@ export function MyOttsIcon({ className, ...props }: React.SVGProps<SVGSVGElement
       className={cn("h-5 w-5", className)}
       {...props}
     >
-      <defs>
-        <linearGradient id="my-otts-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style={{stopColor: 'rgb(255,0,0)', stopOpacity: 1}} />
-          <stop offset="50%" style={{stopColor: 'rgb(0,255,0)', stopOpacity: 1}} />
-          <stop offset="100%" style={{stopColor: 'rgb(0,0,255)', stopOpacity: 1}} />
-        </linearGradient>
-      </defs>
-      <polygon points="12 2 2 7 12 12 22 7 12 2" stroke="url(#my-otts-gradient)" fill="transparent"/>
-      <polyline points="2 17 12 22 22 17"  stroke="url(#my-otts-gradient)"/>
-      <polyline points="2 12 12 17 22 12"  stroke="url(#my-otts-gradient)"/>
+      <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.27a2 2 0 0 0 0 3.46l8.57 4.09a2 2 0 0 0 1.66 0l8.57-4.09a2 2 0 0 0 0-3.46z" />
+      <path d="m2 12.27 8.57 4.09a2 2 0 0 0 1.66 0L22 12.27" />
+      <path d="m2 17.27 8.57 4.09a2 2 0 0 0 1.66 0L22 17.27" />
     </svg>
   );
 }
