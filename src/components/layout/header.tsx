@@ -244,7 +244,7 @@ export function Header() {
                                     <DropdownMenuSeparator className="bg-white/10 mx-2" />
                                     <DropdownMenuItem onClick={handleLogout} className="rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer py-3">
                                         <LogOut className="mr-3 h-4 w-4" />
-                                        <span className="text-[11px] font-black uppercase tracking-widest">Sever Secure Link</span>
+                                        <span className="text-[11px] font-black uppercase tracking-widest">Logout</span>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
