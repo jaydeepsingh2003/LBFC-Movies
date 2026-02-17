@@ -1,14 +1,17 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import DiscoverFilters, { type FilterState } from '@/components/discover-filters';
 import { useToast } from '@/hooks/use-toast';
 import { MovieCard } from '@/components/movie-card';
 import { TVShowCard } from '@/components/tv-show-card';
 import { discoverMovies, discoverTvShows, getPosterUrl, getMovieVideos, getTvShowVideos } from '@/lib/tmdb.client';
-import { Loader2, Search, Clapperboard, Monitor, Compass, Filter } from 'lucide-react';
+import { Loader2, Search, Clapperboard, Monitor, Compass, Filter, Sparkles } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import FavoriteArtistsSection from '@/components/sections/favorite-artists-section';
+import LanguagePicksSection from '@/components/sections/language-picks-section';
+import MovieMatchmakerSection from '@/components/movie-matchmaker-section';
 
 interface DiscoverResult {
   id: number;
@@ -180,7 +183,7 @@ export default function DiscoverPage() {
       </div>
 
       {/* Results Tier */}
-      <main className="min-h-[500px] relative">
+      <main className="min-h-[500px] relative space-y-16">
         {isLoading ? (
           <div className="flex flex-col justify-center items-center h-[400px] gap-6">
             <div className="relative">
@@ -220,7 +223,7 @@ export default function DiscoverPage() {
                 </div>
             </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-40 bg-secondary/10 rounded-[3rem] border-2 border-dashed border-white/5 group hover:border-primary/20 transition-colors">
+          <div className="flex flex-col items-center justify-center py-20 bg-secondary/10 rounded-[3rem] border-2 border-dashed border-white/5 group hover:border-primary/20 transition-colors">
             <div className="relative mb-6">
                 <Search className="h-20 w-20 text-muted-foreground/10 group-hover:text-primary/20 transition-colors" />
                 <div className="absolute -top-2 -right-2 bg-primary/20 p-2 rounded-full blur-xl animate-pulse" />
@@ -231,6 +234,22 @@ export default function DiscoverPage() {
             </p>
           </div>
         )}
+
+        {/* Discovery Tools Tier */}
+        <section className="space-y-4 pt-12 border-t border-white/5">
+            <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                    <Sparkles className="size-6 text-primary" />
+                </div>
+                <h2 className="font-headline text-3xl font-black tracking-tighter uppercase text-white">Dynamic Discovery Tools</h2>
+            </div>
+            
+            <div className="space-y-0">
+                <FavoriteArtistsSection />
+                <LanguagePicksSection />
+                <MovieMatchmakerSection />
+            </div>
+        </section>
       </main>
     </div>
   );

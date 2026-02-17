@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from "react"
@@ -9,73 +8,53 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Loader2, Globe, Languages } from "lucide-react"
 import { Movie } from "@/lib/tmdb"
-import { getPosterUrl, searchMovies, getMovieVideos } from "@/lib/tmdb.client"
+import { getPosterUrl, discoverMovies } from "@/lib/tmdb.client"
 import { Skeleton } from "../ui/skeleton"
-import { languageBasedMoviePicks } from "@/ai/flows/language-based-movie-picks"
 
-const availableLanguages = ["English", "Spanish", "French", "Japanese", "Korean", "Hindi", "Kannada", "German"];
+const availableLanguages = [
+    { name: "English", code: "en" },
+    { name: "Hindi", code: "hi" },
+    { name: "Tamil", code: "ta" },
+    { name: "Telugu", code: "te" },
+    { name: "Kannada", code: "kn" },
+    { name: "Spanish", code: "es" },
+    { name: "French", code: "fr" },
+    { name: "Japanese", code: "ja" },
+    { name: "Korean", code: "ko" },
+];
 
 interface MovieWithPoster extends Movie {
     posterUrl: string | null;
 }
 
 export default function LanguagePicksSection() {
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(["English"]);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("en");
   const [recommendations, setRecommendations] = useState<MovieWithPoster[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleLanguageChange = (language: string) => {
-    setSelectedLanguages(prev =>
-      prev.includes(language)
-        ? prev.filter(lang => lang !== language)
-        : [...prev, language]
-    );
-  };
-
-  const handleGetPicks = async () => {
-    if (selectedLanguages.length === 0) {
-      toast({
-        variant: "destructive",
-        title: "No Language Selected",
-        description: "Please select at least one language.",
-      });
-      return;
-    }
+  const handleGetPicks = async (langCode: string) => {
+    setSelectedLanguage(langCode);
     setIsLoading(true);
     setRecommendations([]);
     try {
-      const result = await languageBasedMoviePicks({ 
-          languages: selectedLanguages,
-          numberOfRecommendations: 12
-      });
+      const results = await discoverMovies({ 
+          with_original_language: langCode,
+          sort_by: 'popularity.desc'
+      }, 1);
       
-      const movieTitles = result.movieRecommendations;
+      const moviesWithPosters = results.map(m => ({
+          ...m,
+          posterUrl: getPosterUrl(m.poster_path)
+      })) as MovieWithPoster[];
       
-      const moviePromises = movieTitles.map(async (title) => {
-        const searchResults = await searchMovies(title);
-        const movie = searchResults.length > 0 ? searchResults[0] : null;
-        if (movie) {
-            const videos = await getMovieVideos(movie.id);
-            const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-            return {
-                ...movie,
-                posterUrl: getPosterUrl(movie.poster_path),
-                trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
-            } as MovieWithPoster;
-        }
-        return null;
-      });
-
-      const moviesData = (await Promise.all(moviePromises)).filter((m): m is MovieWithPoster => m !== null);
+      setRecommendations(moviesWithPosters.slice(0, 18));
       
-      setRecommendations(moviesData);
-      
-      if (moviesData.length === 0) {
+      if (moviesWithPosters.length === 0) {
           toast({
               variant: "destructive",
-              title: "Search failed",
-              description: "Could not find movies matching these languages.",
+              title: "Search Failed",
+              description: "No results found for this language category.",
           });
       }
 
@@ -83,8 +62,8 @@ export default function LanguagePicksSection() {
       console.error(error);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to get language-based picks. Please try again.",
+        title: "Signal Lost",
+        description: "Failed to connect to the linguistic database.",
       });
     } finally {
       setIsLoading(false);
@@ -101,44 +80,37 @@ export default function LanguagePicksSection() {
             <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter uppercase text-white mb-0">
                 Linguistic <span className="text-blue-400">Frontiers</span>
             </h2>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Explore premium titles from global cultures in your preferred languages.</p>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Dynamic real-time indexing of global cultures and narratives.</p>
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-4 items-center bg-secondary/30 p-6 rounded-2xl border border-white/5 backdrop-blur-md">
+      <div className="flex flex-wrap gap-3 items-center">
         {availableLanguages.map(lang => (
-          <div key={lang} className="flex items-center space-x-3 group cursor-pointer">
-            <Checkbox
-              id={`lang-${lang}`}
-              checked={selectedLanguages.includes(lang)}
-              onCheckedChange={() => handleLanguageChange(lang)}
-              className="border-white/20 data-[state=checked]:bg-blue-400 data-[state=checked]:border-blue-400"
-            />
-            <Label htmlFor={`lang-${lang}`} className="font-black cursor-pointer text-[10px] uppercase tracking-widest text-muted-foreground group-hover:text-white transition-colors">{lang}</Label>
-          </div>
+          <Button
+            key={lang.code}
+            variant="outline"
+            onClick={() => handleGetPicks(lang.code)}
+            className={`rounded-full px-6 py-6 font-black uppercase tracking-widest text-[10px] border-white/5 transition-all ${selectedLanguage === lang.code ? 'bg-blue-400 text-black border-blue-400 scale-105 shadow-xl shadow-blue-400/20' : 'bg-secondary/20 hover:bg-white hover:text-black'}`}
+            disabled={isLoading}
+          >
+            {lang.name}
+          </Button>
         ))}
       </div>
-      <Button onClick={handleGetPicks} disabled={isLoading} className="rounded-full px-10 h-14 font-black uppercase tracking-widest text-xs bg-blue-400 hover:bg-blue-500 text-black shadow-xl shadow-blue-400/20">
-        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Globe className="mr-2 h-4 w-4" />}
-        Architect Catalog
-      </Button>
 
-      {isLoading && (
-        <div className="space-y-4">
-            <Skeleton className="h-8 w-1/3" />
+      <div className="min-h-[200px]">
+          {isLoading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4">
                 {[...Array(7)].map((_, i) => (
                     <div key={i} className="aspect-[2/3] w-full bg-secondary rounded-lg animate-pulse"></div>
                 ))}
             </div>
-        </div>
-      )}
-
-      {recommendations.length > 0 && (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <MovieCarousel title={`Premium picks in ${selectedLanguages.join(', ')}`} movies={recommendations} />
-        </div>
-      )}
+          ) : recommendations.length > 0 && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <MovieCarousel title="" movies={recommendations} />
+            </div>
+          )}
+      </div>
     </section>
   );
 }

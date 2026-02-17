@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -9,14 +8,11 @@ import HeroSection from '@/components/sections/hero-section';
 import ForYouSection from '@/components/sections/for-you-section';
 import MoodSection from '@/components/sections/mood-section';
 import TrendingSection from '@/components/sections/trending-section';
-import FavoriteArtistsSection from '@/components/sections/favorite-artists-section';
-import LanguagePicksSection from '@/components/sections/language-picks-section';
 import FranchiseFocusSection from '@/components/sections/franchise-focus-section';
 import HindiMoviesSection from '@/components/sections/hindi-movies-section';
 import KannadaMoviesSection from '@/components/sections/kannada-movies-section';
 import TamilMoviesSection from '@/components/sections/tamil-movies-section';
 import TeluguMoviesSection from '@/components/sections/telugu-movies-section';
-import MovieMatchmakerSection from '@/components/movie-matchmaker-section';
 import NowPlayingSection from '@/components/sections/now-playing-section';
 import UpcomingSection from '@/components/sections/upcoming-section';
 import TrendingOttsSection from '@/components/sections/trending-otts-section';
@@ -62,10 +58,6 @@ export default function DashboardPage() {
           <KannadaMoviesSection />
           <TamilMoviesSection />
           <TeluguMoviesSection />
-          
-          <FavoriteArtistsSection />
-          <LanguagePicksSection />
-          <MovieMatchmakerSection />
       </div>
     </div>
   );

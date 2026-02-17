@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -7,8 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Loader2, Shuffle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { movieMatchmaker } from '@/ai/flows/movie-matchmaker';
-import { getPosterUrl, searchMovies as searchTmdb, getMovieVideos } from '@/lib/tmdb.client';
+import { getPosterUrl, searchMovies as searchTmdb, getMovieDetails, discoverMovies } from '@/lib/tmdb.client';
 import type { Movie } from '@/lib/tmdb';
 import { MovieCard } from '@/components/movie-card';
 
@@ -28,7 +26,7 @@ export default function MovieMatchmakerSection() {
       toast({
         variant: 'destructive',
         title: 'Input Required',
-        description: 'Please enter two movie titles to find a match.',
+        description: 'Please enter two titles to establish a link.',
       });
       return;
     }
@@ -36,34 +34,49 @@ export default function MovieMatchmakerSection() {
     setResult(null);
 
     try {
-      const aiResult = await movieMatchmaker({ movie1, movie2 });
-      const searchResults = await searchTmdb(aiResult.recommendation);
-      const movie = searchResults.length > 0 ? searchResults[0] : null;
+      const [res1, res2] = await Promise.all([searchTmdb(movie1), searchTmdb(movie2)]);
+      const m1 = res1[0];
+      const m2 = res2[0];
 
-      if (movie) {
-        const videos = await getMovieVideos(movie.id);
-        const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
-        
-        const movieWithPoster: MovieWithPoster = {
-            ...movie,
-            posterUrl: getPosterUrl(movie.poster_path),
-            trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined,
-        };
-        setResult(movieWithPoster);
+      if (!m1 || !m2) {
+          toast({ variant: "destructive", title: "Archive Mismatch", description: "One or both titles could not be located." });
+          setIsLoading(false);
+          return;
+      }
 
+      const [details1, details2] = await Promise.all([getMovieDetails(m1.id), getMovieDetails(m2.id)]);
+      
+      const genreIds1 = details1.genres.map(g => g.id);
+      const genreIds2 = details2.genres.map(g => g.id);
+      
+      // Find intersection or combined unique set
+      const commonGenres = genreIds1.filter(id => genreIds2.includes(id));
+      const searchGenres = commonGenres.length > 0 ? commonGenres : [genreIds1[0], genreIds2[0]];
+
+      const matchedResults = await discoverMovies({
+          genreId: searchGenres[0],
+          sort_by: 'popularity.desc',
+          voteAverageGte: 7
+      }, 1);
+
+      // Filter out inputs
+      const filtered = matchedResults.filter(m => m.id !== m1.id && m.id !== m2.id);
+      const finalMatch = filtered[Math.floor(Math.random() * Math.min(5, filtered.length))] || filtered[0];
+
+      if (finalMatch) {
+        setResult({
+            ...finalMatch,
+            posterUrl: getPosterUrl(finalMatch.poster_path),
+        } as MovieWithPoster);
       } else {
-        toast({
-            variant: "destructive",
-            title: "Could not find movie",
-            description: `AI suggested "${aiResult.recommendation}", but we couldn't find details for it.`
-        });
+        toast({ title: "No Bridge Found", description: "The database could not architect a suitable cinematic link." });
       }
     } catch (error) {
       console.error(error);
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: 'Failed to find a movie match. Please try again.',
+        title: "Connection Failed",
+        description: 'Failed to process cinematic matching. Please try again.',
       });
     } finally {
       setIsLoading(false);
@@ -80,7 +93,7 @@ export default function MovieMatchmakerSection() {
             <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter uppercase text-white mb-0">
                 Cinematic <span className="text-pink-500">Matchmaker</span>
             </h2>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Find the perfect bridge between two of your favorite masterpieces.</p>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Real-time genre intersection indexing to find the perfect bridge between icons.</p>
         </div>
       </div>
 
@@ -136,7 +149,6 @@ export default function MovieMatchmakerSection() {
                     id={result.id}
                     title={result.title}
                     posterUrl={result.posterUrl}
-                    trailerUrl={result.trailerUrl}
                     overview={result.overview}
                     poster_path={result.poster_path}
                 />
