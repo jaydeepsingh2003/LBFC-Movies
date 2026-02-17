@@ -58,7 +58,7 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
         };
         setShow(showWithMedia);
 
-        // Fetch external ratings via AI
+        // Fetch external ratings via AI (IMDb/RT)
         getExternalTvRatings({ tvShowTitle: showDetails.name })
             .then(setExternalRatings)
             .catch(err => console.error("External TV ratings failed", err));
@@ -147,11 +147,11 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                     {externalRatings && (
                         <>
                             <div className="flex items-center gap-1.5 text-yellow-500 font-black text-[10px] md:text-sm bg-black/60 backdrop-blur-xl px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-white/10 shadow-2xl">
-                                <span className="text-[8px] uppercase opacity-70">IMDb</span>
+                                <span className="text-[8px] uppercase opacity-70 mr-1">IMDb</span>
                                 {externalRatings.imdb}
                             </div>
                             <div className="flex items-center gap-1.5 text-red-500 font-black text-[10px] md:text-sm bg-black/60 backdrop-blur-xl px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-white/10 shadow-2xl">
-                                <span className="text-[8px] uppercase opacity-70">Rotten Tomatoes</span>
+                                <span className="text-[8px] uppercase opacity-70 mr-1">RT</span>
                                 {externalRatings.rottenTomatoes}
                             </div>
                         </>
