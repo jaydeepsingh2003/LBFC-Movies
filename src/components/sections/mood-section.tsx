@@ -1,17 +1,18 @@
+
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { MovieCarousel } from "@/components/movie-carousel"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-import { Loader2, Smile } from "lucide-react"
+import { Loader2, Smile, Sparkles } from "lucide-react"
 import { getPosterUrl, searchMovies, getMovieVideos } from "@/lib/tmdb.client"
 import { Movie } from "@/lib/tmdb"
 import { Skeleton } from "../ui/skeleton"
 import { getMoodBasedRecommendations } from "@/ai/flows/mood-based-recommendations"
 
-const moods = ["Happy", "Sad", "Adventurous", "Romantic", "Thrilling", "Funny", "Epic", "Thought-provoking"];
+const moods = ["Thrilling", "Adventurous", "Happy", "Sad", "Romantic", "Epic", "Funny", "Nostalgic"];
 
 interface MovieWithPoster extends Movie {
     posterUrl: string | null;
@@ -23,7 +24,7 @@ export default function MoodSection() {
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
 
-  const handleMoodSelect = async (mood: string) => {
+  const handleMoodSelect = useCallback(async (mood: string) => {
     if (selectedMood === mood && recommendations.length > 0) return;
     
     setSelectedMood(mood)
@@ -54,7 +55,7 @@ export default function MoodSection() {
           toast({
               variant: "destructive",
               title: "No matches found",
-              description: "We couldn't find matching movies for this mood.",
+              description: "We couldn't find matching movies for this mood in the live catalog.",
           });
       }
 
@@ -64,13 +65,18 @@ export default function MoodSection() {
       console.error(error)
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to get mood-based recommendations.",
+        title: "Signal Lost",
+        description: "Failed to connect to the atmospheric discovery engine.",
       })
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [selectedMood, recommendations.length, toast]);
+
+  // Initial load "In Action"
+  useEffect(() => {
+    handleMoodSelect(moods[0]);
+  }, []);
 
   return (
     <section className="py-6 space-y-8 border-b border-white/5">
@@ -104,22 +110,25 @@ export default function MoodSection() {
         ))}
       </div>
       
-      {isLoading && (
-        <div className="space-y-4">
-            <Skeleton className="h-8 w-1/3" />
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4">
-                {[...Array(7)].map((_, i) => (
-                    <div key={i} className="aspect-[2/3] w-full bg-secondary rounded-lg animate-pulse"></div>
-                ))}
+      <div className="min-h-[350px]">
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center h-[300px] gap-4">
+                <div className="relative">
+                    <Loader2 className="h-12 w-12 animate-spin text-yellow-400" />
+                    <Sparkles className="absolute -top-2 -right-2 text-yellow-400 size-4 animate-pulse" />
+                </div>
+                <p className="text-muted-foreground font-black tracking-widest uppercase text-[10px] animate-pulse">Scanning Archives for {selectedMood} vibe...</p>
             </div>
-        </div>
-      )}
-      
-      {recommendations.length > 0 && selectedMood && (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <MovieCarousel title={`Perfect matches for ${selectedMood}`} movies={recommendations} />
-        </div>
-      )}
+          ) : recommendations.length > 0 && selectedMood ? (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <MovieCarousel title="" movies={recommendations} />
+            </div>
+          ) : (
+            <div className="h-[300px] bg-secondary/10 rounded-[2rem] border-2 border-dashed border-white/5 flex items-center justify-center">
+                <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Select a mood to initialize transmission</p>
+            </div>
+          )}
+      </div>
     </section>
   )
 }

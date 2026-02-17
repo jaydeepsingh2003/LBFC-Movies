@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from 'react';
@@ -42,36 +43,28 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
-      {/* Hero Section is full-bleed and fits the screen height */}
+      {/* Hero Section is full-bleed */}
       <HeroSection />
       
       {/* Content Gallery with Zero Gap Alignment */}
       <div className="space-y-0 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto w-full">
-          {/* Global High Impact */}
           <Top10MoviesSection />
-          
-          {/* Dense High-Fidelity Tier */}
           <RegionalTop10Section />
           <TrendingOttsSection />
           <NowPlayingSection />
-          
           <UpcomingSection />
+          <ForYouSection />
+          <MoodSection />
+          <TrendingSection />
           <FranchiseFocusSection />
           
-          <ForYouSection />
-          <TrendingSection />
-          
-          {/* Regional Cinema Tier */}
           <HindiMoviesSection />
           <KannadaMoviesSection />
           <TamilMoviesSection />
           <TeluguMoviesSection />
           
-          {/* Discovery Tools */}
-          <MoodSection />
           <FavoriteArtistsSection />
           <LanguagePicksSection />
-          
           <MovieMatchmakerSection />
       </div>
     </div>
