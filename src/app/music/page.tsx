@@ -35,7 +35,7 @@ export default function MusicPage() {
   const [activeCategory, setActiveCategory] = useState(MUSIC_CATEGORIES[0].label);
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [videoResults, setVideoResults] = useState<AdvancedMovieSearchOutput | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
+  const [isSearching, setIsSearching] = useState(true);
   const [isListening, setIsListening] = useState(false);
   const { setVideoId } = useVideoPlayer();
 

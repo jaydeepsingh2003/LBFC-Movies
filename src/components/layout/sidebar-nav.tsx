@@ -1,14 +1,12 @@
-
 "use client"
 
-import { Compass, Home, ListVideo, Users, Tv, UserSquare, User as UserIcon, Music } from "lucide-react";
-import { MyOttsIcon } from "../icons/my-otts-icon";
+import { Compass, Home, ListVideo, Users, Tv, UserSquare, User as UserIcon, Music, Layers } from "lucide-react";
 
 export const allNavItems = [
     { href: "/", label: "Home", icon: Home },
     { href: "/discover", label: "Discover", icon: Compass },
     { href: "/tv", label: "TV Shows", icon: Tv},
-    { href: "/my-otts", label: "My OTTs", icon: MyOttsIcon },
+    { href: "/my-otts", label: "My OTTs", icon: Layers },
     { href: "/music", label: "Music", icon: Music },
     { href: "/playlists", label: "Playlists", icon: ListVideo },
     { href: "/people", label: "People", icon: UserSquare},
@@ -19,7 +17,7 @@ export const allNavItems = [
 export const mobileNavItems = [
     { href: "/", label: "Home", icon: Home },
     { href: "/discover", label: "Discover", icon: Compass },
-    { href: "/my-otts", label: "My OTTs", icon: MyOttsIcon },
+    { href: "/my-otts", label: "My OTTs", icon: Layers },
     { href: "/music", label: "Music", icon: Music },
     { href: "/playlists", label: "Playlists", icon: ListVideo },
     { href: "/people", label: "People", icon: UserSquare },
