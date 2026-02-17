@@ -123,19 +123,19 @@ export default function HeroSection() {
                                         src={movie.backdropUrl}
                                         alt={movie.title}
                                         fill
-                                        className="object-cover object-center transition-opacity duration-1000 scale-105 animate-in fade-in zoom-in-105 duration-[2000ms]"
+                                        className="object-cover object-center transition-opacity duration-1000 animate-in fade-in duration-[1500ms]"
                                         priority
                                         sizes="100vw"
                                     />
                                 )}
                                 
                                 {/* Complex Layered Gradients for Visibility */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
-                                <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-transparent hidden lg:block" />
-                                <div className="absolute inset-0 bg-black/60 lg:bg-black/10" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent hidden lg:block" />
+                                <div className="absolute inset-0 bg-black/40 lg:bg-black/5" />
                                 
                                 {/* Content Area */}
-                                <div className="absolute bottom-[10%] md:bottom-[20%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-5xl z-20">
+                                <div className="absolute bottom-[12%] md:bottom-[20%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-5xl z-20">
                                     <div className="space-y-4 md:space-y-8">
                                         {/* Metadata Row */}
                                         <div className="flex items-center gap-2 md:gap-3 animate-in fade-in slide-in-from-left-10 duration-700">
@@ -143,7 +143,7 @@ export default function HeroSection() {
                                             <Badge variant="outline" className="border-white/40 text-white font-bold backdrop-blur-md text-[8px] md:text-xs uppercase tracking-widest">
                                                 Ultra HD 4K
                                             </Badge>
-                                            <div className="flex items-center gap-1 text-white/60 font-bold text-[10px] md:text-sm">
+                                            <div className="flex items-center gap-1 text-white/80 font-bold text-[10px] md:text-sm">
                                                 <span>{new Date(movie.release_date).getFullYear()}</span>
                                                 <span>•</span>
                                                 <span className="text-primary">{movie.vote_average.toFixed(1)} Rating</span>
@@ -151,12 +151,12 @@ export default function HeroSection() {
                                         </div>
                                         
                                         {/* Fluid Title */}
-                                        <h1 className="font-headline text-3xl sm:text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[0.85] drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] animate-in fade-in slide-in-from-bottom-10 duration-700 delay-100">
+                                        <h1 className="font-headline text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[0.85] drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] animate-in fade-in slide-in-from-bottom-10 duration-700 delay-100">
                                             {movie.title}
                                         </h1>
                                         
                                         {/* Adaptive Overview */}
-                                        <p className="text-xs md:text-xl text-white/80 line-clamp-2 md:line-clamp-3 max-w-2xl font-medium leading-relaxed drop-shadow-xl animate-in fade-in slide-in-from-bottom-12 duration-700 delay-200">
+                                        <p className="text-xs md:text-xl text-white/90 line-clamp-2 md:line-clamp-3 max-w-2xl font-medium leading-relaxed drop-shadow-xl animate-in fade-in slide-in-from-bottom-12 duration-700 delay-200">
                                             {movie.overview}
                                         </p>
                                         

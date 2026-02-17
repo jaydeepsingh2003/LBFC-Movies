@@ -70,21 +70,21 @@ export function Header() {
             "fixed top-0 z-50 w-full transition-all duration-500 h-16 md:h-18",
             scrolled ? "bg-background/95 backdrop-blur-xl border-b shadow-2xl" : "bg-black/80 backdrop-blur-sm border-b border-white/5"
         )}>
-            <div className="w-full px-4 md:px-8 lg:px-12 max-w-[2200px] mx-auto flex items-center justify-between gap-3 md:gap-6 h-full">
+            <div className="w-full px-4 md:px-8 lg:px-12 max-w-[2200px] mx-auto flex items-center justify-between gap-2 md:gap-6 h-full">
                 {/* Logo Section */}
                 <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
                     <div className="p-1 md:p-1.5 bg-primary rounded-lg group-hover:scale-110 transition-transform duration-300">
                         <Film className="size-4 md:size-5 text-white" />
                     </div>
-                    <h1 className="font-headline text-lg md:text-2xl font-black text-primary tracking-tighter hidden sm:block">LBFC</h1>
+                    <h1 className="font-headline text-lg md:text-2xl font-black text-primary tracking-tighter hidden xs:block">LBFC</h1>
                 </Link>
                 
                 {/* Search & Navigation Middle */}
-                <div className="flex-1 flex items-center justify-center gap-6 h-full max-w-[600px]">
+                <div className="flex-1 flex items-center justify-center gap-2 md:gap-6 h-full max-w-[600px]">
                     <div className="hidden xl:block h-full">
                         <DesktopNav />
                     </div>
-                    <div className="flex-1 w-full">
+                    <div className="flex-1 w-full max-w-[400px]">
                         <MovieSearch />
                     </div>
                 </div>
@@ -96,14 +96,14 @@ export function Header() {
                     ) : user ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="relative h-8 w-8 md:h-9 md:w-9 rounded-full focus-visible:ring-primary p-0 ring-2 ring-primary/20 hover:ring-primary transition-all">
+                                <button className="relative h-8 w-8 md:h-9 md:w-9 rounded-full focus:outline-none ring-2 ring-primary/20 hover:ring-primary transition-all overflow-hidden">
                                     <Avatar className="h-full w-full">
                                         {user.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
                                         <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px] md:text-xs">
                                             {user.displayName?.charAt(0) || <User size={14}/>}
                                         </AvatarFallback>
                                     </Avatar>
-                                </Button>
+                                </button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-64 glass-panel mt-2" align="end">
                                 <DropdownMenuLabel className="font-normal p-4">
