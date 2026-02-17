@@ -46,9 +46,6 @@ const FALLBACK_POOL = [
     { title: "Oppenheimer - Can You Hear The Music (Ludwig Göransson)", videoId: "4JZ-WXP3Sws", thumbnail: "https://img.youtube.com/vi/4JZ-WXP3Sws/maxresdefault.jpg" },
     { title: "LALISA - LISA (Official Music Video)", videoId: "7WGT7SI6Z_Y", thumbnail: "https://img.youtube.com/vi/7WGT7SI6Z_Y/maxresdefault.jpg" },
     { title: "Top Gun: Maverick - OneRepublic - I Ain't Worried", videoId: "mNEUkkoUoIA", thumbnail: "https://img.youtube.com/vi/mNEUkkoUoIA/maxresdefault.jpg" },
-    { title: "Joker: Folie à Deux - Lady Gaga - Smile", videoId: "Z_8Z_8_8_8", thumbnail: "https://img.youtube.com/vi/Z_8Z_8_8_8/maxresdefault.jpg" },
-    { title: "Billie Eilish - What Was I Made For?", videoId: "cW8V060DxaM", thumbnail: "https://img.youtube.com/vi/cW8V060DxaM/maxresdefault.jpg" },
-    { title: "Miley Cyrus - Flowers (Official Video)", videoId: "G7KNmW9a75Y", thumbnail: "https://img.youtube.com/vi/G7KNmW9a75Y/maxresdefault.jpg" },
     { title: "Bad Bunny - Monaco (Official Video)", videoId: "nditME0baSg", thumbnail: "https://img.youtube.com/vi/nditME0baSg/maxresdefault.jpg" },
     { title: "Hans Zimmer - Cornfield Chase (Interstellar)", videoId: "1Vko01Djpns", thumbnail: "https://img.youtube.com/vi/1Vko01Djpns/maxresdefault.jpg" },
     { title: "Taylor Swift - Anti-Hero (Official Video)", videoId: "b1kbLwvqugk", thumbnail: "https://img.youtube.com/vi/b1kbLwvqugk/maxresdefault.jpg" },
@@ -62,7 +59,6 @@ const searchYoutube = ai.defineTool(
         outputSchema: AdvancedMovieSearchOutputSchema,
     },
     async ({ query }) => {
-        // If API key is missing, return a dynamic shuffle of high-fidelity results
         if (!YOUTUBE_API_KEY) {
             const shuffled = [...FALLBACK_POOL]
                 .sort(() => 0.5 - Math.random())
@@ -75,25 +71,24 @@ const searchYoutube = ai.defineTool(
         try {
             const response = await fetch(url);
             if (!response.ok) {
-                // If API quota exceeded or error, return fallback
-                return { results: FALLBACK_POOL.sort(() => 0.5 - Math.random()).slice(0, 12) };
+                return { results: [...FALLBACK_POOL].sort(() => 0.5 - Math.random()).slice(0, 12) };
             }
             const data = await response.json();
             
             if (!data.items || data.items.length === 0) {
-                return { results: FALLBACK_POOL.sort(() => 0.5 - Math.random()).slice(0, 12) };
+                return { results: [...FALLBACK_POOL].sort(() => 0.5 - Math.random()).slice(0, 12) };
             }
 
             return {
                 results: data.items.map((item: any) => ({
                     title: item.snippet.title,
                     videoId: item.id.videoId,
-                    thumbnail: item.snippet.thumbnails.maxres?.url || item.snippet.thumbnails.standard?.url || item.snippet.thumbnails.high?.url || item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default.url,
+                    thumbnail: item.snippet.thumbnails.maxres?.url || item.snippet.thumbnails.high?.url || item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default.url,
                 })),
             };
         } catch (error) {
             console.error('Error searching YouTube:', error);
-            return { results: FALLBACK_POOL.sort(() => 0.5 - Math.random()).slice(0, 12) };
+            return { results: [...FALLBACK_POOL].sort(() => 0.5 - Math.random()).slice(0, 12) };
         }
     }
 );

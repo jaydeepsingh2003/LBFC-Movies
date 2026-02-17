@@ -40,8 +40,8 @@ export default function MusicPage() {
   const handleSearch = useCallback(async (query: string) => {
     setIsSearching(true);
     try {
-      // Ensure the search is dynamic and includes the "official music video" context
-      const results = await advancedMovieSearch({ query: `${query} official music video` });
+      // Prioritize "official music video" context for premium results
+      const results = await advancedMovieSearch({ query: `${query} official music video 4k` });
       setVideoResults(results);
     } catch (error) {
       console.error("Error searching youtube", error);
@@ -100,9 +100,9 @@ export default function MusicPage() {
   }, [debouncedSearchQuery, handleSearch]);
 
   useEffect(() => {
-    // Initial real-time fetch for the default category
+    // Initial entry fetch
     handleSearch(MUSIC_CATEGORIES[0].query);
-  }, []);
+  }, [MUSIC_CATEGORIES, handleSearch]);
 
   const renderContent = () => {
     if (isSearching) {
@@ -112,7 +112,7 @@ export default function MusicPage() {
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
             <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full animate-pulse" />
           </div>
-          <p className="text-muted-foreground font-bold tracking-widest uppercase text-xs animate-pulse">Syncing Global Soundwaves...</p>
+          <p className="text-muted-foreground font-black tracking-widest uppercase text-xs animate-pulse">Syncing Global Soundwaves...</p>
         </div>
       );
     }
@@ -142,7 +142,7 @@ export default function MusicPage() {
                   </div>
                   <div className="absolute top-2 left-2">
                     <Badge className="bg-black/60 backdrop-blur-md border-white/10 text-[10px] uppercase font-black px-2 py-0.5">
-                        <Youtube className="size-3 mr-1 text-red-500 fill-current" /> YouTube
+                        <Youtube className="size-3 mr-1 text-red-500 fill-current" /> Official
                     </Badge>
                   </div>
                 </div>
@@ -151,7 +151,7 @@ export default function MusicPage() {
                     {video.title}
                   </h3>
                   <div className="flex items-center justify-between">
-                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Official Transmission</p>
+                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Master Transmission</p>
                     <Music className="size-3 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>
@@ -165,9 +165,9 @@ export default function MusicPage() {
     return (
         <div className="flex flex-col items-center justify-center py-40 bg-secondary/10 rounded-[3rem] border-2 border-dashed border-white/5">
           <Search className="h-16 w-16 text-muted-foreground/20 mb-4" />
-          <h3 className="text-xl font-bold text-white tracking-tight">Signal Lost</h3>
+          <h3 className="text-xl font-bold text-white tracking-tight">Signal Interrupted</h3>
           <p className="text-muted-foreground mt-2 text-center max-w-sm px-6 font-medium">
-            We couldn't locate any dynamic tracks for "{searchQuery || activeCategory}". Try searching for a global icon like "The Weeknd".
+            We couldn't locate dynamic tracks for "{searchQuery || activeCategory}". Try searching for global icons like "The Weeknd".
           </p>
         </div>
     );
@@ -186,7 +186,7 @@ export default function MusicPage() {
               Pulse <span className="text-primary">Discovery</span>
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl font-medium leading-relaxed">
-              Real-time synchronization with global music trends and cinematic soundtracks.
+              Real-time synchronization with global music trends, official music videos, and cinematic soundtracks.
             </p>
           </div>
 
