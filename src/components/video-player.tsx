@@ -3,7 +3,7 @@
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useVideoPlayer } from "@/context/video-provider";
-import { X } from "lucide-react";
+import { X, ShieldAlert } from "lucide-react";
 
 export function VideoPlayer() {
   const { activeMedia, setActiveMedia } = useVideoPlayer();
@@ -30,9 +30,8 @@ export function VideoPlayer() {
     }
 
     if (activeMedia.type === 'movie') {
-      // VidLink Movie Format: https://vidlink.pro/movie/{tmdbId}
-      // Parameters: primaryColor=e11d48 (App Red), nextbutton=true, autoplay=true
-      const url = `https://vidlink.pro/movie/${activeMedia.id}?primaryColor=e11d48&secondaryColor=171717&iconColor=ffffff&autoplay=true&nextbutton=true`;
+      // VidLink JW Player Movie Format
+      const url = `https://vidlink.pro/movie/${activeMedia.id}?primaryColor=e11d48&secondaryColor=171717&iconColor=ffffff&icons=vid&player=jw&title=true&poster=true&autoplay=true&nextbutton=true`;
       return (
         <iframe
           src={url}
@@ -46,10 +45,10 @@ export function VideoPlayer() {
     }
 
     if (activeMedia.type === 'tv') {
-      // VidLink TV Format: https://vidlink.pro/tv/{tmdbId}/{season}/{episode}
+      // VidLink JW Player TV Format
       const season = activeMedia.season || 1;
       const episode = activeMedia.episode || 1;
-      const url = `https://vidlink.pro/tv/${activeMedia.id}/${season}/${episode}?primaryColor=e11d48&secondaryColor=171717&iconColor=ffffff&autoplay=true&nextbutton=true`;
+      const url = `https://vidlink.pro/tv/${activeMedia.id}/${season}/${episode}?primaryColor=e11d48&secondaryColor=171717&iconColor=ffffff&icons=vid&player=jw&title=true&poster=true&autoplay=true&nextbutton=true`;
       return (
         <iframe
           src={url}
@@ -67,16 +66,22 @@ export function VideoPlayer() {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-[95vw] md:max-w-6xl aspect-video p-0 border-none bg-black/90 backdrop-blur-3xl overflow-hidden rounded-2xl md:rounded-[2rem]">
+      <DialogContent className="max-w-[95vw] md:max-w-6xl aspect-video p-0 border-none bg-black/90 backdrop-blur-3xl overflow-hidden rounded-2xl md:rounded-[2rem] shadow-[0_0_100px_rgba(225,29,72,0.2)]">
         <DialogTitle className="sr-only">Studio Player</DialogTitle>
         <button 
             onClick={onClose}
-            className="absolute -top-12 right-0 md:-right-12 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all text-white z-[100]"
+            className="absolute -top-12 right-0 md:-right-12 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all text-white z-[100] group"
         >
-            <X className="size-6" />
+            <X className="size-6 group-hover:scale-110 transition-transform" />
         </button>
-        <div className="w-full h-full">
-          {renderContent()}
+        <div className="w-full h-full relative">
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-0 opacity-20 pointer-events-none flex items-center gap-2">
+              <ShieldAlert className="size-4" />
+              <span className="text-[8px] font-black uppercase tracking-[0.3em]">Encrypted Transmission</span>
+          </div>
+          <div className="relative z-10 w-full h-full">
+            {renderContent()}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
