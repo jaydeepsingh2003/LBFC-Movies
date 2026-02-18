@@ -81,7 +81,8 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
 
   const handleExternalPlayer = (player: 'vlc' | 'mx') => {
     if (!show) return;
-    const streamUrl = `https://vidsrc.to/embed/tv/${show.id}/1/1`;
+    // Primary mirror for external player stability
+    const streamUrl = `https://vidsrc.xyz/embed/tv/${show.id}/1/1`;
     
     if (player === 'vlc') {
         window.location.href = `intent://${streamUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=org.videolan.vlc;action=android.intent.action.VIEW;type=video/*;end`;
@@ -94,7 +95,7 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
 
   const handleCopyLink = () => {
     if (!show) return;
-    const link = `https://vidsrc.to/embed/tv/${show.id}/1/1`;
+    const link = `https://vidsrc.xyz/embed/tv/${show.id}/1/1`;
     navigator.clipboard.writeText(link);
     toast({ title: "Master Link Copied", description: "Use 'Open Network Stream' in your player for ad-free viewing." });
   };
@@ -247,7 +248,7 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                     </Button>
                 </div>
                 <p className="text-[8px] text-muted-foreground font-medium uppercase text-center leading-relaxed">
-                    Pro Tip: External players bypass browser-level ads entirely. Use "Open Network Stream" for hardware-accelerated playback.
+                    Pro Tip: If connection fails, use "Open Network Stream" in your player and paste the Master Link.
                 </p>
             </div>
 
