@@ -6,7 +6,7 @@ import { getTvShowDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.clien
 import type { TVShowDetails } from '@/lib/tmdb';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Users, Award, Share2, Play, Smartphone, Zap, Copy } from 'lucide-react';
+import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Users, Award, Share2, Play, Smartphone, Zap, Copy, ShieldCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
@@ -89,7 +89,7 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
         window.location.href = `intent://${streamUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.mxtech.videoplayer.ad;action=android.intent.action.VIEW;type=video/*;end`;
     }
     
-    toast({ title: `Handoff to ${player.toUpperCase()}`, description: "Establishing hardware-accelerated link." });
+    toast({ title: `Handoff to ${player.toUpperCase()}`, description: "Establishing ad-free hardware link." });
   };
 
   const handleCopyLink = () => {
@@ -231,10 +231,15 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover/kit:opacity-30 transition-opacity">
                     <Smartphone className="size-12 md:size-20" />
                 </div>
-                <h3 className="font-black text-[10px] md:text-xs uppercase tracking-[0.3em] text-blue-400 flex items-center gap-3">
-                    <div className="p-1.5 md:p-2 bg-blue-400/10 rounded-lg md:rounded-xl"><Zap className="size-3 md:size-4" /></div>
-                    Pro Mobile Kit (Ad-Free Path)
-                </h3>
+                <div className="flex items-center justify-between">
+                    <h3 className="font-black text-[10px] md:text-xs uppercase tracking-[0.3em] text-blue-400 flex items-center gap-3">
+                        <div className="p-1.5 md:p-2 bg-blue-400/10 rounded-lg md:rounded-xl"><Zap className="size-3 md:size-4" /></div>
+                        Pro Mobile Kit
+                    </h3>
+                    <Badge variant="outline" className="border-blue-400/30 text-blue-400 text-[8px] font-black uppercase flex items-center gap-1">
+                        <ShieldCheck className="size-2.5" /> Ad-Free path
+                    </Badge>
+                </div>
                 <div className="grid grid-cols-1 gap-3 relative z-10">
                     <Button onClick={() => handleExternalPlayer('vlc')} variant="outline" className="h-14 md:h-16 rounded-xl md:rounded-2xl border-white/5 bg-white/5 hover:bg-orange-500 hover:text-white transition-all font-bold uppercase tracking-widest text-[10px] md:text-xs">
                         Play in VLC
@@ -247,7 +252,7 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                     </Button>
                 </div>
                 <p className="text-[8px] text-muted-foreground font-medium uppercase text-center leading-relaxed">
-                    Pro Tip: If connection fails, use "Open Network Stream" in your player and paste the Master Link.
+                    Pro Tip: Local apps bypass all browser ads. If connection fails, use "Open Network Stream" and paste the link.
                 </p>
             </div>
 

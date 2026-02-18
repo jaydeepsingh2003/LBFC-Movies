@@ -4,14 +4,14 @@
 import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useVideoPlayer } from "@/context/video-provider";
-import { X, ShieldAlert, RefreshCw, Smartphone, Zap, Copy, Maximize, Minimize2, FastForward } from "lucide-react";
+import { X, ShieldAlert, RefreshCw, Smartphone, Zap, Copy, Maximize, Minimize2, ShieldCheck, FastForward } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
 export function VideoPlayer() {
   const { activeMedia, setActiveMedia } = useVideoPlayer();
-  const [server, setServer] = useState<1 | 2>(1);
+  const [server, setServer] = useState<1 | 2 | 3 | 4>(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { toast } = useToast();
   const playerContainerRef = useRef<HTMLDivElement>(null);
@@ -35,8 +35,9 @@ export function VideoPlayer() {
     return () => document.removeEventListener("fullscreenchange", handleFsChange);
   }, []);
 
-  const toggleServer = () => {
-    setServer(prev => prev === 1 ? 2 : 1);
+  const cycleServer = () => {
+    setServer(prev => (prev % 4 + 1) as 1 | 2 | 3 | 4);
+    toast({ title: "Mirror Switched", description: `Transitioning to Archive Mirror ${server === 4 ? 1 : server + 1}.` });
   };
 
   const toggleFullScreen = () => {
@@ -132,45 +133,33 @@ export function VideoPlayer() {
     }
 
     const studioColor = "e11d48";
+    // HARDENED AD-SHIELDING SANDBOX
+    // allow-popups and allow-top-navigation are omitted to block ads
+    const sandboxConfig = "allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-presentation";
 
+    let url = "";
     if (activeMedia.type === 'movie') {
-      const url = `https://vidsrc.wtf/api/${server}/movie/?id=${activeMedia.id}&color=${studioColor}`;
-      return (
-        <iframe
-          ref={iframeRef}
-          src={url}
-          width="100%"
-          height="100%"
-          frameBorder="0"
-          allowFullScreen
-          allow="autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          referrerPolicy="no-referrer"
-          className="rounded-xl shadow-2xl bg-black"
-        ></iframe>
-      );
-    }
-
-    if (activeMedia.type === 'tv') {
+      url = `https://vidsrc.wtf/api/${server}/movie/?id=${activeMedia.id}${server < 3 ? `&color=${studioColor}` : ''}`;
+    } else if (activeMedia.type === 'tv') {
       const season = activeMedia.season || 1;
       const episode = activeMedia.episode || 1;
-      const url = `https://vidsrc.wtf/api/${server}/tv/?id=${activeMedia.id}&s=${season}&e=${episode}&color=${studioColor}`;
-      
-      return (
-        <iframe
-          ref={iframeRef}
-          src={url}
-          width="100%"
-          height="100%"
-          frameBorder="0"
-          allowFullScreen
-          allow="autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          referrerPolicy="no-referrer"
-          className="rounded-xl shadow-2xl bg-black"
-        ></iframe>
-      );
+      url = `https://vidsrc.wtf/api/${server}/tv/?id=${activeMedia.id}&s=${season}&e=${episode}${server < 3 ? `&color=${studioColor}` : ''}`;
     }
 
-    return null;
+    return (
+      <iframe
+        ref={iframeRef}
+        src={url}
+        width="100%"
+        height="100%"
+        frameBorder="0"
+        allowFullScreen
+        allow="autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+        sandbox={sandboxConfig}
+        referrerPolicy="no-referrer"
+        className="rounded-xl shadow-2xl bg-black"
+      ></iframe>
+    );
   };
 
   return (
@@ -205,13 +194,18 @@ export function VideoPlayer() {
                         <Button 
                             variant="outline" 
                             size="sm" 
-                            onClick={toggleServer}
+                            onClick={cycleServer}
                             className="bg-black/60 backdrop-blur-md border-white/10 text-white hover:bg-primary transition-all font-black uppercase tracking-widest text-[8px] md:text-[10px] h-9 px-3 md:px-5 gap-2 rounded-full shadow-2xl"
                         >
-                            <RefreshCw className={cn("size-3 md:size-4", server === 2 && "rotate-180")} />
+                            <RefreshCw className={cn("size-3 md:size-4 transition-transform", server > 1 && "rotate-180")} />
                             Mirror {server}
                         </Button>
                     )}
+
+                    <div className="hidden sm:flex items-center gap-2 bg-green-500/20 backdrop-blur-md border border-green-500/30 px-3 py-1.5 rounded-full">
+                        <ShieldCheck className="size-3 text-green-400" />
+                        <span className="text-[8px] font-black text-green-400 uppercase tracking-widest">Ad-Shield Active</span>
+                    </div>
                 </div>
 
                 <button 
@@ -236,12 +230,12 @@ export function VideoPlayer() {
             {/* PRO AD-BYPASS SIDEBAR */}
             {activeMedia?.type !== 'youtube' && (
                 <div className="w-full lg:w-72 bg-secondary/20 backdrop-blur-2xl border-t lg:border-t-0 lg:border-l border-white/5 p-4 md:p-6 flex flex-col justify-center gap-4">
-                    <div className="space-y-1 mb-2">
-                        <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] flex items-center gap-2">
+                    <div className="space-y-1 mb-2 text-center lg:text-left">
+                        <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] flex items-center justify-center lg:justify-start gap-2">
                             <Smartphone className="size-3" /> External Play
                         </h4>
                         <p className="text-[8px] text-muted-foreground uppercase font-bold leading-tight">
-                            Use local apps for hardware-accelerated playback and native skip controls.
+                            Bypass all browser ads. Hand off to hardware-accelerated local apps.
                         </p>
                     </div>
 
