@@ -8,6 +8,7 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     updateProfile,
+    sendEmailVerification,
     type User
 } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -96,6 +97,8 @@ export const signUpWithEmail = async (email: string, password: string): Promise<
     const auth = getAuth();
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        // Send Email Verification Link
+        await sendEmailVerification(userCredential.user);
         await syncUserProfile(userCredential.user);
         return userCredential.user;
     } catch (error) {

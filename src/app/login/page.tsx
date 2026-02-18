@@ -54,7 +54,10 @@ export default function LoginPage() {
     try {
       if (isSignUp) {
         await signUpWithEmail(email, password);
-        toast({ title: "Account created!", description: "Welcome to the Studio Vault." });
+        toast({ 
+            title: "Vault Access Requested", 
+            description: "A verification email has been sent. Please check your inbox to activate your cinematic identity." 
+        });
       } else {
         await signInWithEmail(email, password);
         toast({ title: "Welcome back!", description: "Secure link established." });
