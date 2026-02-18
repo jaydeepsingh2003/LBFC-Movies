@@ -81,8 +81,7 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
 
   const handleExternalPlayer = (player: 'vlc' | 'mx') => {
     if (!show) return;
-    // Primary mirror for external player stability
-    const streamUrl = `https://vidsrc.xyz/embed/tv/${show.id}/1/1`;
+    const streamUrl = `https://vidsrc.wtf/api/1/tv/?id=${show.id}&s=1&e=1&color=e11d48`;
     
     if (player === 'vlc') {
         window.location.href = `intent://${streamUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=org.videolan.vlc;action=android.intent.action.VIEW;type=video/*;end`;
@@ -95,7 +94,7 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
 
   const handleCopyLink = () => {
     if (!show) return;
-    const link = `https://vidsrc.xyz/embed/tv/${show.id}/1/1`;
+    const link = `https://vidsrc.wtf/api/1/tv/?id=${show.id}&s=1&e=1&color=e11d48`;
     navigator.clipboard.writeText(link);
     toast({ title: "Master Link Copied", description: "Use 'Open Network Stream' in your player for ad-free viewing." });
   };
