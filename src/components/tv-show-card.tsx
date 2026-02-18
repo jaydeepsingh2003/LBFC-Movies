@@ -4,10 +4,9 @@
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { Tv, Play, Info, Loader2, Star, Bookmark, Share2 } from 'lucide-react';
+import { Tv, Play, Info, Star, Bookmark, Share2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useVideoPlayer } from '@/context/video-provider';
-import { getTvShowVideos } from '@/lib/tmdb.client';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from './ui/button';
 import { useUser } from '@/firebase/auth/auth-client';
@@ -27,15 +26,13 @@ interface TVShowCardProps {
 }
 
 export function TVShowCard({ id, title, posterUrl, className, overview, poster_path }: TVShowCardProps) {
-  const { setVideoId, setActiveMedia } = useVideoPlayer();
+  const { setActiveMedia } = useVideoPlayer();
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const router = useRouter();
   const isMobile = useIsMobile();
-  const [isLoadingTrailer, setIsLoadingTrailer] = useState(false);
 
-  // Smart saved status detection
   const savedRef = useMemo(() => 
     user && firestore ? doc(firestore, `users/${user.uid}/savedTvShows/${id}`) : null
   , [firestore, user, id]);
@@ -60,14 +57,14 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
     e.stopPropagation();
     
     if (!user || !firestore) {
-        toast({ variant: "destructive", title: "Access Restricted" });
+        toast({ variant: "destructive", title: "Auth Required" });
         return;
     }
 
     try {
         if (isSaved) {
             await removeTvShowFromPlaylist(firestore, user.uid, id);
-            toast({ title: "Removed from Vault" });
+            toast({ title: "Removed from TV Vault" });
         } else {
             await saveTvShowToPlaylist(firestore, user.uid, { 
                 id, 
@@ -75,31 +72,22 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
                 overview: overview || '', 
                 poster_path: poster_path || null 
             });
-            toast({ title: "Added to Vault" });
+            toast({ title: "Added to TV Vault" });
         }
     } catch (error) {
         console.error(error);
     }
   };
 
-  const handleShare = async (e: React.MouseEvent) => {
+  const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    const shareData = {
-      title: title,
-      url: `${window.location.origin}/tv/${id}`,
-    };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(shareData.url);
+    const url = `${window.location.origin}/tv/${id}`;
+    if (navigator.share) {
+        navigator.share({ title, url }).catch(console.error);
+    } else {
+        navigator.clipboard.writeText(url);
         toast({ title: "Link Copied" });
-      }
-    } catch (error) {
-      console.error(error);
     }
   };
 
@@ -119,6 +107,7 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
             className="object-cover" 
             sizes="(max-width: 768px) 50vw, 25vw"
             quality={90}
+            unoptimized
         />
       ) : (
         <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
@@ -135,28 +124,19 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
           <Button 
             variant="secondary" 
             size="icon" 
-            title="Play Now"
-            className="h-8 w-8 rounded-full glass-card bg-primary text-white border-none shadow-lg backdrop-blur-md transition-all hover:scale-110 active:scale-95" 
-            onClick={handlePlayNow}
-          >
-            <Play className="size-3.5 fill-current" />
-          </Button>
-          <Button 
-            variant="secondary" 
-            size="icon" 
             className={cn(
                 "h-8 w-8 rounded-full glass-card border-none shadow-lg backdrop-blur-md transition-all",
-                isSaved ? "bg-primary text-white" : "bg-black/40 hover:bg-primary hover:text-white"
+                isSaved ? "bg-primary text-white" : "bg-black/40 hover:bg-primary"
             )} 
             onClick={handleToggleSave}
             disabled={isSavedLoading}
           >
             <Bookmark className={cn("size-3.5", isSaved && "fill-current")} />
           </Button>
-          <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-blue-500 hover:text-white border-none shadow-lg backdrop-blur-md" onClick={handleShare}>
+          <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-blue-500 border-none shadow-lg backdrop-blur-md" onClick={handleShare}>
             <Share2 className="size-3.5" />
           </Button>
-          <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-yellow-500 hover:text-white border-none shadow-lg backdrop-blur-md" onClick={handleNavigateToDetails}>
+          <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-yellow-500 border-none shadow-lg backdrop-blur-md" onClick={handleNavigateToDetails}>
             <Info className="size-3.5" />
           </Button>
         </div>

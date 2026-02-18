@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { Film, Play, Bookmark, Star, Info, Loader2, Share2, Clapperboard } from 'lucide-react';
+import { Play, Bookmark, Star, Info, Share2, Clapperboard } from 'lucide-react';
 import { useVideoPlayer } from '@/context/video-provider';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
@@ -12,7 +12,6 @@ import { useUser } from '@/firebase/auth/auth-client';
 import { useToast } from '@/hooks/use-toast';
 import { saveMovieToPlaylist, removeMovieFromPlaylist } from '@/firebase/firestore/playlists';
 import { useFirestore } from '@/firebase';
-import { getMovieVideos } from '@/lib/tmdb.client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { doc } from 'firebase/firestore';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
@@ -27,16 +26,14 @@ interface MovieCardProps {
   className?: string;
 }
 
-export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl, className, overview, poster_path }: MovieCardProps) {
-  const { setVideoId, setActiveMedia } = useVideoPlayer();
+export function MovieCard({ id, title, posterUrl, className, overview, poster_path }: MovieCardProps) {
+  const { setActiveMedia } = useVideoPlayer();
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const router = useRouter();
   const isMobile = useIsMobile();
-  const [isLoadingTrailer, setIsLoadingTrailer] = useState(false);
 
-  // Smart saved status detection
   const savedRef = useMemo(() => 
     user && firestore ? doc(firestore, `users/${user.uid}/savedMovies/${id}`) : null
   , [firestore, user, id]);
@@ -61,7 +58,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
     e.stopPropagation();
     
     if (!user || !firestore) {
-        toast({ variant: "destructive", title: "Access Restricted", description: "Please sign in to curate your collection." });
+        toast({ variant: "destructive", title: "Auth Required", description: "Sign in to curate your collection." });
         return;
     }
 
@@ -83,24 +80,15 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
     }
   };
 
-  const handleShare = async (e: React.MouseEvent) => {
+  const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    const shareData = {
-      title: title,
-      url: `${window.location.origin}/movie/${id}`,
-    };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(shareData.url);
+    const url = `${window.location.origin}/movie/${id}`;
+    if (navigator.share) {
+        navigator.share({ title, url }).catch(console.error);
+    } else {
+        navigator.clipboard.writeText(url);
         toast({ title: "Link Copied" });
-      }
-    } catch (error) {
-      console.error(error);
     }
   };
 
@@ -120,6 +108,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
             className="object-cover" 
             sizes="(max-width: 768px) 50vw, 25vw"
             quality={90}
+            unoptimized
         />
       ) : (
         <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
@@ -136,28 +125,19 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
           <Button 
             variant="secondary" 
             size="icon" 
-            title="Play Now"
-            className="h-8 w-8 rounded-full glass-card bg-primary text-white border-none shadow-lg backdrop-blur-md transition-all hover:scale-110 active:scale-95" 
-            onClick={handlePlayNow}
-          >
-            <Play className="size-3.5 fill-current" />
-          </Button>
-          <Button 
-            variant="secondary" 
-            size="icon" 
             className={cn(
                 "h-8 w-8 rounded-full glass-card border-none shadow-lg backdrop-blur-md transition-all",
-                isSaved ? "bg-primary text-white" : "bg-black/40 hover:bg-primary hover:text-white"
+                isSaved ? "bg-primary text-white" : "bg-black/40 hover:bg-primary"
             )} 
             onClick={handleToggleSave}
             disabled={isSavedLoading}
           >
             <Bookmark className={cn("size-3.5", isSaved && "fill-current")} />
           </Button>
-          <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-blue-500 hover:text-white border-none shadow-lg backdrop-blur-md" onClick={handleShare}>
+          <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-blue-500 border-none shadow-lg backdrop-blur-md" onClick={handleShare}>
             <Share2 className="size-3.5" />
           </Button>
-          <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-yellow-500 hover:text-white border-none shadow-lg backdrop-blur-md" onClick={handleNavigateToDetails}>
+          <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-yellow-500 border-none shadow-lg backdrop-blur-md" onClick={handleNavigateToDetails}>
             <Info className="size-3.5" />
           </Button>
         </div>
