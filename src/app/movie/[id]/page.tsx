@@ -95,9 +95,8 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
 
   const handleExternalPlayer = (player: 'vlc' | 'mx') => {
     if (!movie) return;
-    const streamUrl = `https://vidlink.pro/movie/${movie.id}?player=jw`;
+    const streamUrl = `https://vidsrc.to/embed/movie/${movie.id}`;
     
-    // Using Android Intent for 100% direct redirection
     if (player === 'vlc') {
         window.location.href = `intent://${streamUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=org.videolan.vlc;action=android.intent.action.VIEW;type=video/*;end`;
     } else {
@@ -109,7 +108,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
 
   const handleCopyLink = () => {
     if (!movie) return;
-    const link = `https://vidlink.pro/movie/${movie.id}?player=jw`;
+    const link = `https://vidsrc.to/embed/movie/${movie.id}`;
     navigator.clipboard.writeText(link);
     toast({ title: "Master Link Copied", description: "Use 'Open Network Stream' in your player for ad-free viewing." });
   };

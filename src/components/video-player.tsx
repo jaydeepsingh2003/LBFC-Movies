@@ -30,10 +30,10 @@ export function VideoPlayer() {
     }
 
     if (activeMedia.type === 'movie') {
-      // VidLink JW Player Movie Format - Branded with Studio Red
-      // Sandbox: allow-scripts and allow-same-origin are REQUIRED to avoid "Disable Sandbox" errors.
-      // We OMIT allow-popups and allow-top-navigation to block ads.
-      const url = `https://vidlink.pro/movie/${activeMedia.id}?primaryColor=e11d48&secondaryColor=171717&iconColor=ffffff&icons=vid&player=jw&title=true&poster=true&autoplay=true&nextbutton=true`;
+      // VidSrc.to Movie Endpoint
+      // Sandbox: allow-scripts and allow-same-origin are REQUIRED for playback.
+      // We OMIT allow-popups and allow-top-navigation to block ads and redirects.
+      const url = `https://vidsrc.to/embed/movie/${activeMedia.id}`;
       return (
         <iframe
           src={url}
@@ -49,10 +49,10 @@ export function VideoPlayer() {
     }
 
     if (activeMedia.type === 'tv') {
-      // VidLink JW Player TV Format - Branded with Studio Red
+      // VidSrc.to TV Endpoint
       const season = activeMedia.season || 1;
       const episode = activeMedia.episode || 1;
-      const url = `https://vidlink.pro/tv/${activeMedia.id}/${season}/${episode}?primaryColor=e11d48&secondaryColor=171717&iconColor=ffffff&icons=vid&player=jw&title=true&poster=true&autoplay=true&nextbutton=true`;
+      const url = `https://vidsrc.to/embed/tv/${activeMedia.id}/${season}/${episode}`;
       return (
         <iframe
           src={url}
