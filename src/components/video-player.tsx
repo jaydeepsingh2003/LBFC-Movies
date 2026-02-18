@@ -13,6 +13,7 @@ export function VideoPlayer() {
   const { activeMedia, setActiveMedia } = useVideoPlayer();
   const [server, setServer] = useState<1 | 2>(1);
   const { toast } = useToast();
+  const playerContainerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const isOpen = !!activeMedia;
@@ -27,15 +28,16 @@ export function VideoPlayer() {
   };
 
   const handleFullScreen = () => {
-    if (iframeRef.current) {
-      if (iframeRef.current.requestFullscreen) {
-        iframeRef.current.requestFullscreen();
-      } else if ((iframeRef.current as any).webkitRequestFullscreen) {
-        (iframeRef.current as any).webkitRequestFullscreen();
-      } else if ((iframeRef.current as any).msRequestFullscreen) {
-        (iframeRef.current as any).msRequestFullscreen();
+    const element = playerContainerRef.current;
+    if (element) {
+      if (element.requestFullscreen) {
+        element.requestFullscreen();
+      } else if ((element as any).webkitRequestFullscreen) {
+        (element as any).webkitRequestFullscreen();
+      } else if ((element as any).msRequestFullscreen) {
+        (element as any).msRequestFullscreen();
       }
-      toast({ title: "Entering Cinema Mode", description: "Bigger screen initialized." });
+      toast({ title: "Cinematic Mode", description: "Bigger screen initialized." });
     }
   };
 
@@ -153,51 +155,46 @@ export function VideoPlayer() {
       <DialogContent className="max-w-[100vw] md:max-w-7xl p-0 border-none bg-black/95 backdrop-blur-3xl overflow-hidden rounded-none md:rounded-[2.5rem] shadow-[0_0_100px_rgba(225,29,72,0.3)] gap-0">
         <DialogTitle className="sr-only">Studio Player</DialogTitle>
         
-        {/* TOP COMMAND BAR */}
-        <div className="absolute -top-14 left-0 right-0 flex items-center justify-between px-2 z-[100] animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <div className="flex items-center gap-2 md:gap-3">
-                <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={handleFullScreen}
-                    className="glass-card rounded-full border-white/10 text-white hover:bg-primary transition-all font-black uppercase tracking-widest text-[8px] md:text-[10px] h-10 px-4 md:px-6 gap-2"
-                >
-                    <Maximize className="size-3 md:size-4" />
-                    Bigger Screen
-                </Button>
-                {activeMedia?.type !== 'youtube' && (
-                    <>
+        <div className="flex flex-col lg:flex-row w-full h-full min-h-[65vh] md:min-h-[80vh] relative">
+            {/* FLOATING COMMAND OVERLAY */}
+            <div className="absolute top-4 left-4 right-4 z-50 flex items-center justify-between pointer-events-none">
+                <div className="flex items-center gap-2 pointer-events-auto">
+                    <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={handleFullScreen}
+                        className="bg-black/60 backdrop-blur-md border-white/10 text-white hover:bg-primary transition-all font-black uppercase tracking-widest text-[8px] md:text-[10px] h-9 px-3 md:px-5 gap-2 rounded-full shadow-2xl"
+                    >
+                        <Maximize className="size-3 md:size-4" />
+                        Full View
+                    </Button>
+                    
+                    {activeMedia?.type !== 'youtube' && (
                         <Button 
                             variant="outline" 
                             size="sm" 
                             onClick={toggleServer}
-                            className="glass-card rounded-full border-white/10 text-white hover:bg-primary transition-all font-black uppercase tracking-widest text-[8px] md:text-[10px] h-10 px-4 md:px-6 gap-2"
+                            className="bg-black/60 backdrop-blur-md border-white/10 text-white hover:bg-primary transition-all font-black uppercase tracking-widest text-[8px] md:text-[10px] h-9 px-3 md:px-5 gap-2 rounded-full shadow-2xl"
                         >
                             <RefreshCw className={cn("size-3 md:size-4", server === 2 && "rotate-180")} />
                             Mirror {server}
                         </Button>
-                        <div className="hidden lg:flex items-center gap-2 bg-primary/10 backdrop-blur-xl px-4 py-2 rounded-full border border-primary/20">
-                            <FastForward className="size-3 text-primary" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-white">Forward Controls Active</span>
-                        </div>
-                    </>
-                )}
+                    )}
+                </div>
+
+                <button 
+                    onClick={onClose}
+                    className="p-2 md:p-3 bg-black/60 backdrop-blur-md border border-white/10 hover:bg-primary rounded-full transition-all text-white group shadow-2xl pointer-events-auto"
+                >
+                    <X className="size-5 md:size-6 group-hover:scale-110 transition-transform" />
+                </button>
             </div>
 
-            <button 
-                onClick={onClose}
-                className="p-3 bg-white/10 hover:bg-primary rounded-full transition-all text-white group shadow-2xl"
-            >
-                <X className="size-5 md:size-6 group-hover:scale-110 transition-transform" />
-            </button>
-        </div>
-
-        <div className="flex flex-col lg:flex-row w-full h-full min-h-[60vh] md:min-h-[80vh]">
             {/* VIDEO STAGE */}
-            <div className="flex-1 relative group/player bg-black shadow-2xl flex items-center justify-center">
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-0 opacity-20 pointer-events-none flex items-center gap-2">
-                    <ShieldAlert className="size-4" />
-                    <span className="text-[8px] font-black uppercase tracking-[0.3em]">Cinematic Hub Established</span>
+            <div ref={playerContainerRef} className="flex-1 relative group/player bg-black shadow-2xl flex items-center justify-center overflow-hidden">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-10 pointer-events-none flex flex-col items-center gap-2">
+                    <ShieldAlert className="size-12" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em]">LBFC Hub</span>
                 </div>
                 <div className="relative z-10 w-full h-full aspect-video">
                     {renderContent()}
