@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -6,7 +5,7 @@ import { getTvShowDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.clien
 import type { TVShowDetails } from '@/lib/tmdb';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Users, Award, Share2, Play, Smartphone, Zap, Copy, ShieldCheck } from 'lucide-react';
+import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Users, Award, Share2, Play } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
@@ -77,26 +76,6 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
     if (show) {
       setActiveMedia({ type: 'tv', id: show.id, season, episode });
     }
-  };
-
-  const handleExternalPlayer = (player: 'vlc' | 'mx') => {
-    if (!show) return;
-    const streamUrl = `https://vidsrc.wtf/api/1/tv/?id=${show.id}&s=1&e=1&color=e11d48`;
-    
-    if (player === 'vlc') {
-        window.location.href = `intent://${streamUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=org.videolan.vlc;action=android.intent.action.VIEW;type=video/*;end`;
-    } else {
-        window.location.href = `intent://${streamUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.mxtech.videoplayer.ad;action=android.intent.action.VIEW;type=video/*;end`;
-    }
-    
-    toast({ title: `Handoff to ${player.toUpperCase()}`, description: "Establishing ad-free hardware link." });
-  };
-
-  const handleCopyLink = () => {
-    if (!show) return;
-    const link = `https://vidsrc.wtf/api/1/tv/?id=${show.id}&s=1&e=1&color=e11d48`;
-    navigator.clipboard.writeText(link);
-    toast({ title: "Master Link Copied", description: "Use 'Open Network Stream' in your player for ad-free viewing." });
   };
 
   const handleSaveToggle = async () => {
@@ -224,36 +203,6 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                         <Share2 className="size-5 md:size-7" />
                     </Button>
                 </div>
-            </div>
-
-            {/* PRO MOBILE KIT */}
-            <div className="glass-panel rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 space-y-6 border-white/5 shadow-2xl bg-secondary/10 relative overflow-hidden group/kit">
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover/kit:opacity-30 transition-opacity">
-                    <Smartphone className="size-12 md:size-20" />
-                </div>
-                <div className="flex items-center justify-between">
-                    <h3 className="font-black text-[10px] md:text-xs uppercase tracking-[0.3em] text-blue-400 flex items-center gap-3">
-                        <div className="p-1.5 md:p-2 bg-blue-400/10 rounded-lg md:rounded-xl"><Zap className="size-3 md:size-4" /></div>
-                        Pro Mobile Kit
-                    </h3>
-                    <Badge variant="outline" className="border-blue-400/30 text-blue-400 text-[8px] font-black uppercase flex items-center gap-1">
-                        <ShieldCheck className="size-2.5" /> Ad-Free path
-                    </Badge>
-                </div>
-                <div className="grid grid-cols-1 gap-3 relative z-10">
-                    <Button onClick={() => handleExternalPlayer('vlc')} variant="outline" className="h-14 md:h-16 rounded-xl md:rounded-2xl border-white/5 bg-white/5 hover:bg-orange-500 hover:text-white transition-all font-bold uppercase tracking-widest text-[10px] md:text-xs">
-                        Play in VLC
-                    </Button>
-                    <Button onClick={() => handleExternalPlayer('mx')} variant="outline" className="h-14 md:h-16 rounded-xl md:rounded-2xl border-white/5 bg-white/5 hover:bg-blue-600 hover:text-white transition-all font-bold uppercase tracking-widest text-[10px] md:text-xs">
-                        Play in MX Player
-                    </Button>
-                    <Button onClick={handleCopyLink} variant="ghost" className="h-14 md:h-16 rounded-xl md:rounded-2xl text-muted-foreground hover:text-primary transition-all font-bold uppercase tracking-widest text-[10px] md:text-xs gap-2">
-                        <Copy className="size-4" /> Copy Master Link
-                    </Button>
-                </div>
-                <p className="text-[8px] text-muted-foreground font-medium uppercase text-center leading-relaxed">
-                    Pro Tip: Local apps bypass all browser ads. If connection fails, use "Open Network Stream" and paste the link.
-                </p>
             </div>
 
             {streamingProviders.length > 0 && (
