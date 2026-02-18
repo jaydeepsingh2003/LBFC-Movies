@@ -5,7 +5,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { getMovieDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
 import type { MovieDetails, Movie } from '@/lib/tmdb';
 import Image from 'next/image';
-import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, TrendingUp, Users, Award } from 'lucide-react';
+import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, TrendingUp, Users, Award, Clapperboard } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
@@ -41,7 +41,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
   const { toast } = useToast();
   const [movie, setMovie] = useState<MovieDetailsWithMedia | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { setVideoId } = useVideoPlayer();
+  const { setVideoId, setActiveMedia } = useVideoPlayer();
   const [similarMovies, setSimilarMovies] = useState<MovieWithPoster[]>([]);
 
   const savedMovieRef = useMemo(() => 
@@ -85,8 +85,14 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
     fetchData();
   }, [id]);
 
-  const handlePlayVideo = (key: string) => setVideoId(key);
+  const handlePlayTrailer = (key: string) => setVideoId(key);
   
+  const handlePlayNow = () => {
+    if (movie) {
+      setActiveMedia({ type: 'movie', id: movie.id });
+    }
+  };
+
   const handleSaveToggle = async () => {
     if (!user || !firestore || !movie) {
         toast({ variant: "destructive", title: "Sign in required", description: "You need an account to curate your playlist." });
@@ -192,19 +198,20 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
             <div className="relative aspect-[2/3] w-[220px] md:w-full mx-auto md:mx-0 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.8)] border-2 border-white/10 glass-card group">
                 {movie.posterUrl && <Image src={movie.posterUrl} alt={movie.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" unoptimized />}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    {trailer && (
-                        <Button variant="outline" className="rounded-full h-16 w-16 md:h-24 md:w-24 p-0 border-white/20 bg-white/10 backdrop-blur-md hover:bg-primary hover:text-white transition-all scale-75 group-hover:scale-100 duration-500" onClick={() => handlePlayVideo(trailer.key)}>
-                            <Play className="size-8 md:size-12 fill-current" />
-                        </Button>
-                    )}
+                    <Button variant="outline" className="rounded-full h-16 w-16 md:h-24 md:w-24 p-0 border-white/20 bg-primary/20 backdrop-blur-md hover:bg-primary hover:text-white transition-all scale-75 group-hover:scale-100 duration-500" onClick={handlePlayNow}>
+                        <Play className="size-8 md:size-12 fill-current" />
+                    </Button>
                 </div>
             </div>
             
             <div className="grid grid-cols-1 gap-3 md:gap-5">
-                <Button onClick={() => trailer && handlePlayVideo(trailer.key)} disabled={!trailer} size="lg" className="rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 font-black text-lg md:text-2xl shadow-2xl shadow-primary/30 group bg-white text-black hover:bg-white/90">
-                    <Play className="mr-2 md:mr-3 size-5 md:size-7 fill-current transition-transform group-hover:scale-110" /> Watch Trailer
+                <Button onClick={handlePlayNow} size="lg" className="rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 font-black text-lg md:text-2xl shadow-2xl shadow-primary/30 group bg-primary text-white hover:bg-primary/90">
+                    <Play className="mr-2 md:mr-3 size-5 md:size-7 fill-current transition-transform group-hover:scale-110" /> Play Now
                 </Button>
                 <div className="flex gap-3 md:gap-4">
+                    <Button onClick={() => trailer && handlePlayTrailer(trailer.key)} variant="outline" className="flex-1 rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 border-white/10 glass-card text-sm md:text-xl font-bold transition-all hover:scale-105 active:scale-95" disabled={!trailer}>
+                        <Clapperboard className="mr-2 md:mr-3 size-5 md:size-7" /> Trailer
+                    </Button>
                     <Button onClick={handleSaveToggle} variant={isSaved ? "secondary" : "outline"} className="flex-1 rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 border-white/10 glass-card text-sm md:text-xl font-bold transition-all hover:scale-105 active:scale-95" disabled={isSavedMovieLoading}>
                         <Bookmark className={cn("mr-2 md:mr-3 size-5 md:size-7 transition-all", isSaved && "fill-primary text-primary")} /> 
                         {isSaved ? 'In Playlist' : 'Save Title'}

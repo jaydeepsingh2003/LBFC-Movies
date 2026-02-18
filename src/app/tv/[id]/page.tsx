@@ -6,7 +6,7 @@ import { getTvShowDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.clien
 import type { TVShowDetails } from '@/lib/tmdb';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Users, Award, Share2 } from 'lucide-react';
+import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Users, Award, Share2, Play } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
@@ -34,7 +34,7 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
   const { toast } = useToast();
   const [show, setShow] = useState<TVShowDetailsWithMedia | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { setVideoId } = useVideoPlayer();
+  const { setVideoId, setActiveMedia } = useVideoPlayer();
 
   const savedShowRef = useMemo(() => 
     user && firestore && id ? doc(firestore, `users/${user.uid}/savedTvShows/${id}`) : null
@@ -70,6 +70,12 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
     const trailer = show?.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official);
     if (trailer) {
       setVideoId(trailer.key);
+    }
+  };
+
+  const handlePlayNow = (season: number = 1, episode: number = 1) => {
+    if (show) {
+      setActiveMedia({ type: 'tv', id: show.id, season, episode });
     }
   };
 
@@ -176,19 +182,20 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
             <div className="relative aspect-[2/3] w-[220px] md:w-full mx-auto md:mx-0 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.8)] border-2 border-white/10 glass-card group">
                 {show.posterUrl && <Image src={show.posterUrl} alt={show.name} fill className="object-cover transition-transform duration-700 group-hover:scale-110" unoptimized />}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    {trailerAvailable && (
-                        <Button variant="outline" className="rounded-full h-16 w-16 md:h-24 md:w-24 p-0 border-white/20 bg-white/10 backdrop-blur-md hover:bg-primary hover:text-white transition-all scale-75 group-hover:scale-100 duration-500" onClick={handlePlayTrailer}>
-                            <PlayCircle className="size-10 md:size-14 fill-current" />
-                        </Button>
-                    )}
+                    <Button variant="outline" className="rounded-full h-16 w-16 md:h-24 md:w-24 p-0 border-white/20 bg-primary/20 backdrop-blur-md hover:bg-primary hover:text-white transition-all scale-75 group-hover:scale-100 duration-500" onClick={() => handlePlayNow()}>
+                        <Play className="size-10 md:size-14 fill-current" />
+                    </Button>
                 </div>
             </div>
             
             <div className="grid grid-cols-1 gap-3 md:gap-5">
-                <Button onClick={handlePlayTrailer} disabled={!trailerAvailable} size="lg" className="rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 font-black text-lg md:text-2xl shadow-2xl shadow-primary/30 group bg-white text-black hover:bg-white/90">
-                    <PlayCircle className="mr-2 md:mr-3 size-5 md:size-7 fill-current transition-transform group-hover:scale-110" /> Watch Trailer
+                <Button onClick={() => handlePlayNow()} size="lg" className="rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 font-black text-lg md:text-2xl shadow-2xl shadow-primary/30 group bg-primary text-white hover:bg-primary/90">
+                    <Play className="mr-2 md:mr-3 size-5 md:size-7 fill-current transition-transform group-hover:scale-110" /> Start Series
                 </Button>
                 <div className="flex gap-3 md:gap-4">
+                    <Button onClick={handlePlayTrailer} variant="outline" className="flex-1 rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 border-white/10 glass-card text-sm md:text-xl font-bold transition-all hover:scale-105 active:scale-95" disabled={!trailerAvailable}>
+                        <PlayCircle className="mr-2 md:mr-3 size-5 md:size-7 transition-all" /> Trailer
+                    </Button>
                     <Button onClick={handleSaveToggle} variant={isSaved ? "secondary" : "outline"} className="flex-1 rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 border-white/10 glass-card text-sm md:text-xl font-bold transition-all hover:scale-105 active:scale-95" disabled={isSavedShowLoading}>
                         <Bookmark className={cn("mr-2 md:mr-3 size-5 md:size-7 transition-all", isSaved && "fill-primary text-primary")} /> 
                         {isSaved ? 'In Vault' : 'Save Series'}
@@ -319,7 +326,7 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                     {show.seasons.filter(s => s.season_number > 0).map(season => (
                         <div key={season.id} className="group glass-panel rounded-[2rem] md:rounded-[3rem] overflow-hidden border border-white/5 hover:border-primary/20 transition-all duration-500 shadow-2xl relative">
                             <div className="flex flex-col md:flex-row gap-6 md:gap-8 p-6 md:p-8 relative z-10">
-                                <div className="w-full md:w-48 aspect-[2/3] relative flex-shrink-0 rounded-xl md:rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
+                                <div className="w-full md:w-48 aspect-[2/3] relative flex-shrink-0 rounded-xl md:rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl group/poster">
                                     {season.poster_path ? (
                                         <Image src={getPosterUrl(season.poster_path)!} alt={season.name} fill className="object-cover transition-transform group-hover:scale-110 duration-700" unoptimized />
                                     ) : (
@@ -327,6 +334,11 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                                             <Tv className="size-8 md:size-12 text-white/10" />
                                         </div>
                                     )}
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/poster:opacity-100 transition-opacity flex items-center justify-center">
+                                        <Button size="icon" className="rounded-full bg-primary" onClick={() => handlePlayNow(season.season_number, 1)}>
+                                            <Play className="size-6 fill-current" />
+                                        </Button>
+                                    </div>
                                 </div>
                                 <div className="flex-1 space-y-4 md:space-y-6">
                                     <div className="flex items-start justify-between">
@@ -338,6 +350,9 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                                                 <span className="text-[8px] md:text-[11px] font-black text-muted-foreground uppercase tracking-[0.25em]">{season.episode_count} Episodes</span>
                                             </div>
                                         </div>
+                                        <Button variant="outline" className="hidden md:flex rounded-full px-8 glass-panel hover:bg-primary transition-all border-white/10" onClick={() => handlePlayNow(season.season_number, 1)}>
+                                            <Play className="mr-2 size-4 fill-current" /> Resume Cycle
+                                        </Button>
                                     </div>
                                     <p className="text-sm md:text-xl text-muted-foreground/90 leading-relaxed font-medium line-clamp-3 md:line-clamp-4">
                                         {season.overview || "Production details for this cycle are currently classified. Access will be granted upon transmission."}

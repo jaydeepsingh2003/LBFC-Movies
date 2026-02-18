@@ -1,9 +1,10 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { Film, Play, Bookmark, Star, Info, Loader2, Share2 } from 'lucide-react';
+import { Film, Play, Bookmark, Star, Info, Loader2, Share2, Clapperboard } from 'lucide-react';
 import { useVideoPlayer } from '@/context/video-provider';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
@@ -27,7 +28,7 @@ interface MovieCardProps {
 }
 
 export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl, className, overview, poster_path }: MovieCardProps) {
-  const { setVideoId } = useVideoPlayer();
+  const { setVideoId, setActiveMedia } = useVideoPlayer();
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -48,6 +49,12 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
     e.preventDefault();
     e.stopPropagation();
     router.push(`/movie/${id}`);
+  };
+
+  const handlePlayNow = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setActiveMedia({ type: 'movie', id });
   };
 
   const handlePlayTrailer = async (e: React.MouseEvent) => {
@@ -142,7 +149,7 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         />
       ) : (
         <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
-          <Film className="w-12 h-12 text-muted-foreground/30 mb-2" />
+          <Clapperboard className="w-12 h-12 text-muted-foreground/30 mb-2" />
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{title}</span>
         </div>
       )}
@@ -152,6 +159,15 @@ export function MovieCard({ id, title, posterUrl, trailerUrl: initialTrailerUrl,
         isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
       )}>
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
+          <Button 
+            variant="secondary" 
+            size="icon" 
+            title="Play Now"
+            className="h-8 w-8 rounded-full glass-card bg-primary text-white border-none shadow-lg backdrop-blur-md transition-all hover:scale-110 active:scale-95" 
+            onClick={handlePlayNow}
+          >
+            <Play className="size-3.5 fill-current" />
+          </Button>
           <Button 
             variant="secondary" 
             size="icon" 

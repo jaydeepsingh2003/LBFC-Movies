@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -26,7 +27,7 @@ interface TVShowCardProps {
 }
 
 export function TVShowCard({ id, title, posterUrl, className, overview, poster_path }: TVShowCardProps) {
-  const { setVideoId } = useVideoPlayer();
+  const { setVideoId, setActiveMedia } = useVideoPlayer();
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -47,6 +48,12 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
     e.preventDefault();
     e.stopPropagation();
     router.push(`/tv/${id}`);
+  };
+
+  const handlePlayNow = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setActiveMedia({ type: 'tv', id, season: 1, episode: 1 });
   };
 
   const handlePlayTrailer = async (e: React.MouseEvent) => {
@@ -151,6 +158,15 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
         isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
       )}>
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
+          <Button 
+            variant="secondary" 
+            size="icon" 
+            title="Play Now"
+            className="h-8 w-8 rounded-full glass-card bg-primary text-white border-none shadow-lg backdrop-blur-md transition-all hover:scale-110 active:scale-95" 
+            onClick={handlePlayNow}
+          >
+            <Play className="size-3.5 fill-current" />
+          </Button>
           <Button 
             variant="secondary" 
             size="icon" 
