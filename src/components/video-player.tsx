@@ -30,7 +30,7 @@ export function VideoPlayer() {
     }
 
     if (activeMedia.type === 'movie') {
-      // VidLink JW Player Movie Format
+      // VidLink JW Player Movie Format - Branded with Studio Red
       const url = `https://vidlink.pro/movie/${activeMedia.id}?primaryColor=e11d48&secondaryColor=171717&iconColor=ffffff&icons=vid&player=jw&title=true&poster=true&autoplay=true&nextbutton=true`;
       return (
         <iframe
@@ -45,7 +45,7 @@ export function VideoPlayer() {
     }
 
     if (activeMedia.type === 'tv') {
-      // VidLink JW Player TV Format
+      // VidLink JW Player TV Format - Branded with Studio Red
       const season = activeMedia.season || 1;
       const episode = activeMedia.episode || 1;
       const url = `https://vidlink.pro/tv/${activeMedia.id}/${season}/${episode}?primaryColor=e11d48&secondaryColor=171717&iconColor=ffffff&icons=vid&player=jw&title=true&poster=true&autoplay=true&nextbutton=true`;
