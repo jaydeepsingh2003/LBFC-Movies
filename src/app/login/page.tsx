@@ -5,14 +5,14 @@ import { useUser, loginWithGoogle, signInWithEmail, signUpWithEmail, logout } fr
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Film, ShieldCheck, Mail, RefreshCcw, LogOut } from 'lucide-react';
+import { Loader2, Film, ShieldCheck, Mail, RefreshCcw, LogOut, Info } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { getTrendingMovies, getBackdropUrl } from '@/lib/tmdb.client';
-import { sendEmailVerification } from 'firebase/auth';
+import { sendEmailVerification, getAuth } from 'firebase/auth';
 
 export default function LoginPage() {
   const { user, isLoading: isUserLoading } = useUser();
@@ -57,7 +57,7 @@ export default function LoginPage() {
         await signUpWithEmail(email, password);
         toast({ 
             title: "Verification Sent", 
-            description: "Check your inbox to activate your cinematic identity." 
+            description: "Check your inbox (and spam folder) to activate your identity." 
         });
       } else {
         await signInWithEmail(email, password);
@@ -96,12 +96,17 @@ export default function LoginPage() {
     if (!user) return;
     setIsLoading(true);
     try {
+      // Force a reload of the user's data from Firebase
       await user.reload();
-      if (user.emailVerified) {
+      // Important: After reload, we need to check the updated verified status
+      const auth = getAuth();
+      const updatedUser = auth.currentUser;
+      
+      if (updatedUser?.emailVerified) {
         toast({ title: "Identity Verified", description: "Welcome to the studio." });
         router.push('/');
       } else {
-        toast({ title: "Verification Pending", description: "Please check your email and click the confirmation link." });
+        toast({ title: "Verification Pending", description: "Identity not yet confirmed. Please click the link in your email." });
       }
     } catch (error) {
       console.error("Reload failed", error);
@@ -115,7 +120,7 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       await sendEmailVerification(user);
-      toast({ title: "Link Dispatched", description: "A new verification email has been sent." });
+      toast({ title: "Link Dispatched", description: "A new verification email has been sent. Check Spam if missing." });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Limit Exceeded", description: "Please wait a moment before requesting another link." });
     } finally {
@@ -149,9 +154,15 @@ export default function LoginPage() {
                 <Mail className="size-10 text-primary" />
               </div>
               <CardTitle className="text-3xl font-headline font-black tracking-tighter uppercase">Verification Required</CardTitle>
-              <p className="text-muted-foreground text-sm font-medium px-6">
-                A confirmation link has been sent to <span className="text-white font-bold">{user.email}</span>. Please verify your identity to access the studio.
-              </p>
+              <div className="space-y-2">
+                <p className="text-muted-foreground text-sm font-medium px-6">
+                  A confirmation link has been sent to <span className="text-white font-bold">{user.email}</span>.
+                </p>
+                <div className="flex items-center justify-center gap-2 text-yellow-500/80 bg-yellow-500/5 py-2 px-4 rounded-full mx-6">
+                    <Info className="size-3" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Check Spam or Promotions folder</span>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4 pb-12 px-8">
               <Button onClick={handleReloadStatus} disabled={isLoading} className="w-full h-14 bg-white text-black hover:bg-white/90 font-black uppercase tracking-widest rounded-xl transition-all shadow-xl">
@@ -168,9 +179,14 @@ export default function LoginPage() {
                 </Button>
               </div>
 
-              <div className="pt-6 border-t border-white/5 flex items-center justify-center gap-2 text-primary/60">
-                <ShieldCheck className="size-4" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secure Session: ID-{user.uid.slice(0, 8)}</span>
+              <div className="pt-6 border-t border-white/5 flex flex-col items-center justify-center gap-2">
+                <div className="flex items-center gap-2 text-primary/60">
+                    <ShieldCheck className="size-4" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secure Session: ID-{user.uid.slice(0, 8)}</span>
+                </div>
+                <p className="text-[8px] text-muted-foreground uppercase font-bold text-center mt-2 opacity-50">
+                    Tip: Add noreply@firebaseapp.com to your contacts to ensure link delivery.
+                </p>
               </div>
             </CardContent>
         </Card>

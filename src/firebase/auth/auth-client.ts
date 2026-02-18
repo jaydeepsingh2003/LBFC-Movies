@@ -95,6 +95,8 @@ export const loginWithGoogle = async () => {
 
 export const signUpWithEmail = async (email: string, password: string): Promise<User> => {
     const auth = getAuth();
+    // Use device language to help avoid regional spam filters
+    auth.useDeviceLanguage();
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         // Send Email Verification Link
