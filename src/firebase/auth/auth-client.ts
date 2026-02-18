@@ -9,6 +9,7 @@ import {
     signInWithEmailAndPassword,
     updateProfile,
     sendEmailVerification,
+    sendPasswordResetEmail,
     type User
 } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -117,6 +118,17 @@ export const signInWithEmail = async (email: string, password: string): Promise<
         return userCredential.user;
     } catch (error) {
         console.error("Error signing in with email and password", error);
+        throw error;
+    }
+};
+
+export const resetPassword = async (email: string) => {
+    const auth = getAuth();
+    auth.useDeviceLanguage();
+    try {
+        await sendPasswordResetEmail(auth, email);
+    } catch (error) {
+        console.error("Error sending reset email", error);
         throw error;
     }
 };

@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useUser, loginWithGoogle, signInWithEmail, signUpWithEmail, logout } from '@/firebase/auth/auth-client';
+import { useUser, loginWithGoogle, signInWithEmail, signUpWithEmail, logout, resetPassword } from '@/firebase/auth/auth-client';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Film, ShieldCheck, Mail, RefreshCcw, LogOut, Info } from 'lucide-react';
+import { Loader2, Film, ShieldCheck, Mail, RefreshCcw, LogOut, Info, KeyRound } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
@@ -69,6 +69,34 @@ export default function LoginPage() {
         variant: 'destructive',
         title: 'Authentication Failed',
         description: error.message || 'Please check your credentials and try again.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast({
+        variant: 'destructive',
+        title: "Email Required",
+        description: "Please enter your email address to receive a recovery link.",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await resetPassword(email);
+      toast({
+        title: "Recovery Link Dispatched",
+        description: "Check your inbox for instructions to reset your vault credentials.",
+      });
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: "Transmission Failed",
+        description: error.message || "Could not send reset email. Please verify the address.",
       });
     } finally {
       setIsLoading(false);
@@ -231,7 +259,19 @@ export default function LoginPage() {
                       />
                   </div>
                   <div className="space-y-2">
-                      <Label htmlFor="password" id="password-label" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Password</Label>
+                      <div className="flex items-center justify-between ml-1">
+                        <Label htmlFor="password" id="password-label" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Password</Label>
+                        {!isSignUp && (
+                          <button 
+                            type="button" 
+                            onClick={handleForgotPassword}
+                            className="text-[9px] font-black uppercase tracking-widest text-primary hover:underline"
+                            disabled={isLoading}
+                          >
+                            Forgot Credentials?
+                          </button>
+                        )}
+                      </div>
                       <Input 
                           id="password" 
                           type="password" 
