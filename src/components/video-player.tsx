@@ -4,13 +4,15 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useVideoPlayer } from "@/context/video-provider";
-import { X, ShieldAlert, RefreshCw, Layers } from "lucide-react";
+import { X, ShieldAlert, RefreshCw, Layers, Smartphone, Zap, Copy, Play } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 export function VideoPlayer() {
   const { activeMedia, setActiveMedia } = useVideoPlayer();
   const [server, setServer] = useState<1 | 2>(1);
+  const { toast } = useToast();
 
   const isOpen = !!activeMedia;
   
@@ -40,6 +42,37 @@ export function VideoPlayer() {
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, []);
+
+  const handleExternalPlayer = (player: 'vlc' | 'mx') => {
+    if (!activeMedia) return;
+    
+    let streamUrl = "";
+    if (activeMedia.type === 'movie') {
+        streamUrl = `https://vidsrc.wtf/api/${server}/movie/?id=${activeMedia.id}&color=e11d48`;
+    } else if (activeMedia.type === 'tv') {
+        streamUrl = `https://vidsrc.wtf/api/${server}/tv/?id=${activeMedia.id}&s=${activeMedia.season || 1}&e=${activeMedia.episode || 1}&color=e11d48`;
+    }
+
+    if (player === 'vlc') {
+        window.location.href = `intent://${streamUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=org.videolan.vlc;action=android.intent.action.VIEW;type=video/*;end`;
+    } else {
+        window.location.href = `intent://${streamUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.mxtech.videoplayer.ad;action=android.intent.action.VIEW;type=video/*;end`;
+    }
+    
+    toast({ title: `Handoff to ${player.toUpperCase()}`, description: "Launching ad-free hardware stream." });
+  };
+
+  const handleCopyLink = () => {
+    if (!activeMedia) return;
+    let link = "";
+    if (activeMedia.type === 'movie') {
+        link = `https://vidsrc.wtf/api/${server}/movie/?id=${activeMedia.id}&color=e11d48`;
+    } else if (activeMedia.type === 'tv') {
+        link = `https://vidsrc.wtf/api/${server}/tv/?id=${activeMedia.id}&s=${activeMedia.season || 1}&e=${activeMedia.episode || 1}&color=e11d48`;
+    }
+    navigator.clipboard.writeText(link);
+    toast({ title: "Master Link Copied", description: "Paste into your player's 'Network Stream' for zero ads." });
+  };
 
   const renderContent = () => {
     if (!activeMedia) return null;
@@ -72,7 +105,8 @@ export function VideoPlayer() {
           allowFullScreen
           allow="autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
           referrerPolicy="no-referrer"
-          className="rounded-xl shadow-2xl"
+          sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts"
+          className="rounded-xl shadow-2xl bg-black"
         ></iframe>
       );
     }
@@ -91,7 +125,8 @@ export function VideoPlayer() {
           allowFullScreen
           allow="autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
           referrerPolicy="no-referrer"
-          className="rounded-xl shadow-2xl"
+          sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts"
+          className="rounded-xl shadow-2xl bg-black"
         ></iframe>
       );
     }
@@ -101,46 +136,95 @@ export function VideoPlayer() {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-[95vw] md:max-w-6xl aspect-video p-0 border-none bg-black/90 backdrop-blur-3xl overflow-hidden rounded-2xl md:rounded-[2rem] shadow-[0_0_100px_rgba(225,29,72,0.2)]">
+      <DialogContent className="max-w-[98vw] md:max-w-7xl p-0 border-none bg-black/95 backdrop-blur-3xl overflow-hidden rounded-2xl md:rounded-[2.5rem] shadow-[0_0_100px_rgba(225,29,72,0.3)] gap-0">
         <DialogTitle className="sr-only">Studio Player</DialogTitle>
         
-        <div className="absolute -top-14 left-0 right-0 flex items-center justify-between px-2 z-[100]">
-            <div className="flex items-center gap-3">
+        {/* TOP COMMAND BAR */}
+        <div className="absolute -top-14 left-0 right-0 flex items-center justify-between px-2 z-[100] animate-in fade-in slide-in-from-bottom-2 duration-500">
+            <div className="flex items-center gap-2 md:gap-3">
                 {activeMedia?.type !== 'youtube' && (
-                    <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={toggleServer}
-                        className="glass-card rounded-full border-white/10 text-white hover:bg-primary transition-all font-black uppercase tracking-widest text-[9px] md:text-[10px] h-10 px-6 gap-2"
-                    >
-                        <RefreshCw className={cn("size-3 md:size-4", server === 2 && "rotate-180")} />
-                        Switch to Server {server === 1 ? '2' : '1'}
-                    </Button>
+                    <>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={toggleServer}
+                            className="glass-card rounded-full border-white/10 text-white hover:bg-primary transition-all font-black uppercase tracking-widest text-[8px] md:text-[10px] h-10 px-4 md:px-6 gap-2"
+                        >
+                            <RefreshCw className={cn("size-3 md:size-4", server === 2 && "rotate-180")} />
+                            Server {server}
+                        </Button>
+                        <div className="hidden sm:flex items-center gap-2 bg-primary/10 backdrop-blur-xl px-4 py-2 rounded-full border border-primary/20">
+                            <Zap className="size-3 text-primary" />
+                            <span className="text-[9px] font-black uppercase tracking-widest text-white">Ad-Shield Active</span>
+                        </div>
+                    </>
                 )}
-                <div className="hidden md:flex items-center gap-2 bg-white/5 backdrop-blur-xl px-4 py-2 rounded-full border border-white/5">
-                    <Layers className="size-3 text-primary" />
-                    <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
-                        Node: {server === 1 ? 'WTF Primary' : 'WTF Ultra-High'}
-                    </span>
-                </div>
             </div>
 
             <button 
                 onClick={onClose}
-                className="p-3 bg-white/10 hover:bg-primary rounded-full transition-all text-white group"
+                className="p-3 bg-white/10 hover:bg-primary rounded-full transition-all text-white group shadow-2xl"
             >
                 <X className="size-5 md:size-6 group-hover:scale-110 transition-transform" />
             </button>
         </div>
 
-        <div className="w-full h-full relative">
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-0 opacity-20 pointer-events-none flex items-center gap-2">
-              <ShieldAlert className="size-4" />
-              <span className="text-[8px] font-black uppercase tracking-[0.3em]">Hardware Link Active</span>
-          </div>
-          <div className="relative z-10 w-full h-full">
-            {renderContent()}
-          </div>
+        <div className="flex flex-col lg:flex-row w-full h-full">
+            {/* VIDEO STAGE */}
+            <div className="flex-1 aspect-video relative group/player bg-black shadow-2xl">
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-0 opacity-20 pointer-events-none flex items-center gap-2">
+                    <ShieldAlert className="size-4" />
+                    <span className="text-[8px] font-black uppercase tracking-[0.3em]">Hardware Link Active</span>
+                </div>
+                <div className="relative z-10 w-full h-full">
+                    {renderContent()}
+                </div>
+            </div>
+
+            {/* AD-FREE SIDEBAR (DESKTOP) / BOTTOM BAR (MOBILE) */}
+            {activeMedia?.type !== 'youtube' && (
+                <div className="w-full lg:w-72 bg-secondary/20 backdrop-blur-2xl border-t lg:border-t-0 lg:border-l border-white/5 p-4 md:p-6 flex flex-col justify-center gap-4">
+                    <div className="space-y-1 mb-2">
+                        <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] flex items-center gap-2">
+                            <Smartphone className="size-3" /> Ad-Free Path
+                        </h4>
+                        <p className="text-[8px] text-muted-foreground uppercase font-bold leading-tight">
+                            If the web player shows errors, transmit directly to local apps.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 md:gap-3">
+                        <Button 
+                            onClick={() => handleExternalPlayer('vlc')} 
+                            variant="outline" 
+                            className="h-12 rounded-xl border-white/5 bg-white/5 hover:bg-orange-500 hover:text-white transition-all font-bold uppercase tracking-widest text-[9px] gap-2"
+                        >
+                            VLC Player
+                        </Button>
+                        <Button 
+                            onClick={() => handleExternalPlayer('mx')} 
+                            variant="outline" 
+                            className="h-12 rounded-xl border-white/5 bg-white/5 hover:bg-blue-600 hover:text-white transition-all font-bold uppercase tracking-widest text-[9px] gap-2"
+                        >
+                            MX Player
+                        </Button>
+                    </div>
+
+                    <Button 
+                        onClick={handleCopyLink} 
+                        variant="ghost" 
+                        className="h-12 rounded-xl text-muted-foreground hover:text-primary transition-all font-bold uppercase tracking-widest text-[9px] gap-2 border border-dashed border-white/10"
+                    >
+                        <Copy className="size-3" /> Master Link
+                    </Button>
+
+                    <div className="hidden lg:block pt-4 border-t border-white/5">
+                        <p className="text-[7px] text-muted-foreground font-black uppercase text-center tracking-widest opacity-50">
+                            Transmission ID: {activeMedia?.id}
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
       </DialogContent>
     </Dialog>
