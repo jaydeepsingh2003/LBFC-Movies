@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useVideoPlayer } from "@/context/video-provider";
-import { X, ShieldAlert, RefreshCw, Smartphone, Zap, Copy, Maximize, FastForward } from "lucide-react";
+import { X, ShieldAlert, RefreshCw, Smartphone, Zap, Copy, Maximize, Minimize2, FastForward } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 export function VideoPlayer() {
   const { activeMedia, setActiveMedia } = useVideoPlayer();
   const [server, setServer] = useState<1 | 2>(1);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const { toast } = useToast();
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -19,17 +20,30 @@ export function VideoPlayer() {
   const isOpen = !!activeMedia;
   
   const onClose = () => {
+    if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+    }
     setActiveMedia(null);
     setServer(1);
   };
+
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFsChange);
+    return () => document.removeEventListener("fullscreenchange", handleFsChange);
+  }, []);
 
   const toggleServer = () => {
     setServer(prev => prev === 1 ? 2 : 1);
   };
 
-  const handleFullScreen = () => {
+  const toggleFullScreen = () => {
     const element = playerContainerRef.current;
-    if (element) {
+    if (!element) return;
+
+    if (!document.fullscreenElement) {
       if (element.requestFullscreen) {
         element.requestFullscreen();
       } else if ((element as any).webkitRequestFullscreen) {
@@ -38,6 +52,15 @@ export function VideoPlayer() {
         (element as any).msRequestFullscreen();
       }
       toast({ title: "Cinematic Mode", description: "Bigger screen initialized." });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      } else if ((document as any).msExitFullscreen) {
+        (document as any).msExitFullscreen();
+      }
+      toast({ title: "Windowed Mode", description: "Returning to standard view." });
     }
   };
 
@@ -162,11 +185,20 @@ export function VideoPlayer() {
                     <Button 
                         variant="outline" 
                         size="sm" 
-                        onClick={handleFullScreen}
+                        onClick={toggleFullScreen}
                         className="bg-black/60 backdrop-blur-md border-white/10 text-white hover:bg-primary transition-all font-black uppercase tracking-widest text-[8px] md:text-[10px] h-9 px-3 md:px-5 gap-2 rounded-full shadow-2xl"
                     >
-                        <Maximize className="size-3 md:size-4" />
-                        Full View
+                        {isFullscreen ? (
+                            <>
+                                <Minimize2 className="size-3 md:size-4" />
+                                Exit View
+                            </>
+                        ) : (
+                            <>
+                                <Maximize className="size-3 md:size-4" />
+                                Full View
+                            </>
+                        )}
                     </Button>
                     
                     {activeMedia?.type !== 'youtube' && (
