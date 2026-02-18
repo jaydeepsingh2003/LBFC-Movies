@@ -31,8 +31,6 @@ export function VideoPlayer() {
 
     if (activeMedia.type === 'movie') {
       // VidSrc.to Movie Endpoint
-      // Sandbox: allow-scripts and allow-same-origin are REQUIRED for playback.
-      // We OMIT allow-popups and allow-top-navigation to block ads and redirects.
       const url = `https://vidsrc.to/embed/movie/${activeMedia.id}`;
       return (
         <iframe
@@ -41,7 +39,6 @@ export function VideoPlayer() {
           height="100%"
           frameBorder="0"
           allowFullScreen
-          sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"
           referrerPolicy="origin"
           className="rounded-xl shadow-2xl"
         ></iframe>
@@ -60,7 +57,6 @@ export function VideoPlayer() {
           height="100%"
           frameBorder="0"
           allowFullScreen
-          sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"
           referrerPolicy="origin"
           className="rounded-xl shadow-2xl"
         ></iframe>
@@ -83,7 +79,7 @@ export function VideoPlayer() {
         <div className="w-full h-full relative">
           <div className="absolute top-4 left-1/2 -translate-x-1/2 z-0 opacity-20 pointer-events-none flex items-center gap-2">
               <ShieldAlert className="size-4" />
-              <span className="text-[8px] font-black uppercase tracking-[0.3em]">Hardened Ad-Shield Active</span>
+              <span className="text-[8px] font-black uppercase tracking-[0.3em]">Hardware Link Active</span>
           </div>
           <div className="relative z-10 w-full h-full">
             {renderContent()}
