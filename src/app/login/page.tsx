@@ -1,17 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useUser, loginWithGoogle, signInWithEmail, signUpWithEmail } from '@/firebase/auth/auth-client';
+import { useUser, loginWithGoogle, signInWithEmail, signUpWithEmail, logout } from '@/firebase/auth/auth-client';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Film, ShieldCheck } from 'lucide-react';
+import { Loader2, Film, ShieldCheck, Mail, RefreshCcw, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { getTrendingMovies, getBackdropUrl } from '@/lib/tmdb.client';
+import { sendEmailVerification } from 'firebase/auth';
 
 export default function LoginPage() {
   const { user, isLoading: isUserLoading } = useUser();
@@ -24,8 +25,9 @@ export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [bgImageUrl, setBgImageUrl] = useState('https://image.tmdb.org/t/p/original/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg');
 
+  // Strict Redirect: Only if verified
   useEffect(() => {
-    if (user) {
+    if (user && user.emailVerified) {
       router.push('/');
     }
   }, [user, router]);
@@ -36,7 +38,6 @@ export default function LoginPage() {
       try {
         const trending = await getTrendingMovies('day');
         if (trending && trending.length > 0) {
-          // Select a random movie from the top 10 for variety
           const randomIndex = Math.floor(Math.random() * Math.min(10, trending.length));
           const backdrop = getBackdropUrl(trending[randomIndex].backdrop_path);
           if (backdrop) setBgImageUrl(backdrop);
@@ -55,12 +56,12 @@ export default function LoginPage() {
       if (isSignUp) {
         await signUpWithEmail(email, password);
         toast({ 
-            title: "Vault Access Requested", 
-            description: "A verification email has been sent. Please check your inbox to activate your cinematic identity." 
+            title: "Verification Sent", 
+            description: "Check your inbox to activate your cinematic identity." 
         });
       } else {
         await signInWithEmail(email, password);
-        toast({ title: "Welcome back!", description: "Secure link established." });
+        toast({ title: "Authorized", description: "Secure link established." });
       }
     } catch (error: any) {
       console.error('Authentication failed', error);
@@ -91,7 +92,43 @@ export default function LoginPage() {
     }
   };
 
-  if (isUserLoading || user) {
+  const handleReloadStatus = async () => {
+    if (!user) return;
+    setIsLoading(true);
+    try {
+      await user.reload();
+      if (user.emailVerified) {
+        toast({ title: "Identity Verified", description: "Welcome to the studio." });
+        router.push('/');
+      } else {
+        toast({ title: "Verification Pending", description: "Please check your email and click the confirmation link." });
+      }
+    } catch (error) {
+      console.error("Reload failed", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!user) return;
+    setIsLoading(true);
+    try {
+      await sendEmailVerification(user);
+      toast({ title: "Link Dispatched", description: "A new verification email has been sent." });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Limit Exceeded", description: "Please wait a moment before requesting another link." });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    toast({ title: "Session Terminated" });
+  };
+
+  if (isUserLoading) {
     return (
       <div className="flex justify-center items-center h-screen bg-background">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -99,17 +136,51 @@ export default function LoginPage() {
     );
   }
 
+  // Verification Pending Screen
+  if (user && !user.emailVerified) {
+    return (
+      <div className="relative h-screen w-screen flex items-center justify-center p-4">
+        <Image src={bgImageUrl} alt="Background" fill className="object-cover z-0 blur-sm opacity-50" priority unoptimized />
+        <div className="absolute inset-0 bg-black/80 z-10" />
+        
+        <Card className="w-full max-w-md z-20 bg-black/90 backdrop-blur-xl border-white/10 text-white shadow-2xl rounded-[2.5rem] overflow-hidden animate-in zoom-in-95 duration-500">
+            <CardHeader className="text-center pt-12 pb-6 space-y-4">
+              <div className="mx-auto size-20 bg-primary/10 rounded-full flex items-center justify-center border border-primary/30 animate-pulse">
+                <Mail className="size-10 text-primary" />
+              </div>
+              <CardTitle className="text-3xl font-headline font-black tracking-tighter uppercase">Verification Required</CardTitle>
+              <p className="text-muted-foreground text-sm font-medium px-6">
+                A confirmation link has been sent to <span className="text-white font-bold">{user.email}</span>. Please verify your identity to access the studio.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4 pb-12 px-8">
+              <Button onClick={handleReloadStatus} disabled={isLoading} className="w-full h-14 bg-white text-black hover:bg-white/90 font-black uppercase tracking-widest rounded-xl transition-all shadow-xl">
+                {isLoading ? <Loader2 className="size-5 animate-spin" /> : <RefreshCcw className="mr-2 size-5" />}
+                Check Verification Status
+              </Button>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <Button onClick={handleResendVerification} variant="outline" disabled={isLoading} className="h-12 border-white/5 bg-white/5 hover:bg-white/10 font-black uppercase text-[10px] tracking-widest rounded-xl">
+                  Resend Link
+                </Button>
+                <Button onClick={handleLogout} variant="outline" className="h-12 border-white/5 bg-white/5 hover:bg-white/10 font-black uppercase text-[10px] tracking-widest rounded-xl">
+                  <LogOut className="mr-2 size-4" /> Sign Out
+                </Button>
+              </div>
+
+              <div className="pt-6 border-t border-white/5 flex items-center justify-center gap-2 text-primary/60">
+                <ShieldCheck className="size-4" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secure Session: ID-{user.uid.slice(0, 8)}</span>
+              </div>
+            </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="relative h-screen w-screen flex items-center justify-center p-4">
-        <Image
-            src={bgImageUrl}
-            alt="Background"
-            fill
-            className="object-cover z-0 transition-opacity duration-1000 animate-in fade-in"
-            data-ai-hint="dark cinematic background"
-            priority
-            unoptimized
-        />
+        <Image src={bgImageUrl} alt="Background" fill className="object-cover z-0 transition-opacity duration-1000 animate-in fade-in" priority unoptimized />
         <div className="absolute inset-0 bg-black/75 z-10" />
         
         <Link href="/" className="absolute top-6 left-6 z-20 flex items-center gap-2 group">

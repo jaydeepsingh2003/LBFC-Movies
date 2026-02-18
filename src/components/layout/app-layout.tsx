@@ -19,14 +19,19 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     setIsClient(true);
   }, []);
 
-  // GLOBAL SECURITY GUARD
+  // GLOBAL SECURITY GUARD: Enforce login AND email verification
   useEffect(() => {
-    if (isClient && !isLoading && !user && pathname !== '/login') {
-      router.push('/login');
+    if (isClient && !isLoading) {
+      const isUnauthenticated = !user;
+      const isUnverified = user && !user.emailVerified;
+      
+      if ((isUnauthenticated || isUnverified) && pathname !== '/login') {
+        router.push('/login');
+      }
     }
   }, [isClient, isLoading, user, router, pathname]);
 
-  if (!isClient || isLoading || (!user && pathname !== '/login')) {
+  if (!isClient || isLoading || ((!user || !user.emailVerified) && pathname !== '/login')) {
     return (
       <div className="flex flex-col justify-center items-center h-svh bg-background gap-6">
         <div className="relative">
