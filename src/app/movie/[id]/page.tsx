@@ -97,20 +97,21 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
     if (!movie) return;
     const streamUrl = `https://vidlink.pro/movie/${movie.id}?player=jw`;
     
+    // Using Android Intent for 100% direct redirection
     if (player === 'vlc') {
-        window.location.href = `intent://${streamUrl}#Intent;package=org.videolan.vlc;type=video/*;scheme=https;end`;
+        window.location.href = `intent://${streamUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=org.videolan.vlc;action=android.intent.action.VIEW;type=video/*;end`;
     } else {
-        window.location.href = `intent://${streamUrl}#Intent;package=com.mxtech.videoplayer.ad;type=video/*;scheme=https;end`;
+        window.location.href = `intent://${streamUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.mxtech.videoplayer.ad;action=android.intent.action.VIEW;type=video/*;end`;
     }
     
-    toast({ title: `Redirecting to ${player.toUpperCase()}`, description: "Launching external high-performance player." });
+    toast({ title: `Handoff to ${player.toUpperCase()}`, description: "Establishing hardware-accelerated link." });
   };
 
   const handleCopyLink = () => {
     if (!movie) return;
     const link = `https://vidlink.pro/movie/${movie.id}?player=jw`;
     navigator.clipboard.writeText(link);
-    toast({ title: "Stream Link Copied", description: "Use 'Open Network Stream' in VLC or MX Player." });
+    toast({ title: "Master Link Copied", description: "Use 'Open Network Stream' in your player for ad-free viewing." });
   };
 
   const handleSaveToggle = async () => {
@@ -249,7 +250,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                 </div>
                 <h3 className="font-black text-[10px] md:text-xs uppercase tracking-[0.3em] text-blue-400 flex items-center gap-3">
                     <div className="p-1.5 md:p-2 bg-blue-400/10 rounded-lg md:rounded-xl"><Zap className="size-3 md:size-4" /></div>
-                    Pro Mobile Kit
+                    Pro Mobile Kit (Ad-Free Path)
                 </h3>
                 <div className="grid grid-cols-1 gap-3 relative z-10">
                     <Button onClick={() => handleExternalPlayer('vlc')} variant="outline" className="h-14 md:h-16 rounded-xl md:rounded-2xl border-white/5 bg-white/5 hover:bg-orange-500 hover:text-white transition-all font-bold uppercase tracking-widest text-[10px] md:text-xs">
@@ -263,7 +264,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                     </Button>
                 </div>
                 <p className="text-[8px] text-muted-foreground font-medium uppercase text-center leading-relaxed">
-                    Pro Tip: Use "Open Network Stream" in your player for 100% reliable hardware playback.
+                    Pro Tip: External players bypass browser-level ads entirely. Use "Open Network Stream" for hardware-accelerated playback.
                 </p>
             </div>
 
