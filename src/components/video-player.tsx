@@ -30,7 +30,7 @@ export function VideoPlayer() {
     }
 
     if (activeMedia.type === 'movie') {
-      // VidSrc.to Movie Endpoint
+      // VidSrc.to Movie Endpoint - Optimized for Laptop Playback
       const url = `https://vidsrc.to/embed/movie/${activeMedia.id}`;
       return (
         <iframe
@@ -39,14 +39,15 @@ export function VideoPlayer() {
           height="100%"
           frameBorder="0"
           allowFullScreen
-          referrerPolicy="origin"
+          allow="autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          referrerPolicy="no-referrer"
           className="rounded-xl shadow-2xl"
         ></iframe>
       );
     }
 
     if (activeMedia.type === 'tv') {
-      // VidSrc.to TV Endpoint
+      // VidSrc.to TV Endpoint - Optimized for Laptop Playback
       const season = activeMedia.season || 1;
       const episode = activeMedia.episode || 1;
       const url = `https://vidsrc.to/embed/tv/${activeMedia.id}/${season}/${episode}`;
@@ -57,7 +58,8 @@ export function VideoPlayer() {
           height="100%"
           frameBorder="0"
           allowFullScreen
-          referrerPolicy="origin"
+          allow="autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          referrerPolicy="no-referrer"
           className="rounded-xl shadow-2xl"
         ></iframe>
       );
