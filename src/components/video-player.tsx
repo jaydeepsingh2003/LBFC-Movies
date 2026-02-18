@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -9,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "./ui/badge";
 
-type QualityTier = '720p' | '1080p' | '2k';
+type QualityTier = '720p' | '1080p' | '2k' | '4k';
 
 export function VideoPlayer() {
   const { activeMedia, setActiveMedia } = useVideoPlayer();
@@ -45,7 +46,7 @@ export function VideoPlayer() {
 
   const handleQualityChange = (q: QualityTier) => {
     setQuality(q);
-    if (q === '2k' && server > 2) setServer(1);
+    if ((q === '2k' || q === '4k') && server > 2) setServer(1);
     toast({ title: `Quality Optimized`, description: `Targeting ${q} resolution for this transmission.` });
   };
 
@@ -140,7 +141,7 @@ export function VideoPlayer() {
       <DialogContent className="max-w-[100vw] md:max-w-[95vw] lg:max-w-7xl p-0 border-none bg-black/95 backdrop-blur-3xl overflow-hidden rounded-none md:rounded-[2.5rem] shadow-[0_0_100px_rgba(225,29,72,0.3)] gap-0">
         <DialogTitle className="sr-only">Studio Player</DialogTitle>
         
-        <div className="flex flex-col lg:flex-row w-full h-full min-h-[65vh] md:min-h-[85vh] relative">
+        <div className="flex flex-col lg:flex-row w-full h-full min-h-[60vh] md:min-h-[85vh] relative">
             <div className="absolute top-4 left-4 right-4 z-50 flex items-center justify-between pointer-events-none">
                 <div className="flex items-center gap-2 pointer-events-auto">
                     <Button 
@@ -192,10 +193,10 @@ export function VideoPlayer() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 text-primary">
                             <Settings2 className="size-4" />
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Quality Profile</h4>
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Transmission Profile</h4>
                         </div>
-                        <div className="grid grid-cols-3 gap-2">
-                            {(['720p', '1080p', '2k'] as QualityTier[]).map((q) => (
+                        <div className="grid grid-cols-2 gap-2">
+                            {(['720p', '1080p', '2k', '4k'] as QualityTier[]).map((q) => (
                                 <button
                                     key={q}
                                     onClick={() => handleQualityChange(q)}
@@ -203,11 +204,12 @@ export function VideoPlayer() {
                                         "h-10 rounded-xl text-[9px] font-black uppercase transition-all flex items-center justify-center gap-1 border",
                                         quality === q 
                                             ? "bg-primary border-primary text-white shadow-lg shadow-primary/20" 
-                                            : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10"
+                                            : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10",
+                                        q === '4k' && quality === q && "bg-yellow-500 border-yellow-500 text-black shadow-yellow-500/20"
                                     )}
                                 >
                                     {quality === q && <Check className="size-3" />}
-                                    {q}
+                                    {q} {q === '4k' && 'UHD'}
                                 </button>
                             ))}
                         </div>
@@ -216,7 +218,7 @@ export function VideoPlayer() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 text-blue-400">
                             <Languages className="size-4" />
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Transmission Nodes</h4>
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Network Nodes</h4>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                             {[1, 2, 3, 4].map((num) => (
@@ -226,7 +228,7 @@ export function VideoPlayer() {
                                     className={cn(
                                         "h-10 rounded-xl text-[9px] font-black uppercase transition-all border",
                                         server === num 
-                                            ? "bg-blue-500 border-blue-500 text-white" 
+                                            ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20" 
                                             : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10"
                                     )}
                                 >
@@ -235,14 +237,14 @@ export function VideoPlayer() {
                             ))}
                         </div>
                         <p className="text-[8px] text-muted-foreground uppercase font-bold text-center leading-relaxed">
-                            Pro Tip: Use Mirrors 1 or 2 for target 2K quality. Mirror 3 & 4 provide maximum multi-language stability.
+                            Pro Tip: Use Mirrors 1 or 2 for target 4K quality. Mirror 3 & 4 provide maximum multi-language stability.
                         </p>
                     </div>
 
                     <div className="mt-auto hidden lg:block pt-4 border-t border-white/5">
                         <div className="flex items-center justify-between">
                             <span className="text-[7px] text-muted-foreground font-black uppercase tracking-widest opacity-50">Signal ID: {activeMedia?.id}</span>
-                            <Badge variant="outline" className="text-[7px] font-black uppercase border-white/5 text-muted-foreground px-2">v2.1.0-WTF</Badge>
+                            <Badge variant="outline" className="text-[7px] font-black uppercase border-white/5 text-muted-foreground px-2">v2.5.0-WTF</Badge>
                         </div>
                     </div>
                 </div>

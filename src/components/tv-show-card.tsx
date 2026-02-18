@@ -34,7 +34,6 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
   const router = useRouter();
   const isMobile = useIsMobile();
   const [isLoadingTrailer, setIsLoadingTrailer] = useState(false);
-  const [cachedTrailer, setCachedTrailer] = useState<string | null>(null);
 
   // Smart saved status detection
   const savedRef = useMemo(() => 
@@ -54,32 +53,6 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
     e.preventDefault();
     e.stopPropagation();
     setActiveMedia({ type: 'tv', id, season: 1, episode: 1 });
-  };
-
-  const handlePlayTrailer = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (cachedTrailer) {
-      setVideoId(cachedTrailer);
-      return;
-    }
-
-    setIsLoadingTrailer(true);
-    try {
-      const videos = await getTvShowVideos(id);
-      const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-      if (trailer) {
-        setCachedTrailer(trailer.key);
-        setVideoId(trailer.key);
-      } else {
-        toast({ title: "Trailer Unavailable" });
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoadingTrailer(false);
-    }
   };
 
   const handleToggleSave = async (e: React.MouseEvent) => {
@@ -132,6 +105,7 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
 
   return (
     <div 
+      onClick={handleNavigateToDetails}
       className={cn(
         "relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-secondary transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/20 group cursor-pointer border border-white/5", 
         className
@@ -189,10 +163,10 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
 
         <div className="absolute inset-0 flex items-center justify-center z-10">
           <div 
-            className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-primary/90 flex items-center justify-center shadow-2xl scale-90 md:scale-75 group-hover:scale-100 transition-transform duration-500" 
-            onClick={handlePlayTrailer}
+            className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-primary/90 flex items-center justify-center shadow-2xl scale-90 md:scale-75 group-hover:scale-100 transition-transform duration-500 cursor-pointer" 
+            onClick={handlePlayNow}
           >
-              {isLoadingTrailer ? <Loader2 className="size-6 md:size-8 text-white animate-spin" /> : <Play className="size-6 md:size-8 text-white fill-current ml-1" />}
+              <Play className="size-6 md:size-8 text-white fill-current ml-1" />
           </div>
         </div>
 
