@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -49,7 +50,12 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
   const handlePlayNow = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setActiveMedia({ type: 'movie', id });
+    setActiveMedia({ 
+        type: 'movie', 
+        id, 
+        title, 
+        posterPath: poster_path 
+    });
   };
 
   const handleToggleSave = async (e: React.MouseEvent) => {

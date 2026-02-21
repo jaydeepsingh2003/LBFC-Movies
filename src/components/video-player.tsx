@@ -1,18 +1,24 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useVideoPlayer } from "@/context/video-provider";
-import { X, Maximize, Minimize2, Settings2, Check, Languages, MonitorPlay, ShieldCheck, Zap } from "lucide-react";
+import { X, Maximize, Minimize2, Settings2, Check, Languages, MonitorPlay, ShieldCheck, Zap, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "./ui/badge";
+import { useUser } from "@/firebase/auth/auth-client";
+import { useFirestore } from "@/firebase";
+import { addToHistory } from "@/firebase/firestore/history";
 
 type QualityTier = '720p' | '1080p' | '2k' | '4k';
 
 export function VideoPlayer() {
   const { activeMedia, setActiveMedia } = useVideoPlayer();
+  const { user } = useUser();
+  const firestore = useFirestore();
   const [server, setServer] = useState<1 | 2 | 3 | 4>(1);
   const [quality, setQuality] = useState<QualityTier>('1080p');
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -28,6 +34,20 @@ export function VideoPlayer() {
     setActiveMedia(null);
     setServer(1);
   };
+
+  // Automated History Tracking
+  useEffect(() => {
+    if (isOpen && activeMedia && user && firestore && activeMedia.type !== 'youtube') {
+        addToHistory(firestore, user.uid, {
+            id: activeMedia.id,
+            type: activeMedia.type,
+            title: activeMedia.title || 'Unknown Title',
+            posterPath: activeMedia.posterPath || null,
+            season: activeMedia.season,
+            episode: activeMedia.episode
+        }).catch(err => console.error("History sync failed", err));
+    }
+  }, [isOpen, activeMedia, user, firestore]);
 
   useEffect(() => {
     const handleFsChange = () => {
@@ -123,7 +143,6 @@ export function VideoPlayer() {
         allowFullScreen
         allow="autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         referrerPolicy="no-referrer"
-        sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-presentation allow-modals"
         className="w-full h-full bg-black"
       ></iframe>
     );

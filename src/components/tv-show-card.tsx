@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -48,7 +49,14 @@ export function TVShowCard({ id, title, posterUrl, className, overview, poster_p
   const handlePlayNow = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setActiveMedia({ type: 'tv', id, season: 1, episode: 1 });
+    setActiveMedia({ 
+        type: 'tv', 
+        id, 
+        title, 
+        posterPath: poster_path,
+        season: 1, 
+        episode: 1 
+    });
   };
 
   const handleToggleSave = async (e: React.MouseEvent) => {

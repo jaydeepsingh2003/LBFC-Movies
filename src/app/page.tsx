@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useUser } from '@/firebase/auth/auth-client';
@@ -16,6 +17,7 @@ import UpcomingSection from '@/components/sections/upcoming-section';
 import TrendingOttsSection from '@/components/sections/trending-otts-section';
 import Top10MoviesSection from '@/components/sections/top-10-movies-section';
 import RegionalTop10Section from '@/components/sections/regional-top-10-section';
+import ContinueWatchingSection from '@/components/sections/continue-watching-section';
 
 export default function DashboardPage() {
   const { user, isLoading } = useUser();
@@ -34,6 +36,7 @@ export default function DashboardPage() {
       
       {/* Zero Gap Cinematic Gallery */}
       <div className="space-y-0 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto w-full">
+          <ContinueWatchingSection />
           <Top10MoviesSection />
           <RegionalTop10Section />
           <TrendingOttsSection />

@@ -7,6 +7,8 @@ import { VideoPlayer } from "@/components/video-player";
 export type MediaState = {
   type: 'youtube' | 'movie' | 'tv';
   id: string | number;
+  title?: string;
+  posterPath?: string | null;
   season?: number;
   episode?: number;
 } | null;
