@@ -142,6 +142,7 @@ export function VideoPlayer() {
         allowFullScreen
         allow="autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         referrerPolicy="no-referrer"
+        sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-presentation allow-modals"
         className="w-full h-full bg-black"
       ></iframe>
     );
