@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -31,6 +30,10 @@ export function VideoPlayer() {
     if (document.fullscreenElement) {
         document.exitFullscreen().catch(() => {});
     }
+    // Attempt to unlock orientation when closing
+    if (typeof window !== 'undefined' && screen.orientation && (screen.orientation as any).unlock) {
+        try { (screen.orientation as any).unlock(); } catch (e) {}
+    }
     setActiveMedia(null);
     setServer(1);
   };
@@ -50,7 +53,21 @@ export function VideoPlayer() {
 
   useEffect(() => {
     const handleFsChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      const isFs = !!document.fullscreenElement;
+      setIsFullscreen(isFs);
+      
+      // Handle orientation lock on mobile
+      if (isFs && typeof window !== 'undefined' && screen.orientation && (screen.orientation as any).lock) {
+          try {
+              (screen.orientation as any).lock('landscape').catch(() => {
+                  console.warn("Orientation lock not supported or requires user gesture.");
+              });
+          } catch (e) {}
+      } else if (!isFs) {
+          if (typeof window !== 'undefined' && screen.orientation && (screen.orientation as any).unlock) {
+              try { (screen.orientation as any).unlock(); } catch (e) {}
+          }
+      }
     };
     document.addEventListener("fullscreenchange", handleFsChange);
     document.addEventListener("webkitfullscreenchange", handleFsChange);
