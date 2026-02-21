@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo } from "react";
@@ -6,17 +5,20 @@ import { useFirestore } from "@/firebase";
 import { useUser } from "@/firebase/auth/auth-client";
 import { collection, query, orderBy, limit } from "firebase/firestore";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { History, Play, History as HistoryIcon } from "lucide-react";
+import { History as HistoryIcon, X, Loader2 } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { MovieCard } from "@/components/movie-card";
 import { TVShowCard } from "@/components/tv-show-card";
 import { getPosterUrl } from "@/lib/tmdb.client";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { HistoryItem } from "@/firebase/firestore/history";
+import { deleteFromHistory, type HistoryItem } from "@/firebase/firestore/history";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ContinueWatchingSection() {
     const firestore = useFirestore();
     const { user } = useUser();
+    const { toast } = useToast();
 
     const historyQuery = useMemo(() => {
         if (!user || !firestore) return null;
@@ -28,6 +30,19 @@ export default function ContinueWatchingSection() {
     }, [user, firestore]);
 
     const [historyItems, loading] = useCollectionData(historyQuery);
+
+    const handleRemove = async (e: React.MouseEvent, mediaId: string | number) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!user || !firestore) return;
+
+        try {
+            await deleteFromHistory(firestore, user.uid, mediaId);
+            toast({ title: "History Updated", description: "Title removed from your recent streams." });
+        } catch (err) {
+            toast({ variant: "destructive", title: "Action Failed", description: "Could not remove title from vault." });
+        }
+    };
 
     if (loading) {
         return (
@@ -63,22 +78,33 @@ export default function ContinueWatchingSection() {
                     {historyItems.map((item: any) => {
                         const hItem = item as HistoryItem;
                         return (
-                            <CarouselItem key={hItem.id} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 2xl:basis-1/7 pl-4 md:pl-6">
-                                {hItem.type === 'movie' ? (
-                                    <MovieCard 
-                                        id={Number(hItem.id)} 
-                                        title={hItem.title} 
-                                        posterUrl={getPosterUrl(hItem.posterPath)} 
-                                        poster_path={hItem.posterPath}
-                                    />
-                                ) : (
-                                    <TVShowCard 
-                                        id={Number(hItem.id)} 
-                                        title={hItem.title} 
-                                        posterUrl={getPosterUrl(hItem.posterPath)} 
-                                        poster_path={hItem.posterPath}
-                                    />
-                                )}
+                            <CarouselItem key={hItem.id} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 2xl:basis-1/7 pl-4 md:pl-6 relative group/history">
+                                <div className="relative h-full">
+                                    {/* Precise History Removal Control */}
+                                    <button 
+                                        onClick={(e) => handleRemove(e, hItem.id)}
+                                        className="absolute top-2 left-2 z-30 p-1.5 bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-destructive hover:border-destructive transition-all rounded-lg opacity-0 group-hover/history:opacity-100 scale-90 group-hover/history:scale-100"
+                                        title="Remove from history"
+                                    >
+                                        <X className="size-3.5" />
+                                    </button>
+
+                                    {hItem.type === 'movie' ? (
+                                        <MovieCard 
+                                            id={Number(hItem.id)} 
+                                            title={hItem.title} 
+                                            posterUrl={getPosterUrl(hItem.posterPath)} 
+                                            poster_path={hItem.posterPath}
+                                        />
+                                    ) : (
+                                        <TVShowCard 
+                                            id={Number(hItem.id)} 
+                                            title={hItem.title} 
+                                            posterUrl={getPosterUrl(hItem.posterPath)} 
+                                            poster_path={hItem.posterPath}
+                                        />
+                                    )}
+                                </div>
                             </CarouselItem>
                         );
                     })}

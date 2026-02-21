@@ -1,7 +1,6 @@
-
 'use client';
 
-import { doc, setDoc, serverTimestamp, type Firestore } from 'firebase/firestore';
+import { doc, setDoc, deleteDoc, serverTimestamp, type Firestore } from 'firebase/firestore';
 
 export interface HistoryItem {
     id: number | string;
@@ -47,6 +46,20 @@ export const addToHistory = async (firestore: Firestore, userId: string, media: 
         return await setDoc(historyRef, data, { merge: true });
     } catch (error) {
         console.error("Error writing to history:", error);
+        throw error;
+    }
+};
+
+/**
+ * Removes a specific item from the user's watch history.
+ */
+export const deleteFromHistory = async (firestore: Firestore, userId: string, mediaId: string | number) => {
+    if (!userId || !firestore || !mediaId) return;
+    const historyRef = doc(firestore, `users/${userId}/history/${mediaId}`);
+    try {
+        await deleteDoc(historyRef);
+    } catch (error) {
+        console.error("Error deleting from history:", error);
         throw error;
     }
 };
