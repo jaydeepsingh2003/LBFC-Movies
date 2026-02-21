@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -5,7 +6,7 @@ import { getTvShowDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.clien
 import type { TVShowDetails } from '@/lib/tmdb';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Users, Award, Share2, Play, ExternalLink, RotateCcw } from 'lucide-react';
+import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Users, Award, Share2, Play, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
@@ -26,6 +27,22 @@ interface TVShowDetailsWithMedia extends TVShowDetails {
   backdropUrl: string | null;
 }
 
+const getDirectPlatformLink = (providerName: string, title: string) => {
+    const query = encodeURIComponent(title);
+    switch (providerName.toLowerCase()) {
+        case 'netflix': return `https://www.netflix.com/search?q=${query}`;
+        case 'amazon prime video':
+        case 'amazon prime': return `https://www.primevideo.com/search/ref=atv_nb_sr?phrase=${query}`;
+        case 'disney plus hotstar':
+        case 'disney+':
+        case 'hotstar': return `https://www.hotstar.com/in/search?q=${query}`;
+        case 'jiocinema': return `https://www.jiocinema.com/search/${query}`;
+        case 'sony liv': return `https://www.sonyliv.com/search?q=${query}`;
+        case 'zee5': return `https://www.zee5.com/search?q=${query}`;
+        default: return null;
+    }
+};
+
 export default function TVShowDetailsPage(props: { params: Promise<{ id: string }> }) {
   const { id } = React.use(props.params);
   const { user } = useUser();
@@ -35,19 +52,12 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
   const [isLoading, setIsLoading] = useState(true);
   const { setVideoId, setActiveMedia } = useVideoPlayer();
 
-  // Check Saved Status
   const savedShowRef = useMemo(() => 
     user && firestore && id ? doc(firestore, `users/${user.uid}/savedTvShows/${id}`) : null
   , [firestore, user, id]);
+  
   const [savedShowDoc, isSavedShowLoading] = useDocumentData(savedShowRef);
   const isSaved = !!savedShowDoc;
-
-  // Check Watch History for "Resume" status
-  const historyRef = useMemo(() => 
-    user && firestore && id ? doc(firestore, `users/${user.uid}/history/${id}`) : null
-  , [firestore, user, id]);
-  const [historyDoc] = useDocumentData(historyRef);
-  const hasHistory = !!historyDoc;
 
   useEffect(() => {
     async function fetchData() {
@@ -147,7 +157,7 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
 
   const trailerAvailable = !!show?.videos?.results?.find(v => v.type === 'Trailer');
   const streamingProviders = show?.['watch/providers']?.results?.IN?.flatrate || [];
-  const watchLink = show?.['watch/providers']?.results?.IN?.link;
+  const tmdbWatchLink = show?.['watch/providers']?.results?.IN?.link;
 
   return (
     <div className="relative min-h-svh bg-background">
@@ -198,22 +208,14 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                 {show.posterUrl && <Image src={show.posterUrl} alt={show.name} fill className="object-cover transition-transform duration-700 group-hover:scale-110" unoptimized />}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Button variant="outline" className="rounded-full h-16 w-16 md:h-24 md:w-24 p-0 border-white/20 bg-primary/20 backdrop-blur-md hover:bg-primary hover:text-white transition-all scale-75 group-hover:scale-100 duration-500" onClick={() => handlePlayNow()}>
-                        {hasHistory ? <RotateCcw className="size-10 md:size-14" /> : <Play className="size-10 md:size-14 fill-current" />}
+                        <Play className="size-10 md:size-14 fill-current ml-1" />
                     </Button>
                 </div>
             </div>
             
             <div className="grid grid-cols-1 gap-3 md:gap-5">
                 <Button onClick={() => handlePlayNow()} size="lg" className="rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 font-black text-lg md:text-2xl shadow-2xl shadow-primary/30 group bg-primary text-white hover:bg-primary/90">
-                    {hasHistory ? (
-                        <>
-                            <RotateCcw className="mr-2 md:mr-3 size-5 md:size-7 transition-transform group-hover:rotate-[-45deg]" /> Resume Series
-                        </>
-                    ) : (
-                        <>
-                            <Play className="mr-2 md:mr-3 size-5 md:size-7 fill-current transition-transform group-hover:scale-110" /> Start Series
-                        </>
-                    )}
+                    <Play className="mr-2 md:mr-3 size-5 md:size-7 fill-current transition-transform group-hover:scale-110" /> Start Series
                 </Button>
                 <div className="flex gap-3 md:gap-4">
                     <Button onClick={handlePlayTrailer} variant="outline" className="flex-1 rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 border-white/10 glass-card text-sm md:text-xl font-bold transition-all hover:scale-105 active:scale-95" disabled={!trailerAvailable}>
@@ -236,27 +238,30 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                             <div className="p-1.5 md:p-2 bg-primary/10 rounded-lg md:rounded-xl"><TrendingUp className="size-3 md:size-4" /></div>
                             Stream Now
                         </h3>
-                        {watchLink && (
-                            <a href={watchLink} target="_blank" rel="noopener noreferrer" className="text-[8px] font-black uppercase text-muted-foreground hover:text-white flex items-center gap-1 transition-colors">
-                                Full Specs <ExternalLink className="size-2" />
+                        {tmdbWatchLink && (
+                            <a href={tmdbWatchLink} target="_blank" rel="noopener noreferrer" className="text-[8px] font-black uppercase text-muted-foreground hover:text-white flex items-center gap-1 transition-colors">
+                                Source Details <ExternalLink className="size-2" />
                             </a>
                         )}
                     </div>
                     <div className="flex flex-wrap gap-3 md:gap-5">
-                        {streamingProviders.map(provider => (
-                            <a 
-                                key={provider.provider_id} 
-                                href={watchLink || '#'} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                title={`Watch on ${provider.provider_name}`} 
-                                className="relative size-12 md:size-16 rounded-xl md:rounded-[1.25rem] overflow-hidden shadow-2xl hover:scale-110 hover:ring-4 ring-primary/50 transition-all cursor-pointer border border-white/10"
-                            >
-                                <Image src={getPosterUrl(provider.logo_path)!} alt={provider.provider_name} fill className="object-cover" />
-                            </a>
-                        ))}
+                        {streamingProviders.map(provider => {
+                            const directLink = getDirectPlatformLink(provider.provider_name, show.name);
+                            return (
+                                <a 
+                                    key={provider.provider_id} 
+                                    href={directLink || tmdbWatchLink || '#'} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    title={`Watch on ${provider.provider_name}`} 
+                                    className="relative size-12 md:size-16 rounded-xl md:rounded-[1.25rem] overflow-hidden shadow-2xl hover:scale-110 hover:ring-4 ring-primary/50 transition-all cursor-pointer border border-white/10"
+                                >
+                                    <Image src={getLogoUrl(provider.logo_path)!} alt={provider.provider_name} fill className="object-cover" />
+                                </a>
+                            );
+                        })}
                     </div>
-                    <p className="text-[8px] text-muted-foreground uppercase font-bold text-center opacity-50">Redirecting to official platform landing pages.</p>
+                    <p className="text-[8px] text-muted-foreground uppercase font-bold text-center opacity-50">Direct handoff to official platform catalogs.</p>
                 </div>
             )}
           </div>
@@ -389,8 +394,8 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                                             </div>
                                         </div>
                                         <Button variant="outline" className="hidden md:flex rounded-full px-8 glass-panel hover:bg-primary transition-all border-white/10" onClick={() => handlePlayNow(season.season_number, 1)}>
-                                            {hasHistory ? <RotateCcw className="mr-2 size-4" /> : <Play className="mr-2 size-4 fill-current" />}
-                                            {hasHistory ? "Resume Cycle" : "Start Cycle"}
+                                            <Play className="mr-2 size-4 fill-current" />
+                                            Start Cycle
                                         </Button>
                                     </div>
                                     <p className="text-sm md:text-xl text-muted-foreground/90 leading-relaxed font-medium line-clamp-3 md:line-clamp-4">
