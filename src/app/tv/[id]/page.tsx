@@ -5,7 +5,7 @@ import { getTvShowDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.clien
 import type { TVShowDetails } from '@/lib/tmdb';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Users, Award, Share2, Play, ExternalLink } from 'lucide-react';
+import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Users, Award, Share2, Play, ExternalLink, RotateCcw } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
@@ -35,11 +35,19 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
   const [isLoading, setIsLoading] = useState(true);
   const { setVideoId, setActiveMedia } = useVideoPlayer();
 
+  // Check Saved Status
   const savedShowRef = useMemo(() => 
     user && firestore && id ? doc(firestore, `users/${user.uid}/savedTvShows/${id}`) : null
   , [firestore, user, id]);
   const [savedShowDoc, isSavedShowLoading] = useDocumentData(savedShowRef);
   const isSaved = !!savedShowDoc;
+
+  // Check Watch History for "Resume" status
+  const historyRef = useMemo(() => 
+    user && firestore && id ? doc(firestore, `users/${user.uid}/history/${id}`) : null
+  , [firestore, user, id]);
+  const [historyDoc] = useDocumentData(historyRef);
+  const hasHistory = !!historyDoc;
 
   useEffect(() => {
     async function fetchData() {
@@ -74,7 +82,14 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
 
   const handlePlayNow = (season: number = 1, episode: number = 1) => {
     if (show) {
-      setActiveMedia({ type: 'tv', id: show.id, season, episode });
+      setActiveMedia({ 
+        type: 'tv', 
+        id: show.id, 
+        title: show.name, 
+        posterPath: show.poster_path, 
+        season, 
+        episode 
+      });
     }
   };
 
@@ -183,14 +198,22 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                 {show.posterUrl && <Image src={show.posterUrl} alt={show.name} fill className="object-cover transition-transform duration-700 group-hover:scale-110" unoptimized />}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Button variant="outline" className="rounded-full h-16 w-16 md:h-24 md:w-24 p-0 border-white/20 bg-primary/20 backdrop-blur-md hover:bg-primary hover:text-white transition-all scale-75 group-hover:scale-100 duration-500" onClick={() => handlePlayNow()}>
-                        <Play className="size-10 md:size-14 fill-current" />
+                        {hasHistory ? <RotateCcw className="size-10 md:size-14" /> : <Play className="size-10 md:size-14 fill-current" />}
                     </Button>
                 </div>
             </div>
             
             <div className="grid grid-cols-1 gap-3 md:gap-5">
                 <Button onClick={() => handlePlayNow()} size="lg" className="rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 font-black text-lg md:text-2xl shadow-2xl shadow-primary/30 group bg-primary text-white hover:bg-primary/90">
-                    <Play className="mr-2 md:mr-3 size-5 md:size-7 fill-current transition-transform group-hover:scale-110" /> Start Series
+                    {hasHistory ? (
+                        <>
+                            <RotateCcw className="mr-2 md:mr-3 size-5 md:size-7 transition-transform group-hover:rotate-[-45deg]" /> Resume Series
+                        </>
+                    ) : (
+                        <>
+                            <Play className="mr-2 md:mr-3 size-5 md:size-7 fill-current transition-transform group-hover:scale-110" /> Start Series
+                        </>
+                    )}
                 </Button>
                 <div className="flex gap-3 md:gap-4">
                     <Button onClick={handlePlayTrailer} variant="outline" className="flex-1 rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 border-white/10 glass-card text-sm md:text-xl font-bold transition-all hover:scale-105 active:scale-95" disabled={!trailerAvailable}>
@@ -366,7 +389,8 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                                             </div>
                                         </div>
                                         <Button variant="outline" className="hidden md:flex rounded-full px-8 glass-panel hover:bg-primary transition-all border-white/10" onClick={() => handlePlayNow(season.season_number, 1)}>
-                                            <Play className="mr-2 size-4 fill-current" /> Resume Cycle
+                                            {hasHistory ? <RotateCcw className="mr-2 size-4" /> : <Play className="mr-2 size-4 fill-current" />}
+                                            {hasHistory ? "Resume Cycle" : "Start Cycle"}
                                         </Button>
                                     </div>
                                     <p className="text-sm md:text-xl text-muted-foreground/90 leading-relaxed font-medium line-clamp-3 md:line-clamp-4">

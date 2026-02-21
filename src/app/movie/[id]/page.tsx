@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { getMovieDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
 import type { MovieDetails, Movie } from '@/lib/tmdb';
 import Image from 'next/image';
-import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, TrendingUp, Users, Award, Clapperboard, ExternalLink } from 'lucide-react';
+import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, TrendingUp, Users, Award, Clapperboard, ExternalLink, RotateCcw } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
@@ -43,11 +43,19 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
   const { setVideoId, setActiveMedia } = useVideoPlayer();
   const [similarMovies, setSimilarMovies] = useState<MovieWithPoster[]>([]);
 
+  // Check Saved Status
   const savedMovieRef = useMemo(() => 
     user && firestore && id ? doc(firestore, `users/${user.uid}/savedMovies/${id}`) : null
   , [firestore, user, id]);
   const [savedMovieDoc, isSavedMovieLoading] = useDocumentData(savedMovieRef);
   const isSaved = !!savedMovieDoc;
+
+  // Check Watch History for "Resume" status
+  const historyRef = useMemo(() => 
+    user && firestore && id ? doc(firestore, `users/${user.uid}/history/${id}`) : null
+  , [firestore, user, id]);
+  const [historyDoc] = useDocumentData(historyRef);
+  const hasHistory = !!historyDoc;
 
   useEffect(() => {
     async function fetchData() {
@@ -88,7 +96,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
   
   const handlePlayNow = () => {
     if (movie) {
-      setActiveMedia({ type: 'movie', id: movie.id });
+      setActiveMedia({ type: 'movie', id: movie.id, title: movie.title, posterPath: movie.poster_path });
     }
   };
 
@@ -199,14 +207,22 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                 {movie.posterUrl && <Image src={movie.posterUrl} alt={movie.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" unoptimized />}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Button variant="outline" className="rounded-full h-16 w-16 md:h-24 md:w-24 p-0 border-white/20 bg-primary/20 backdrop-blur-md hover:bg-primary hover:text-white transition-all scale-75 group-hover:scale-100 duration-500" onClick={handlePlayNow}>
-                        <Play className="size-8 md:size-12 fill-current" />
+                        {hasHistory ? <RotateCcw className="size-8 md:size-12" /> : <Play className="size-8 md:size-12 fill-current" />}
                     </Button>
                 </div>
             </div>
             
             <div className="grid grid-cols-1 gap-3 md:gap-5">
                 <Button onClick={handlePlayNow} size="lg" className="rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 font-black text-lg md:text-2xl shadow-2xl shadow-primary/30 group bg-primary text-white hover:bg-primary/90">
-                    <Play className="mr-2 md:mr-3 size-5 md:size-7 fill-current transition-transform group-hover:scale-110" /> Play Now
+                    {hasHistory ? (
+                        <>
+                            <RotateCcw className="mr-2 md:mr-3 size-5 md:size-7 transition-transform group-hover:rotate-[-45deg]" /> Resume Movie
+                        </>
+                    ) : (
+                        <>
+                            <Play className="mr-2 md:mr-3 size-5 md:size-7 fill-current transition-transform group-hover:scale-110" /> Play Now
+                        </>
+                    )}
                 </Button>
                 <div className="flex gap-3 md:gap-4">
                     <Button onClick={() => trailer && handlePlayTrailer(trailer.key)} variant="outline" className="flex-1 rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 border-white/10 glass-card text-sm md:text-xl font-bold transition-all hover:scale-105 active:scale-95" disabled={!trailer}>
