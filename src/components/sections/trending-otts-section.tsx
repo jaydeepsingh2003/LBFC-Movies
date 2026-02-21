@@ -21,15 +21,15 @@ interface ContentWithPoster extends Partial<Movie>, Partial<TVShow> {
 const ottPlatforms = [
   {
     name: 'Netflix',
-    provider_id: 8,
+    provider_id: '8',
   },
   {
     name: 'Prime Video',
-    provider_id: 119,
+    provider_id: '119',
   },
   {
     name: 'Disney+',
-    provider_id: 337,
+    provider_id: '122|337', // Hotstar (122) is primary for Disney+ content in India (IN)
   }
 ];
 
@@ -49,8 +49,8 @@ export default function TrendingOttsSection() {
 
       try {
         const [movieResults, tvShowResults] = await Promise.all([
-          discoverMovies({ with_watch_providers: platform.provider_id.toString(), watch_region: 'IN' }),
-          discoverTvShows({ with_watch_providers: platform.provider_id.toString(), watch_region: 'IN' }),
+          discoverMovies({ with_watch_providers: platform.provider_id, watch_region: 'IN' }),
+          discoverTvShows({ with_watch_providers: platform.provider_id, watch_region: 'IN' }),
         ]);
         
         const combinedContent: ContentWithPoster[] = [
