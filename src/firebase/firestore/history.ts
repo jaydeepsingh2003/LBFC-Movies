@@ -1,4 +1,3 @@
-
 'use client';
 
 import { doc, setDoc, serverTimestamp, type Firestore } from 'firebase/firestore';
@@ -13,6 +12,10 @@ export interface HistoryItem {
     lastPlayed: any;
 }
 
+/**
+ * Adds a media item to the user's watch history.
+ * Explicitly cleans undefined values to prevent FirebaseError.
+ */
 export const addToHistory = async (firestore: Firestore, userId: string, media: {
     id: number | string;
     type: 'movie' | 'tv';
@@ -26,8 +29,18 @@ export const addToHistory = async (firestore: Firestore, userId: string, media: 
     // We use the ID as the document name to ensure unique entries that get updated on re-watch
     const historyRef = doc(firestore, `users/${userId}/history/${media.id}`);
     
-    return setDoc(historyRef, {
-        ...media,
+    // Construct a clean object without undefined values
+    const data: any = {
+        id: media.id,
+        type: media.type,
+        title: media.title,
+        posterPath: media.posterPath || null,
         lastPlayed: serverTimestamp(),
-    }, { merge: true });
+    };
+
+    // Only add season/episode if they are defined (Movies don't have these)
+    if (media.season !== undefined) data.season = media.season;
+    if (media.episode !== undefined) data.episode = media.episode;
+
+    return setDoc(historyRef, data, { merge: true });
 };

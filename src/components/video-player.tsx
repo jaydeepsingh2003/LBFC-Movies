@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -35,7 +34,7 @@ export function VideoPlayer() {
     setServer(1);
   };
 
-  // Automated History Tracking
+  // Automated History Tracking - Cleansed for Firestore Compatibility
   useEffect(() => {
     if (isOpen && activeMedia && user && firestore && activeMedia.type !== 'youtube') {
         addToHistory(firestore, user.uid, {
@@ -214,6 +213,26 @@ export function VideoPlayer() {
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 text-blue-400">
                         <Languages className="size-4" />
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Linguistic Hub</h4>
+                    </div>
+                    <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-2xl space-y-2">
+                        <p className="text-[9px] text-white/80 font-bold leading-relaxed">
+                            Access multi-audio and subtitles via the <span className="text-blue-400">Settings Gear</span> inside the player viewport.
+                        </p>
+                        <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2 text-[8px] font-black uppercase text-muted-foreground">
+                                <Check className="size-2.5 text-blue-400" /> Multi-Audio Tracks
+                            </div>
+                            <div className="flex items-center gap-2 text-[8px] font-black uppercase text-muted-foreground">
+                                <Check className="size-2.5 text-blue-400" /> Global Subtitles
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                        <MonitorPlay className="size-4" />
                         <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Archive Node</h4>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -224,16 +243,16 @@ export function VideoPlayer() {
                                 className={cn(
                                     "h-10 rounded-xl text-[9px] font-black uppercase transition-all border",
                                     server === num 
-                                        ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20" 
+                                        ? "bg-white/20 border-white/20 text-white shadow-lg" 
                                         : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10"
                                 )}
                             >
-                                Mirror {num}
+                                Node {num}
                             </button>
                         ))}
                     </div>
                     <p className="text-[8px] text-muted-foreground uppercase font-bold text-center leading-relaxed">
-                        Nodes 1 & 2 are optimized for 4K/2K streams. Nodes 3 & 4 prioritize linguistic stability and subtitles.
+                        Nodes 1 & 2 are optimized for UHD. Nodes 3 & 4 prioritize linguistic stability.
                     </p>
                 </div>
 
@@ -242,7 +261,7 @@ export function VideoPlayer() {
                         <MonitorPlay className="size-3 text-muted-foreground" />
                         <span className="text-[7px] text-muted-foreground font-black uppercase tracking-widest">ID: {activeMedia?.id}</span>
                     </div>
-                    <Badge variant="outline" className="text-[7px] font-black uppercase border-white/10 text-muted-foreground">Premium Engine v2.8</Badge>
+                    <Badge variant="outline" className="text-[7px] font-black uppercase border-white/10 text-muted-foreground">Premium Engine v2.9</Badge>
                 </div>
             </div>
         </div>
