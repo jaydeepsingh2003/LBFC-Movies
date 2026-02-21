@@ -5,7 +5,7 @@ import { getTvShowDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.clien
 import type { TVShowDetails } from '@/lib/tmdb';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Users, Award, Share2, Play } from 'lucide-react';
+import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Users, Award, Share2, Play, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useVideoPlayer } from '@/context/video-provider';
@@ -132,6 +132,7 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
 
   const trailerAvailable = !!show?.videos?.results?.find(v => v.type === 'Trailer');
   const streamingProviders = show?.['watch/providers']?.results?.IN?.flatrate || [];
+  const watchLink = show?.['watch/providers']?.results?.IN?.link;
 
   return (
     <div className="relative min-h-svh bg-background">
@@ -207,17 +208,32 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
 
             {streamingProviders.length > 0 && (
                 <div className="glass-panel rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 space-y-6 md:space-y-8 border-white/5 shadow-2xl bg-secondary/10">
-                    <h3 className="font-black text-[10px] md:text-xs uppercase tracking-[0.3em] text-primary flex items-center gap-3">
-                        <div className="p-1.5 md:p-2 bg-primary/10 rounded-lg md:rounded-xl"><TrendingUp className="size-3 md:size-4" /></div>
-                        Stream Now
-                    </h3>
+                    <div className="flex items-center justify-between">
+                        <h3 className="font-black text-[10px] md:text-xs uppercase tracking-[0.3em] text-primary flex items-center gap-3">
+                            <div className="p-1.5 md:p-2 bg-primary/10 rounded-lg md:rounded-xl"><TrendingUp className="size-3 md:size-4" /></div>
+                            Stream Now
+                        </h3>
+                        {watchLink && (
+                            <a href={watchLink} target="_blank" rel="noopener noreferrer" className="text-[8px] font-black uppercase text-muted-foreground hover:text-white flex items-center gap-1 transition-colors">
+                                Full Specs <ExternalLink className="size-2" />
+                            </a>
+                        )}
+                    </div>
                     <div className="flex flex-wrap gap-3 md:gap-5">
                         {streamingProviders.map(provider => (
-                            <div key={provider.provider_id} title={provider.provider_name} className="relative size-12 md:size-16 rounded-xl md:rounded-[1.25rem] overflow-hidden shadow-2xl hover:scale-110 hover:ring-4 ring-primary/50 transition-all cursor-pointer border border-white/10">
+                            <a 
+                                key={provider.provider_id} 
+                                href={watchLink || '#'} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                title={`Watch on ${provider.provider_name}`} 
+                                className="relative size-12 md:size-16 rounded-xl md:rounded-[1.25rem] overflow-hidden shadow-2xl hover:scale-110 hover:ring-4 ring-primary/50 transition-all cursor-pointer border border-white/10"
+                            >
                                 <Image src={getPosterUrl(provider.logo_path)!} alt={provider.provider_name} fill className="object-cover" />
-                            </div>
+                            </a>
                         ))}
                     </div>
+                    <p className="text-[8px] text-muted-foreground uppercase font-bold text-center opacity-50">Redirecting to official platform landing pages.</p>
                 </div>
             )}
           </div>
