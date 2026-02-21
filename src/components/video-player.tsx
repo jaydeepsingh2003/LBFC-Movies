@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useVideoPlayer } from "@/context/video-provider";
-import { X, Maximize, Minimize2, Settings2, Check, Languages, MonitorPlay, ShieldCheck } from "lucide-react";
+import { X, Maximize, Minimize2, Settings2, Check, Languages, MonitorPlay, ShieldCheck, Zap } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -99,6 +99,7 @@ export function VideoPlayer() {
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
           allowFullScreen
+          sandbox="allow-scripts allow-same-origin allow-presentation"
           className="w-full h-full"
         ></iframe>
       );
@@ -123,6 +124,7 @@ export function VideoPlayer() {
         allowFullScreen
         allow="autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         referrerPolicy="no-referrer"
+        sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-presentation allow-modals"
         className="w-full h-full bg-black"
       ></iframe>
     );
@@ -144,18 +146,18 @@ export function VideoPlayer() {
                             variant="ghost" 
                             size="icon" 
                             onClick={toggleFullScreen}
-                            className="bg-black/40 backdrop-blur-md border border-white/10 text-white rounded-full h-10 w-10 hover:bg-primary"
+                            className="bg-black/40 backdrop-blur-md border border-white/10 text-white rounded-full h-10 w-10 hover:bg-primary transition-all active:scale-90"
                         >
                             {isFullscreen ? <Minimize2 className="size-5" /> : <Maximize className="size-5" />}
                         </Button>
                         <div className="hidden sm:flex items-center gap-2 bg-green-500/20 backdrop-blur-md border border-green-500/30 px-3 py-1.5 rounded-full">
                             <ShieldCheck className="size-3 text-green-400" />
-                            <span className="text-[8px] font-black text-green-400 uppercase tracking-widest">Active Link</span>
+                            <span className="text-[8px] font-black text-green-400 uppercase tracking-widest">Ad-Shield Active</span>
                         </div>
                     </div>
                     <button 
                         onClick={onClose}
-                        className="p-2 bg-black/40 backdrop-blur-md border border-white/10 hover:bg-primary rounded-full transition-all text-white pointer-events-auto"
+                        className="p-2 bg-black/40 backdrop-blur-md border border-white/10 hover:bg-primary rounded-full transition-all text-white pointer-events-auto active:scale-90"
                     >
                         <X className="size-6" />
                     </button>
@@ -172,7 +174,7 @@ export function VideoPlayer() {
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 text-primary">
                         <Settings2 className="size-4" />
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Quality Profile</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Transmission Quality</h4>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         {(['720p', '1080p', '2k', '4k'] as QualityTier[]).map((q) => (
@@ -187,8 +189,8 @@ export function VideoPlayer() {
                                     q === '4k' && "border-yellow-500/50 text-yellow-500"
                                 )}
                             >
-                                {quality === q && <Check className="size-3" />}
-                                {q} {q === '4k' && 'UHD'}
+                                {quality === q ? <Check className="size-3" /> : (q === '4k' && <Zap className="size-3 fill-current" />)}
+                                {q} {q === '4k' && 'ULTRA'}
                             </button>
                         ))}
                     </div>
@@ -197,7 +199,7 @@ export function VideoPlayer() {
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 text-blue-400">
                         <Languages className="size-4" />
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Transmission Node</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Archive Node</h4>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         {[1, 2, 3, 4].map((num) => (
@@ -211,21 +213,21 @@ export function VideoPlayer() {
                                         : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10"
                                 )}
                             >
-                                Node {num}
+                                Mirror {num}
                             </button>
                         ))}
                     </div>
                     <p className="text-[8px] text-muted-foreground uppercase font-bold text-center leading-relaxed">
-                        Nodes 1 & 2 prioritize 4K/2K streams. Nodes 3 & 4 offer maximum linguistic stability.
+                        Nodes 1 & 2 are optimized for 4K/2K streams. Nodes 3 & 4 prioritize linguistic stability and subtitles.
                     </p>
                 </div>
 
                 <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
                     <div className="flex items-center gap-2 opacity-50">
                         <MonitorPlay className="size-3 text-muted-foreground" />
-                        <span className="text-[7px] text-muted-foreground font-black uppercase tracking-widest">Signal: {activeMedia?.id}</span>
+                        <span className="text-[7px] text-muted-foreground font-black uppercase tracking-widest">ID: {activeMedia?.id}</span>
                     </div>
-                    <Badge variant="outline" className="text-[7px] font-black uppercase border-white/10 text-muted-foreground">v2.6.0-iOS</Badge>
+                    <Badge variant="outline" className="text-[7px] font-black uppercase border-white/10 text-muted-foreground">Premium Engine v2.8</Badge>
                 </div>
             </div>
         </div>
