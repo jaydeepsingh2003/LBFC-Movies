@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
 import { MovieCard } from '../movie-card';
 import { TVShowCard } from '../tv-show-card';
-import { Clapperboard } from 'lucide-react';
+import { Clapperboard, MonitorPlay } from 'lucide-react';
 
 interface ContentWithPoster extends Partial<Movie>, Partial<TVShow> {
   posterUrl: string | null;
@@ -28,8 +28,20 @@ const ottPlatforms = [
     provider_id: '119',
   },
   {
-    name: 'Disney+',
+    name: 'Disney+ Hotstar',
     provider_id: '122|337', // Hotstar (122) is primary for Disney+ content in India (IN)
+  },
+  {
+    name: 'JioCinema',
+    provider_id: '220',
+  },
+  {
+    name: 'Sony LIV',
+    provider_id: '237',
+  },
+  {
+    name: 'Zee5',
+    provider_id: '232',
   }
 ];
 
@@ -82,10 +94,10 @@ export default function TrendingOttsSection() {
                 Trending on <span className="text-primary">OTT</span>
             </h2>
           </div>
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] ml-12 md:ml-14">The most watched titles on your favorite platforms today.</p>
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] ml-12 md:ml-14">Real-time dynamic catalogs from your favorite streaming hubs.</p>
         </div>
         
-        <div className="flex items-center gap-2 p-1.5 glass-panel rounded-2xl overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-2 p-1.5 glass-panel rounded-2xl overflow-x-auto no-scrollbar max-w-full">
           {ottPlatforms.map((platform) => {
             const isActive = activePlatform === platform.name;
             return (
@@ -93,7 +105,7 @@ export default function TrendingOttsSection() {
                     key={platform.name}
                     onClick={() => setActivePlatform(platform.name)}
                     className={cn(
-                        'flex-shrink-0 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300',
+                        'flex-shrink-0 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap',
                         isActive
                         ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-105'
                         : 'text-muted-foreground hover:bg-white/5 hover:text-white'
