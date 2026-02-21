@@ -1,3 +1,4 @@
+
 'use client';
 
 import { doc, setDoc, serverTimestamp, type Firestore } from 'firebase/firestore';
@@ -29,7 +30,7 @@ export const addToHistory = async (firestore: Firestore, userId: string, media: 
     // We use the ID as the document name to ensure unique entries that get updated on re-watch
     const historyRef = doc(firestore, `users/${userId}/history/${media.id}`);
     
-    // Construct a clean object without undefined values
+    // Construct a clean object without undefined values to avoid "Unsupported field value: undefined"
     const data: any = {
         id: media.id,
         type: media.type,
@@ -39,8 +40,13 @@ export const addToHistory = async (firestore: Firestore, userId: string, media: 
     };
 
     // Only add season/episode if they are defined (Movies don't have these)
-    if (media.season !== undefined) data.season = media.season;
-    if (media.episode !== undefined) data.episode = media.episode;
+    if (media.season !== undefined && media.season !== null) data.season = media.season;
+    if (media.episode !== undefined && media.episode !== null) data.episode = media.episode;
 
-    return setDoc(historyRef, data, { merge: true });
+    try {
+        return await setDoc(historyRef, data, { merge: true });
+    } catch (error) {
+        console.error("Error writing to history:", error);
+        throw error;
+    }
 };

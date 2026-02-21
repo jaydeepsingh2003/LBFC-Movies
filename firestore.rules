@@ -34,6 +34,11 @@ service cloud.firestore {
         allow read, write, delete: if isOwner(userId);
       }
       
+      // HISTORY sub-collection - Critical for "Continue Watching"
+      match /history/{mediaId} {
+        allow read, write, delete: if isOwner(userId);
+      }
+      
       // FOLLOWING sub-collection
       match /following/{followedUserId} {
         allow read: if true;
@@ -58,14 +63,14 @@ service cloud.firestore {
     }
 
     // MOVIES collection for reviews
-    match /movies/{movieId}/reviews/{reviewId} {
+    match /databases/{database}/documents/movies/{movieId}/reviews/{reviewId} {
       allow read: if true;
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
     
     // TV SHOWS collection for reviews
-    match /tv-shows/{showId}/reviews/{reviewId} {
+    match /databases/{database}/documents/tv-shows/{showId}/reviews/{reviewId} {
       allow read: if true;
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
