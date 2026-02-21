@@ -2,14 +2,14 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { getTvShowDetails, getPosterUrl, getBackdropUrl } from '@/lib/tmdb.client';
+import { getTvShowDetails, getPosterUrl, getBackdropUrl, getLogoUrl } from '@/lib/tmdb.client';
 import type { TVShowDetails } from '@/lib/tmdb';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Loader2, PlayCircle, Star, Tv, Bookmark, ChevronLeft, Calendar, TrendingUp, Layers, LayoutGrid, Users, Award, Share2, Play, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useVideoPlayer } from '@/context/video-provider';
+import { useVideoPlayer } from '@/context/video-player-context';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/firebase/auth/auth-client';
 import { useFirestore } from '@/firebase';
@@ -17,8 +17,6 @@ import { useToast } from '@/hooks/use-toast';
 import { saveTvShowToPlaylist, removeTvShowFromPlaylist } from '@/firebase/firestore/tv-playlists';
 import { doc } from 'firebase/firestore';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
-import { TvShowRating } from '@/components/tv-show-rating';
-import { TVUserReviewsSection } from '@/components/tv-user-reviews-section';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
@@ -325,31 +323,6 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
                                 </div>
                             </Link>
                         ))}
-                    </div>
-                </section>
-
-                <section className="space-y-6 md:space-y-10">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                        <div className="flex items-center gap-3 md:gap-4">
-                            <Star className="size-5 md:size-6 text-primary fill-primary" />
-                            <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter uppercase mb-0">Critical Hub</h2>
-                        </div>
-                        <Badge className="bg-secondary text-white font-black text-[8px] md:text-[10px] px-2 md:px-3 py-1 rounded-sm uppercase tracking-widest border border-white/10">Community Hub</Badge>
-                    </div>
-                    <div className="glass-panel rounded-2xl md:rounded-[3rem] p-6 md:p-10 space-y-8 md:space-y-10 border-white/10 bg-secondary/30 shadow-[0_40px_80px_rgba(0,0,0,0.5)] backdrop-blur-3xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 md:w-64 md:h-64 bg-primary/5 blur-[60px] md:blur-[100px] rounded-full -mr-16 -mt-16 md:-mr-32 md:-mt-32" />
-                        <div className="space-y-6 md:space-y-8 relative z-10">
-                            <div className="text-center space-y-2">
-                                <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Architect your verdict</p>
-                                <div className="flex justify-center py-4 scale-125 md:scale-150 transform transition-transform hover:scale-[1.3] md:hover:scale-[1.6]">
-                                    <TvShowRating showId={show.id} />
-                                </div>
-                            </div>
-                            <Separator className="bg-white/10" />
-                            <div className="relative z-10 min-h-[250px] md:min-h-[300px]">
-                                <TVUserReviewsSection showId={show.id} />
-                            </div>
-                        </div>
                     </div>
                 </section>
             </div>
