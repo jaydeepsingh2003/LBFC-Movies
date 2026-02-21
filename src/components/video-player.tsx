@@ -136,9 +136,7 @@ export function VideoPlayer() {
         
         <div className="flex flex-col lg:flex-row w-full h-full min-h-[70vh] md:min-h-[80vh]">
             
-            {/* Main Stage */}
             <div className="flex-1 relative bg-black flex flex-col">
-                {/* Floating Top Bar (Always Visible) */}
                 <div className="absolute top-0 left-0 right-0 z-50 p-4 flex items-center justify-between pointer-events-none">
                     <div className="flex items-center gap-2 pointer-events-auto">
                         <Button 
@@ -167,7 +165,6 @@ export function VideoPlayer() {
                 </div>
             </div>
 
-            {/* Command Sidebar */}
             <div className="w-full lg:w-80 bg-secondary/30 backdrop-blur-3xl border-t lg:border-t-0 lg:border-l border-white/5 p-6 flex flex-col gap-8 max-h-[40vh] lg:max-h-none overflow-y-auto no-scrollbar">
                 
                 <div className="space-y-4">

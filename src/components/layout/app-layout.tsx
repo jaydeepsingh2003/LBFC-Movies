@@ -19,7 +19,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     setIsClient(true);
   }, []);
 
-  // GLOBAL SECURITY GUARD: Enforce login AND email verification
   useEffect(() => {
     if (isClient && !isLoading) {
       const isUnauthenticated = !user;

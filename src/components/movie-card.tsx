@@ -57,7 +57,7 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
     e.stopPropagation();
     
     if (!user || !firestore) {
-        toast({ variant: "destructive", title: "Auth Required", description: "Sign in to curate your collection." });
+        toast({ variant: "destructive", title: "Auth Required" });
         return;
     }
 

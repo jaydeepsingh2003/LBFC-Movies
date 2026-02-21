@@ -30,7 +30,6 @@ export async function syncUserProfile(user: User) {
     const userRef = doc(db, 'users', user.uid);
     const displayName = user.displayName || user.email?.split('@')[0] || 'Enthusiast';
     
-    // Sync profile
     await setDoc(userRef, {
         uid: user.uid,
         email: user.email,
@@ -39,7 +38,6 @@ export async function syncUserProfile(user: User) {
         lastLogin: serverTimestamp(),
     }, { merge: true });
 
-    // Trigger AI Email Alert signal
     try {
         const emailContent = await generateLoginAlertEmail({
             displayName,
@@ -57,10 +55,10 @@ export async function syncUserProfile(user: User) {
             },
             createdAt: serverTimestamp(),
             userId: user.uid,
-            status: 'pending' // For 'Trigger Email' extension
+            status: 'pending'
         });
     } catch (error) {
-        console.error("Login notification failed to queue:", error);
+        console.error("Login notification failed:", error);
     }
 }
 
@@ -68,13 +66,11 @@ export async function updateUserProfile(user: User, data: { displayName?: string
     const db = getFirestore();
     const userRef = doc(db, 'users', user.uid);
     
-    // Update Auth Profile
     await updateProfile(user, {
         displayName: data.displayName,
         photoURL: data.photoURL
     });
     
-    // Update Firestore
     await setDoc(userRef, {
         ...data,
         updatedAt: serverTimestamp(),
@@ -96,16 +92,14 @@ export const loginWithGoogle = async () => {
 
 export const signUpWithEmail = async (email: string, password: string): Promise<User> => {
     const auth = getAuth();
-    // Use device language to help avoid regional spam filters
     auth.useDeviceLanguage();
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        // Send Email Verification Link
         await sendEmailVerification(userCredential.user);
         await syncUserProfile(userCredential.user);
         return userCredential.user;
     } catch (error) {
-        console.error("Error signing up with email and password", error);
+        console.error("Error signing up", error);
         throw error;
     }
 };
@@ -117,7 +111,7 @@ export const signInWithEmail = async (email: string, password: string): Promise<
         await syncUserProfile(userCredential.user);
         return userCredential.user;
     } catch (error) {
-        console.error("Error signing in with email and password", error);
+        console.error("Error signing in", error);
         throw error;
     }
 };
