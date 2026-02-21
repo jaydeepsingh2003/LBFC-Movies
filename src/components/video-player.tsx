@@ -4,16 +4,21 @@
 import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useVideoPlayer } from "@/context/video-provider";
-import { X, Maximize, Minimize2, Settings2, Check, Languages, MonitorPlay, ShieldCheck, Zap } from "lucide-react";
+import { X, Maximize, Minimize2, Settings2, Check, Languages, MonitorPlay, ShieldCheck, Zap, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "./ui/badge";
+import { useUser } from "@/firebase/auth/auth-client";
+import { useFirestore } from "@/firebase";
+import { addToHistory } from "@/firebase/firestore/history";
 
 type QualityTier = '720p' | '1080p' | '2k' | '4k';
 
 export function VideoPlayer() {
   const { activeMedia, setActiveMedia } = useVideoPlayer();
+  const { user } = useUser();
+  const firestore = useFirestore();
   const [server, setServer] = useState<1 | 2 | 3 | 4>(1);
   const [quality, setQuality] = useState<QualityTier>('1080p');
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -29,6 +34,19 @@ export function VideoPlayer() {
     setActiveMedia(null);
     setServer(1);
   };
+
+  useEffect(() => {
+    if (activeMedia && user && firestore && activeMedia.type !== 'youtube') {
+        addToHistory(firestore, user.uid, {
+            id: activeMedia.id,
+            type: activeMedia.type as 'movie' | 'tv',
+            title: activeMedia.title || 'Unknown Title',
+            posterPath: activeMedia.posterPath || null,
+            season: activeMedia.season,
+            episode: activeMedia.episode
+        }).catch(err => console.warn("Failed to update watch history:", err));
+    }
+  }, [activeMedia, user, firestore]);
 
   useEffect(() => {
     const handleFsChange = () => {
@@ -49,7 +67,7 @@ export function VideoPlayer() {
 
   const handleQualityChange = (q: QualityTier) => {
     setQuality(q);
-    toast({ title: `Quality Target: ${q}`, description: "The player will attempt to match this resolution." });
+    toast({ title: `Quality Target: ${q}`, description: "Resolution lock initiated." });
   };
 
   const toggleFullScreen = () => {
@@ -187,14 +205,6 @@ export function VideoPlayer() {
                         <p className="text-[9px] text-white/80 font-bold leading-relaxed">
                             Access multi-audio and subtitles via the <span className="text-blue-400">Settings Gear</span> inside the player viewport.
                         </p>
-                        <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-2 text-[8px] font-black uppercase text-muted-foreground">
-                                <Check className="size-2.5 text-blue-400" /> Multi-Audio Tracks
-                            </div>
-                            <div className="flex items-center gap-2 text-[8px] font-black uppercase text-muted-foreground">
-                                <Check className="size-2.5 text-blue-400" /> Global Subtitles
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -220,7 +230,7 @@ export function VideoPlayer() {
                         ))}
                     </div>
                     <p className="text-[8px] text-muted-foreground uppercase font-bold text-center leading-relaxed">
-                        Nodes 1 & 2 are optimized for UHD. Nodes 3 & 4 prioritize linguistic stability.
+                        Nodes 1 & 2 optimized for UHD. Nodes 3 & 4 prioritized for accessibility.
                     </p>
                 </div>
 
@@ -229,7 +239,7 @@ export function VideoPlayer() {
                         <MonitorPlay className="size-3 text-muted-foreground" />
                         <span className="text-[7px] text-muted-foreground font-black uppercase tracking-widest">ID: {activeMedia?.id}</span>
                     </div>
-                    <Badge variant="outline" className="text-[7px] font-black uppercase border-white/10 text-muted-foreground">Premium Engine v2.9</Badge>
+                    <Badge variant="outline" className="text-[7px] font-black uppercase border-white/10 text-muted-foreground">Premium Engine</Badge>
                 </div>
             </div>
         </div>

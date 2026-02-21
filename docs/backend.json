@@ -27,6 +27,19 @@
       },
       "required": ["uid", "email"]
     },
+    "HistoryItem": {
+      "title": "History Item",
+      "description": "Represents a title in the user's watch history.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number" },
+        "type": { "type": "string", "enum": ["movie", "tv"] },
+        "title": { "type": "string" },
+        "posterPath": { "type": "string" },
+        "lastPlayed": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "type", "title"]
+    },
     "LoginAlert": {
       "title": "Login Alert",
       "description": "A signal for a login event, used to trigger email notifications.",
@@ -114,34 +127,6 @@
         }
       },
       "required": ["rating"]
-    },
-    "UserMovieReview": {
-      "title": "User Movie Review",
-      "description": "A review for a movie written by a user.",
-      "type": "object",
-      "properties": {
-        "userId": { "type": "string", "description": "The ID of the user who wrote the review." },
-        "displayName": { "type": "string", "description": "The display name of the user." },
-        "photoURL": { "type": "string", "format": "uri", "description": "The profile picture URL of the user." },
-        "content": { "type": "string", "description": "The text content of the review." },
-        "createdAt": { "type": "string", "format": "date-time", "description": "The timestamp when the review was created." },
-        "rating": { "type": "number", "description": "The rating given along with the review." }
-      },
-      "required": ["userId", "displayName", "content", "createdAt", "rating"]
-    },
-    "UserTvShowReview": {
-      "title": "User TV Show Review",
-      "description": "A review for a TV show written by a user.",
-      "type": "object",
-      "properties": {
-        "userId": { "type": "string", "description": "The ID of the user who wrote the review." },
-        "displayName": { "type": "string", "description": "The display name of the user." },
-        "photoURL": { "type": "string", "format": "uri", "description": "The profile picture URL of the user." },
-        "content": { "type": "string", "description": "The text content of the review." },
-        "createdAt": { "type": "string", "format": "date-time", "description": "The timestamp when the review was created." },
-        "rating": { "type": "number", "description": "The rating given along with the review." }
-      },
-      "required": ["userId", "displayName", "content", "createdAt", "rating"]
     }
   },
   "auth": {
@@ -151,6 +136,10 @@
     "/users/{userId}": {
       "schema": { "$ref": "#/entities/UserProfile" },
       "description": "Stores public user profile information."
+    },
+    "/users/{userId}/history/{mediaId}": {
+      "schema": { "$ref": "#/entities/HistoryItem" },
+      "description": "Watch history collection."
     },
     "/users/{userId}/loginAlerts/{alertId}": {
       "schema": { "$ref": "#/entities/LoginAlert" },
@@ -179,14 +168,6 @@
     "/users/{userId}/tvRatings/{showId}": {
       "schema": { "$ref": "#/entities/UserTvShowRating" },
       "description": "Sub-collection storing a user's TV show ratings."
-    },
-    "/movies/{movieId}/reviews/{reviewId}": {
-      "schema": { "$ref": "#/entities/UserMovieReview" },
-      "description": "Sub-collection storing all user reviews for a specific movie."
-    },
-     "/tv-shows/{showId}/reviews/{reviewId}": {
-      "schema": { "$ref": "#/entities/UserTvShowReview" },
-      "description": "Sub-collection storing all user reviews for a specific TV show."
     }
   }
 }

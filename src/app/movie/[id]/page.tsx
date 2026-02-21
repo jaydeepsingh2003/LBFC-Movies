@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { Loader2, Play, Star, Bookmark, Calendar, Clock, ChevronLeft, Share2, TrendingUp, Users, Award, Clapperboard, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useVideoPlayer } from '@/context/video-player-context';
+import { useVideoPlayer } from '@/context/video-provider';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/firebase/auth/auth-client';
 import { useFirestore } from '@/firebase';
@@ -62,8 +62,15 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
     user && firestore && id ? doc(firestore, `users/${user.uid}/savedMovies/${id}`) : null
   , [firestore, user, id]);
   
+  const historyRef = useMemo(() => 
+    user && firestore && id ? doc(firestore, `users/${user.uid}/history/${id}`) : null
+  , [firestore, user, id]);
+
   const [savedMovieDoc, isSavedMovieLoading] = useDocumentData(savedMovieRef);
+  const [historyDoc] = useDocumentData(historyRef);
+  
   const isSaved = !!savedMovieDoc;
+  const isPreviouslyWatched = !!historyDoc;
 
   useEffect(() => {
     async function fetchData() {
@@ -222,7 +229,8 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
             
             <div className="grid grid-cols-1 gap-3 md:gap-5">
                 <Button onClick={handlePlayNow} size="lg" className="rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 font-black text-lg md:text-2xl shadow-2xl shadow-primary/30 group bg-primary text-white hover:bg-primary/90">
-                    <Play className="mr-2 md:mr-3 size-5 md:size-7 fill-current transition-transform group-hover:scale-110" /> Play Now
+                    <Play className="mr-2 md:mr-3 size-5 md:size-7 fill-current transition-transform group-hover:scale-110" /> 
+                    {isPreviouslyWatched ? 'Resume Movie' : 'Play Now'}
                 </Button>
                 <div className="flex gap-3 md:gap-4">
                     <Button onClick={() => trailer && handlePlayTrailer(trailer.key)} variant="outline" className="flex-1 rounded-2xl md:rounded-[2.5rem] h-14 md:h-20 border-white/10 glass-card text-sm md:text-xl font-bold transition-all hover:scale-105 active:scale-95" disabled={!trailer}>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { doc, setDoc, deleteDoc, serverTimestamp, type Firestore } from 'firebase/firestore';
@@ -14,7 +15,6 @@ export interface HistoryItem {
 
 /**
  * Adds a media item to the user's watch history.
- * Explicitly cleans undefined values to prevent FirebaseError.
  */
 export const addToHistory = async (firestore: Firestore, userId: string, media: {
     id: number | string;
@@ -26,10 +26,9 @@ export const addToHistory = async (firestore: Firestore, userId: string, media: 
 }) => {
     if (!userId || !firestore || !media.id) return;
     
-    // We use the ID as the document name to ensure unique entries that get updated on re-watch
     const historyRef = doc(firestore, `users/${userId}/history/${media.id}`);
     
-    // Construct a clean object without undefined values to avoid "Unsupported field value: undefined"
+    // Construct clean data to avoid "Unsupported field value: undefined"
     const data: any = {
         id: media.id,
         type: media.type,
@@ -38,7 +37,6 @@ export const addToHistory = async (firestore: Firestore, userId: string, media: 
         lastPlayed: serverTimestamp(),
     };
 
-    // Only add season/episode if they are defined (Movies don't have these)
     if (media.season !== undefined && media.season !== null) data.season = media.season;
     if (media.episode !== undefined && media.episode !== null) data.episode = media.episode;
 
