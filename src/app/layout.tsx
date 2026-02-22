@@ -38,10 +38,18 @@ export default function RootLayout({
   const handleIntroComplete = () => {
     setShowIntro(false);
     
-    // Entrance 3D Animation for main content
+    // Snappy Entrance 3D Animation
     gsap.fromTo('.main-content-layer', 
-      { perspective: '1000px', rotationX: 15, scale: 0.8, opacity: 0, z: -500 },
-      { rotationX: 0, scale: 1, opacity: 1, z: 0, duration: 1.5, ease: 'expo.out' }
+      { perspective: '1000px', rotationX: 10, scale: 0.9, opacity: 0, z: -300 },
+      { 
+        rotationX: 0, 
+        scale: 1, 
+        opacity: 1, 
+        z: 0, 
+        duration: 0.8, 
+        ease: 'expo.out',
+        clearProps: 'all'
+      }
     );
   };
 
@@ -59,7 +67,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased selection:bg-primary/30 overflow-x-hidden bg-transparent">
           {showIntro && <StudioIntro onComplete={handleIntroComplete} />}
-          <div className={`${showIntro ? 'invisible h-0 overflow-hidden' : 'visible opacity-100'} transition-opacity duration-500`}>
+          <div className={`${showIntro ? 'invisible h-0 overflow-hidden' : 'visible opacity-100'} transition-opacity duration-300`}>
             <PremiumBackground />
             <FirebaseClientProvider>
               <VideoPlayerProvider>
