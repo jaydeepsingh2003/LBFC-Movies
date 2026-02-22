@@ -21,14 +21,14 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
         onComplete: () => {
           gsap.to(containerRef.current, {
             opacity: 0,
-            duration: 1.5,
+            duration: 0.8,
             ease: 'power4.inOut',
             onComplete: onComplete
           });
         }
       });
 
-      // Netflix-style vanishing point setup
+      // Netflix-style vanishing point setup - slightly faster for navigation
       gsap.set(logoRef.current, { scale: 0.2, opacity: 0, z: -2000, rotationY: -15, filter: 'blur(20px)' });
       gsap.set(textRef.current, { opacity: 0, y: 100, letterSpacing: '2em', scale: 0.5 });
       gsap.set(glowRef.current, { opacity: 0, scale: 0.1 });
@@ -41,50 +41,50 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
         z: 0,
         rotationY: 0,
         filter: 'blur(0px)',
-        duration: 2,
+        duration: 1.2,
         ease: 'expo.out'
       })
       .to(glowRef.current, {
         opacity: 1,
         scale: 2.5,
-        duration: 2.5,
+        duration: 1.5,
         ease: 'power2.out'
-      }, '-=1.8')
+      }, '-=1.0')
       .to(lineRef.current, {
         width: '300px',
         opacity: 1,
-        duration: 1.5,
+        duration: 1.0,
         ease: 'power4.out'
-      }, '-=1.5')
+      }, '-=1.2')
       .to(textRef.current, {
         opacity: 1,
         y: 0,
         scale: 1,
         letterSpacing: '0.3em',
-        duration: 2,
+        duration: 1.5,
         ease: 'power4.out'
-      }, '-=1.5')
+      }, '-=1.2')
       .to(logoRef.current, {
-        scale: 1.1,
-        duration: 3,
+        scale: 1.05,
+        duration: 1.5,
         ease: 'linear'
-      }, '-=0.5')
+      }, '-=0.3')
       // Final Netflix-style Zoom-Through
       .to([logoRef.current, textRef.current, lineRef.current], {
-        scale: 20,
+        scale: 15,
         opacity: 0,
         z: 3000,
         filter: 'blur(40px)',
-        duration: 1.8,
+        duration: 1.2,
         ease: 'power4.in',
-        delay: 0.5
+        delay: 0.2
       })
       .to(glowRef.current, {
-        scale: 10,
+        scale: 8,
         opacity: 0,
-        duration: 1.5,
+        duration: 1.0,
         ease: 'power4.in'
-      }, '-=1.5');
+      }, '-=1.0');
     }, containerRef);
 
     return () => ctx.revert();
@@ -121,7 +121,7 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
 
       <div className="absolute bottom-16 flex flex-col items-center gap-4">
         <span className="text-[10px] font-black uppercase tracking-[0.6em] text-muted-foreground animate-pulse opacity-50">
-          Initializing Cinematic Stream
+          Syncing Cinematic Stream
         </span>
       </div>
 
