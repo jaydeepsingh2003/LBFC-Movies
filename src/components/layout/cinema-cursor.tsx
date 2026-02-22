@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useRef } from 'react';
@@ -13,7 +12,7 @@ export function CinemaCursor() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (window.matchMedia('(pointer: coarse)').matches) return; // Disable on touch devices
+    if (window.matchMedia('(pointer: coarse)').matches) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -22,6 +21,7 @@ export function CinemaCursor() {
       canvas,
       alpha: true,
       antialias: true,
+      powerPreference: 'high-performance',
     });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -37,18 +37,16 @@ export function CinemaCursor() {
     );
     camera.position.z = 1;
 
-    // Particle Nebula
-    const particlesCount = 40;
+    // Optimized Particle System
+    const particlesCount = 25; // Lower count, higher impact
     const positions = new Float32Array(particlesCount * 3);
     const opacities = new Float32Array(particlesCount);
-    const sizes = new Float32Array(particlesCount);
 
     for (let i = 0; i < particlesCount; i++) {
       positions[i * 3] = 0;
       positions[i * 3 + 1] = 0;
       positions[i * 3 + 2] = 0;
-      opacities[i] = Math.random();
-      sizes[i] = Math.random() * 4 + 2;
+      opacities[i] = 1.0 - (i / particlesCount);
     }
 
     const geometry = new THREE.BufferGeometry();
@@ -61,7 +59,6 @@ export function CinemaCursor() {
       depthTest: false,
       uniforms: {
         uColor: { value: new THREE.Color('#e11d48') },
-        uTime: { value: 0 },
       },
       vertexShader: `
         attribute float opacity;
@@ -69,7 +66,7 @@ export function CinemaCursor() {
         void main() {
           vOpacity = opacity;
           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = 4.0 * (1.0 / -mvPosition.z);
+          gl_PointSize = 6.0 * (1.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -87,12 +84,11 @@ export function CinemaCursor() {
     const points = new THREE.Points(geometry, material);
     scene.add(points);
 
-    // Main Glow Ring
-    const ringGeo = new THREE.RingGeometry(12, 14, 32);
+    const ringGeo = new THREE.RingGeometry(10, 12, 32);
     const ringMat = new THREE.MeshBasicMaterial({
       color: '#e11d48',
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.5,
       side: THREE.DoubleSide,
     });
     const ring = new THREE.Mesh(ringGeo, ringMat);
@@ -103,26 +99,25 @@ export function CinemaCursor() {
       target.current.y = -e.clientY + window.innerHeight / 2;
     };
 
-    const handleMouseEnter = () => {
+    const onEnter = () => {
       isHovering.current = true;
-      gsap.to(ring.scale, { x: 2.5, y: 2.5, duration: 0.4, ease: 'back.out(2)' });
-      gsap.to(ringMat, { opacity: 0.1, duration: 0.4 });
+      gsap.to(ring.scale, { x: 2.2, y: 2.2, duration: 0.3, ease: 'power3.out' });
+      gsap.to(ringMat, { opacity: 0.15, duration: 0.3 });
     };
 
-    const handleMouseLeave = () => {
+    const onLeave = () => {
       isHovering.current = false;
-      gsap.to(ring.scale, { x: 1, y: 1, duration: 0.4, ease: 'back.out(2)' });
-      gsap.to(ringMat, { opacity: 0.4, duration: 0.4 });
+      gsap.to(ring.scale, { x: 1, y: 1, duration: 0.4, ease: 'power3.out' });
+      gsap.to(ringMat, { opacity: 0.5, duration: 0.4 });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     
-    // Track hover states globally
     const trackHover = () => {
-      const interactives = document.querySelectorAll('button, a, input, [role="button"], .group');
+      const interactives = document.querySelectorAll('button, a, input, [role="button"], .group, .cursor-pointer');
       interactives.forEach(el => {
-        el.addEventListener('mouseenter', handleMouseEnter);
-        el.addEventListener('mouseleave', handleMouseLeave);
+        el.addEventListener('mouseenter', onEnter);
+        el.addEventListener('mouseleave', onLeave);
       });
     };
     
@@ -130,35 +125,26 @@ export function CinemaCursor() {
     observer.observe(document.body, { childList: true, subtree: true });
     trackHover();
 
-    let time = 0;
+    let rafId: number;
     const animate = () => {
-      time += 0.01;
-      material.uniforms.uTime.value = time;
-
-      // Smoothed mouse follow
-      mouse.current.x += (target.current.x - mouse.current.x) * 0.15;
-      mouse.current.y += (target.current.y - mouse.current.y) * 0.15;
+      // High-frequency interpolation
+      mouse.current.x += (target.current.x - mouse.current.x) * 0.2;
+      mouse.current.y += (target.current.y - mouse.current.y) * 0.2;
 
       ring.position.x = mouse.current.x;
       ring.position.y = mouse.current.y;
 
-      // Update particles
       const positionsAttr = geometry.attributes.position as THREE.BufferAttribute;
-      for (let i = 0; i < particlesCount; i++) {
-        const i3 = i * 3;
-        // Shift trail
-        if (i > 0) {
-          positionsAttr.array[i3] += (positionsAttr.array[(i - 1) * 3] - positionsAttr.array[i3]) * 0.4;
-          positionsAttr.array[i3 + 1] += (positionsAttr.array[(i - 1) * 3 + 1] - positionsAttr.array[i3 + 1]) * 0.4;
-        } else {
-          positionsAttr.array[i3] = mouse.current.x;
-          positionsAttr.array[i3 + 1] = mouse.current.y;
-        }
+      for (let i = particlesCount - 1; i > 0; i--) {
+        positionsAttr.array[i * 3] = positionsAttr.array[(i - 1) * 3];
+        positionsAttr.array[i * 3 + 1] = positionsAttr.array[(i - 1) * 3 + 1];
       }
+      positionsAttr.array[0] = mouse.current.x;
+      positionsAttr.array[1] = mouse.current.y;
       positionsAttr.needsUpdate = true;
 
       renderer.render(scene, camera);
-      requestAnimationFrame(animate);
+      rafId = requestAnimationFrame(animate);
     };
 
     animate();
@@ -177,6 +163,7 @@ export function CinemaCursor() {
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(rafId);
       renderer.dispose();
       observer.disconnect();
     };
@@ -185,7 +172,7 @@ export function CinemaCursor() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 z-[9999] pointer-events-none mix-blend-screen"
+      className="fixed inset-0 z-[9999] pointer-events-none mix-blend-screen will-change-transform"
       style={{ touchAction: 'none' }}
     />
   );
