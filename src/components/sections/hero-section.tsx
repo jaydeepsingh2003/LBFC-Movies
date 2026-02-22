@@ -62,40 +62,40 @@ export default function HeroSection() {
     React.useEffect(() => {
         if (!isLoading && movies.length > 0 && heroRef.current) {
             const ctx = gsap.context(() => {
-                // High-Speed Entrance
+                // High-Speed Visceral Entrance
                 gsap.from('.hero-content-node', {
-                    y: 60,
+                    y: 80,
                     opacity: 0,
-                    stagger: 0.1,
-                    duration: 1,
+                    stagger: 0.08,
+                    duration: 0.8,
                     ease: 'expo.out',
-                    delay: 0.3
+                    delay: 0.2
                 });
                 
                 gsap.from('.hero-backdrop', {
-                    scale: 1.15,
+                    scale: 1.2,
                     opacity: 0,
-                    duration: 2,
+                    duration: 1.5,
                     ease: 'power2.out'
                 });
 
                 const handleHeroParallax = (e: MouseEvent) => {
-                    const x = (e.clientX / window.innerWidth - 0.5) * 35;
-                    const y = (e.clientY / window.innerHeight - 0.5) * 35;
+                    const x = (e.clientX / window.innerWidth - 0.5) * 40;
+                    const y = (e.clientY / window.innerHeight - 0.5) * 40;
 
                     gsap.to('.hero-backdrop', {
-                        x: x * -0.4,
-                        y: y * -0.4,
-                        duration: 0.8,
-                        ease: 'power3.out',
+                        x: x * -0.5,
+                        y: y * -0.5,
+                        duration: 0.6,
+                        ease: 'power2.out',
                         overwrite: 'auto'
                     });
 
                     gsap.to('.hero-text-plane', {
-                        x: x * 0.6,
-                        y: y * 0.6,
-                        duration: 0.8,
-                        ease: 'power3.out',
+                        x: x * 0.8,
+                        y: y * 0.8,
+                        duration: 0.6,
+                        ease: 'power2.out',
                         overwrite: 'auto'
                     });
                 };
@@ -106,10 +106,10 @@ export default function HeroSection() {
                         const rect = btn.getBoundingClientRect();
                         const x = e.clientX - rect.left - rect.width / 2;
                         const y = e.clientY - rect.top - rect.height / 2;
-                        gsap.to(btn, { x: x * 0.35, y: y * 0.35, duration: 0.25, ease: 'power3.out' });
+                        gsap.to(btn, { x: x * 0.45, y: y * 0.45, duration: 0.2, ease: 'power3.out' });
                     });
                     btn.addEventListener('mouseleave', () => {
-                        gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' });
+                        gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.3)' });
                     });
                 });
 

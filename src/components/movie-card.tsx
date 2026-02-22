@@ -54,16 +54,17 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
       
-      const rotateX = ((y - centerY) / centerY) * -15; // Increased intensity
-      const rotateY = ((x - centerX) / centerX) * 15;
+      // Increased intensity for premium 3D feel
+      const rotateX = ((y - centerY) / centerY) * -18;
+      const rotateY = ((x - centerX) / centerX) * 18;
 
       gsap.to(card, {
         rotationX: rotateX,
         rotationY: rotateY,
-        scale: 1.06,
-        duration: 0.3, // Faster response
+        scale: 1.08,
+        duration: 0.25, // Accelerated for snappiness
         ease: 'power3.out',
-        transformPerspective: 1200,
+        transformPerspective: 1500,
         force3D: true,
         overwrite: 'auto'
       });
@@ -74,8 +75,8 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
         rotationX: 0,
         rotationY: 0,
         scale: 1,
-        duration: 0.5,
-        ease: 'power3.out',
+        duration: 0.6,
+        ease: 'elastic.out(1, 0.6)', // Physical recovery feel
         force3D: true
       });
     };
@@ -118,24 +119,12 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
     } catch (error) { console.error(error); }
   };
 
-  const handleShare = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const url = `${window.location.origin}/movie/${id}`;
-    if (navigator.share) {
-        navigator.share({ title, url }).catch(console.error);
-    } else {
-        navigator.clipboard.writeText(url);
-        toast({ title: "Link Copied" });
-    }
-  };
-
   return (
     <div 
       ref={cardRef}
       onClick={handleNavigateToDetails}
       className={cn(
-        "relative aspect-[2/3] w-full overflow-hidden rounded-2xl bg-secondary transition-shadow duration-500 hover:shadow-[0_25px_60px_rgba(225,29,72,0.4)] group cursor-pointer border border-white/10 preserve-3d will-change-transform", 
+        "relative aspect-[2/3] w-full overflow-hidden rounded-2xl bg-secondary transition-shadow duration-500 hover:shadow-[0_30px_70px_rgba(225,29,72,0.5)] group cursor-pointer border border-white/10 preserve-3d will-change-transform", 
         className
       )}
     >
@@ -148,6 +137,9 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
         </div>
       )}
 
+      {/* Glossy Glint Layer */}
+      <div className="absolute inset-0 z-20 pointer-events-none glint-effect opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
       <div className={cn(
         "absolute inset-0 bg-gradient-to-t from-black/95 via-black/10 to-transparent transition-opacity duration-500 z-10",
         isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
@@ -155,9 +147,6 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
           <Button variant="secondary" size="icon" className={cn("h-8 w-8 rounded-full glass-card border-none shadow-lg transition-all", isSaved ? "bg-primary text-white" : "bg-black/40 hover:bg-primary")} onClick={handleToggleSave} disabled={isSavedLoading}>
             <Bookmark className={cn("size-3.5", isSaved && "fill-current")} />
-          </Button>
-          <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-blue-500 border-none shadow-lg" onClick={handleShare}>
-            <Share2 className="size-3.5" />
           </Button>
           <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-yellow-500 border-none shadow-lg" onClick={handleNavigateToDetails}>
             <Info className="size-3.5" />

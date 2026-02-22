@@ -19,7 +19,6 @@ function LayoutWrapper({ children }: { children: ReactNode }) {
     setMounted(true);
   }, []);
 
-  // During hydration, render a stable structure
   if (!mounted) {
     return <div className="opacity-0">{children}</div>;
   }
@@ -39,23 +38,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [showIntro, setShowIntro] = useState(true);
-  const pathname = usePathname();
 
-  useEffect(() => {
-    setShowIntro(true);
-  }, [pathname]);
-
+  // The intro now only plays ONCE on initial load, not on every route change.
   const handleIntroComplete = () => {
     setShowIntro(false);
     
+    // Smooth high-speed entrance for the main layer
     gsap.fromTo('.main-content-layer', 
-      { perspective: '1000px', rotationX: 10, scale: 0.9, opacity: 0, z: -300 },
+      { perspective: '1200px', rotationX: 15, scale: 0.85, opacity: 0, z: -500 },
       { 
         rotationX: 0, 
         scale: 1, 
         opacity: 1, 
         z: 0, 
-        duration: 0.8, 
+        duration: 0.6, 
         ease: 'expo.out',
         clearProps: 'all'
       }
