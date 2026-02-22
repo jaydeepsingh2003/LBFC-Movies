@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Play, Bookmark, Star, Info, Share2, Clapperboard } from 'lucide-react';
@@ -15,6 +14,7 @@ import { useFirestore } from '@/firebase';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { doc } from 'firebase/firestore';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
+import { gsap } from 'gsap';
 
 interface MovieCardProps {
   id: number;
@@ -33,6 +33,7 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
   const { toast } = useToast();
   const router = useRouter();
   const isMobile = useIsMobile();
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const savedRef = useMemo(() => 
     user && firestore ? doc(firestore, `users/${user.uid}/savedMovies/${id}`) : null
@@ -40,6 +41,48 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
   
   const [savedDoc, isSavedLoading] = useDocumentData(savedRef);
   const isSaved = !!savedDoc;
+
+  // 3D Perspective Tilt Effect
+  useEffect(() => {
+    if (isMobile || !cardRef.current) return;
+
+    const card = cardRef.current;
+    const onMouseMove = (e: MouseEvent) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = (y - centerY) / 10;
+      const rotateY = (centerX - x) / 10;
+
+      gsap.to(card, {
+        rotationX: rotateX,
+        rotationY: rotateY,
+        scale: 1.05,
+        duration: 0.5,
+        ease: 'power2.out',
+        transformPerspective: 1000
+      });
+    };
+
+    const onMouseLeave = () => {
+      gsap.to(card, {
+        rotationX: 0,
+        rotationY: 0,
+        scale: 1,
+        duration: 0.5,
+        ease: 'power2.out'
+      });
+    };
+
+    card.addEventListener('mousemove', onMouseMove);
+    card.addEventListener('mouseleave', onMouseLeave);
+    return () => {
+      card.removeEventListener('mousemove', onMouseMove);
+      card.removeEventListener('mouseleave', onMouseLeave);
+    };
+  }, [isMobile]);
 
   const handleNavigateToDetails = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -99,9 +142,10 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
 
   return (
     <div 
+      ref={cardRef}
       onClick={handleNavigateToDetails}
       className={cn(
-        "relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-secondary transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/20 group cursor-pointer border border-white/5", 
+        "relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-secondary transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 group cursor-pointer border border-white/5 preserve-3d", 
         className
       )}
     >

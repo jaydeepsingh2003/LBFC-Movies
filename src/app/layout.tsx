@@ -1,4 +1,3 @@
-
 'use client';
 
 import './globals.css';
@@ -44,9 +43,9 @@ export default function RootLayout({
     sessionStorage.setItem('studio-intro-seen', 'true');
     
     // Entrance 3D Animation for main content
-    gsap.fromTo('body', 
-      { perspective: '1000px', rotationX: 5, scale: 0.95, opacity: 0 },
-      { rotationX: 0, scale: 1, opacity: 1, duration: 1.5, ease: 'expo.out' }
+    gsap.fromTo('.main-content-layer', 
+      { perspective: '1000px', rotationX: 10, scale: 0.9, opacity: 0, z: -200 },
+      { rotationX: 0, scale: 1, opacity: 1, z: 0, duration: 2, ease: 'expo.out' }
     );
   };
 
@@ -64,11 +63,13 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased selection:bg-primary/30 overflow-x-hidden">
           {showIntro && <StudioIntro onComplete={handleIntroComplete} />}
-          <div className={showIntro ? 'invisible opacity-0' : 'visible opacity-100 transition-opacity duration-1000'}>
+          <div className={`${showIntro ? 'invisible opacity-0' : 'visible opacity-100'} transition-opacity duration-1000`}>
             <PremiumBackground />
             <FirebaseClientProvider>
               <VideoPlayerProvider>
-                  <LayoutWrapper>{children}</LayoutWrapper>
+                  <div className="main-content-layer">
+                    <LayoutWrapper>{children}</LayoutWrapper>
+                  </div>
                   <Toaster />
               </VideoPlayerProvider>
             </FirebaseClientProvider>
