@@ -31,12 +31,12 @@ export default function RootLayout({
   const pathname = usePathname();
 
   useEffect(() => {
-    // Only show intro on home page first visit in session
+    // Only show intro once per session
     const hasSeenIntro = sessionStorage.getItem('studio-intro-seen');
-    if (hasSeenIntro || pathname !== '/') {
+    if (hasSeenIntro) {
       setShowIntro(false);
     }
-  }, [pathname]);
+  }, []);
 
   const handleIntroComplete = () => {
     setShowIntro(false);
@@ -44,8 +44,8 @@ export default function RootLayout({
     
     // Entrance 3D Animation for main content
     gsap.fromTo('.main-content-layer', 
-      { perspective: '1000px', rotationX: 10, scale: 0.9, opacity: 0, z: -200 },
-      { rotationX: 0, scale: 1, opacity: 1, z: 0, duration: 2, ease: 'expo.out' }
+      { perspective: '1000px', rotationX: 15, scale: 0.8, opacity: 0, z: -500 },
+      { rotationX: 0, scale: 1, opacity: 1, z: 0, duration: 2.5, ease: 'expo.out' }
     );
   };
 
@@ -61,9 +61,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased selection:bg-primary/30 overflow-x-hidden">
+      <body className="font-body antialiased selection:bg-primary/30 overflow-x-hidden bg-transparent">
           {showIntro && <StudioIntro onComplete={handleIntroComplete} />}
-          <div className={`${showIntro ? 'invisible opacity-0' : 'visible opacity-100'} transition-opacity duration-1000`}>
+          <div className={`${showIntro ? 'invisible h-0 overflow-hidden' : 'visible opacity-100'} transition-opacity duration-1000`}>
             <PremiumBackground />
             <FirebaseClientProvider>
               <VideoPlayerProvider>
