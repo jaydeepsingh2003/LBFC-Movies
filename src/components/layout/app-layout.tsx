@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Header } from './header';
@@ -7,6 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import { CinemaCursor } from './cinema-cursor';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useUser();
@@ -43,7 +45,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-transparent selection:bg-primary/30">
+    <div className="min-h-screen flex flex-col bg-transparent selection:bg-primary/30 relative overflow-x-hidden">
+      <CinemaCursor />
       <Header />
       <main className="flex-1 w-full max-w-[2000px] mx-auto pt-16 md:pt-18 pb-24 md:pb-12">
         {children}

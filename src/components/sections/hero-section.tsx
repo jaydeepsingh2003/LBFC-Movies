@@ -72,24 +72,64 @@ export default function HeroSection() {
         fetchHeroMovies();
     }, []);
 
-    // Entrance Animation for Hero Content
+    // Boss-Level Parallax & Magnetic System
     React.useEffect(() => {
         if (!isLoading && movies.length > 0 && heroRef.current) {
             const ctx = gsap.context(() => {
+                // Entrance Sequence
                 gsap.from('.hero-content-node', {
-                    y: 50,
+                    y: 80,
                     opacity: 0,
-                    stagger: 0.2,
-                    duration: 1.2,
+                    stagger: 0.15,
+                    duration: 1.4,
                     ease: 'expo.out',
-                    delay: 0.5
+                    delay: 0.4
                 });
                 
                 gsap.from('.hero-backdrop', {
-                    scale: 1.1,
-                    duration: 2,
+                    scale: 1.2,
+                    opacity: 0,
+                    duration: 2.5,
                     ease: 'power2.out'
                 });
+
+                // Mouse-driven 3D Parallax
+                const handleHeroParallax = (e: MouseEvent) => {
+                    const x = (e.clientX / window.innerWidth - 0.5) * 40;
+                    const y = (e.clientY / window.innerHeight - 0.5) * 40;
+
+                    gsap.to('.hero-backdrop', {
+                        x: x * -0.5,
+                        y: y * -0.5,
+                        scale: 1.05,
+                        duration: 1,
+                        ease: 'power2.out'
+                    });
+
+                    gsap.to('.hero-text-plane', {
+                        x: x * 0.8,
+                        y: y * 0.8,
+                        duration: 1,
+                        ease: 'power2.out'
+                    });
+                };
+
+                // Magnetic Buttons
+                const magneticButtons = document.querySelectorAll('.boss-magnetic');
+                magneticButtons.forEach(btn => {
+                    btn.addEventListener('mousemove', (e: any) => {
+                        const rect = btn.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        gsap.to(btn, { x: x * 0.4, y: y * 0.4, duration: 0.3, ease: 'power2.out' });
+                    });
+                    btn.addEventListener('mouseleave', () => {
+                        gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.3)' });
+                    });
+                });
+
+                window.addEventListener('mousemove', handleHeroParallax);
+                return () => window.removeEventListener('mousemove', handleHeroParallax);
             }, heroRef);
             return () => ctx.revert();
         }
@@ -125,7 +165,7 @@ export default function HeroSection() {
     if (movies.length === 0) return null;
 
     return (
-        <section ref={heroRef} className="relative w-full h-[calc(100vh-4.5rem)] bg-background overflow-hidden">
+        <section ref={heroRef} className="relative w-full h-[calc(100vh-4.5rem)] bg-background overflow-hidden perspective-1000">
             <Carousel
                 plugins={[plugin.current]}
                 className="w-full h-full"
@@ -140,13 +180,13 @@ export default function HeroSection() {
                 <CarouselContent className="h-full ml-0">
                     {movies.map((movie) => (
                         <CarouselItem key={movie.id} className="h-[calc(100vh-4.5rem)] w-full pl-0 relative">
-                            <div className="relative h-full w-full overflow-hidden">
+                            <div className="relative h-full w-full overflow-hidden preserve-3d">
                                 {movie.backdropUrl && (
                                     <Image
                                         src={movie.backdropUrl}
                                         alt={movie.title}
                                         fill
-                                        className="hero-backdrop object-cover object-center transition-opacity duration-1000 animate-in fade-in duration-[1500ms]"
+                                        className="hero-backdrop object-cover object-center transition-opacity duration-1000 scale-105"
                                         priority
                                         sizes="100vw"
                                         unoptimized
@@ -154,45 +194,45 @@ export default function HeroSection() {
                                 )}
                                 
                                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
-                                <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-transparent hidden lg:block" />
-                                <div className="absolute inset-0 bg-black/40 lg:bg-black/10" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-transparent to-transparent hidden lg:block" />
+                                <div className="absolute inset-0 bg-black/20" />
                                 
-                                <div className="absolute bottom-[12%] md:bottom-[15%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-7xl z-20 pointer-events-none">
-                                    <div className="space-y-4 md:space-y-8 pointer-events-auto">
-                                        <div className="hero-content-node flex items-center gap-3">
-                                            <Badge className="bg-primary font-black uppercase text-[10px] md:text-xs px-3 py-1.5 rounded-sm shadow-xl shadow-primary/20 flex items-center gap-2">
-                                                <Flame className="size-3.5 fill-current" /> Featured Selection
+                                <div className="absolute bottom-[15%] md:bottom-[18%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-7xl z-20 pointer-events-none">
+                                    <div className="space-y-6 md:space-y-10 hero-text-plane pointer-events-auto">
+                                        <div className="hero-content-node flex flex-wrap items-center gap-3">
+                                            <Badge className="bg-primary font-black uppercase text-[10px] md:text-xs px-4 py-2 rounded-sm shadow-[0_0_30px_rgba(225,29,72,0.5)] flex items-center gap-2">
+                                                <Flame className="size-4 fill-current" /> Studio Choice
                                             </Badge>
-                                            <Badge variant="outline" className="border-white/40 text-white font-black backdrop-blur-md text-[10px] md:text-xs uppercase tracking-[0.2em] px-3 py-1.5">
-                                                Ultra HD 4K
+                                            <Badge variant="outline" className="border-white/20 text-white font-black backdrop-blur-3xl text-[10px] md:text-xs uppercase tracking-[0.3em] px-4 py-2">
+                                                IMAX Experience
                                             </Badge>
-                                            <div className="flex items-center gap-2 text-white/90 font-black text-xs md:text-sm bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm border border-white/5">
+                                            <div className="flex items-center gap-2 text-white/90 font-black text-xs md:text-sm bg-black/60 px-4 py-1.5 rounded-full backdrop-blur-xl border border-white/10 shadow-2xl">
                                                 <Award className="size-4 text-yellow-400" />
-                                                <span>{movie.vote_average.toFixed(1)} Rating</span>
+                                                <span>{movie.vote_average.toFixed(1)} Index</span>
                                             </div>
                                         </div>
                                         
-                                        <h1 className="hero-content-node font-headline text-4xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-black tracking-tighter text-white leading-[0.9] drop-shadow-[0_15px_15px_rgba(0,0,0,0.6)] uppercase break-words max-w-5xl">
+                                        <h1 className="hero-content-node font-headline text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[0.85] drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)] uppercase break-words max-w-6xl">
                                             {movie.title}
                                         </h1>
                                         
-                                        <p className="hero-content-node text-sm md:text-xl lg:text-2xl text-white/95 line-clamp-2 md:line-clamp-3 max-w-3xl font-medium leading-relaxed drop-shadow-2xl italic opacity-90">
+                                        <p className="hero-content-node text-base md:text-2xl lg:text-3xl text-white/90 line-clamp-2 md:line-clamp-3 max-w-4xl font-medium leading-relaxed drop-shadow-2xl italic opacity-95">
                                             {movie.overview}
                                         </p>
                                         
-                                        <div className="hero-content-node flex flex-wrap gap-4 md:gap-6 pt-2 md:pt-6">
+                                        <div className="hero-content-node flex flex-wrap gap-4 md:gap-8 pt-4 md:pt-10">
                                             <button 
-                                                className="bg-white text-black hover:bg-white/90 font-black rounded-full px-8 md:px-14 h-12 md:h-20 shadow-[0_20px_50px_rgba(255,255,255,0.2)] transition-all hover:scale-105 active:scale-95 text-xs md:text-xl flex items-center gap-4 group" 
+                                                className="boss-magnetic bg-white text-black hover:bg-white/90 font-black rounded-full px-10 md:px-16 h-14 md:h-24 shadow-[0_30px_60px_rgba(255,255,255,0.2)] transition-all hover:scale-105 active:scale-95 text-sm md:text-2xl flex items-center gap-5 group overflow-hidden relative" 
                                                 onClick={(e) => handlePlayTrailer(e, movie.trailerUrl)}
                                             >
-                                                <div className="bg-black rounded-full p-2 group-hover:bg-primary transition-colors">
-                                                    <Play className="size-4 md:size-6 text-white fill-current ml-0.5" />
+                                                <div className="bg-black rounded-full p-2.5 md:p-4 group-hover:bg-primary transition-colors">
+                                                    <Play className="size-5 md:size-8 text-white fill-current ml-1" />
                                                 </div>
-                                                Watch Trailer
+                                                Watch Feed
                                             </button>
                                             
-                                            <Link href={`/movie/${movie.id}`} className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-3xl border border-white/10 font-bold rounded-full px-8 md:px-14 h-12 md:h-20 transition-all hover:scale-105 active:scale-95 text-xs md:text-xl flex items-center gap-4 shadow-2xl">
-                                                <Info className="size-5 md:size-7 text-primary" /> More Info
+                                            <Link href={`/movie/${movie.id}`} className="boss-magnetic bg-white/10 hover:bg-white/20 text-white backdrop-blur-3xl border border-white/10 font-bold rounded-full px-10 md:px-16 h-14 md:h-24 transition-all hover:scale-105 active:scale-95 text-sm md:text-2xl flex items-center gap-5 shadow-2xl">
+                                                <Info className="size-6 md:size-9 text-primary" /> Intelligence
                                             </Link>
                                         </div>
                                     </div>

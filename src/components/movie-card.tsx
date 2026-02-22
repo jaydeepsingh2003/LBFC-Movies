@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from 'react';
@@ -42,27 +43,31 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
   const [savedDoc, isSavedLoading] = useDocumentData(savedRef);
   const isSaved = !!savedDoc;
 
-  // 3D Perspective Tilt Effect
+  // GPU-Accelerated 3D Tilt & Glint System
   useEffect(() => {
     if (isMobile || !cardRef.current) return;
 
     const card = cardRef.current;
+    
     const onMouseMove = (e: MouseEvent) => {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
-      const rotateX = (y - centerY) / 10;
-      const rotateY = (centerX - x) / 10;
+      
+      // Calculate rotation based on center
+      const rotateX = ((y - centerY) / centerY) * -12;
+      const rotateY = ((x - centerX) / centerX) * 12;
 
       gsap.to(card, {
         rotationX: rotateX,
         rotationY: rotateY,
-        scale: 1.05,
-        duration: 0.5,
+        scale: 1.08,
+        duration: 0.4,
         ease: 'power2.out',
-        transformPerspective: 1000
+        transformPerspective: 1000,
+        force3D: true
       });
     };
 
@@ -71,8 +76,9 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
         rotationX: 0,
         rotationY: 0,
         scale: 1,
-        duration: 0.5,
-        ease: 'power2.out'
+        duration: 0.6,
+        ease: 'elastic.out(1, 0.5)',
+        force3D: true
       });
     };
 
@@ -145,7 +151,7 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
       ref={cardRef}
       onClick={handleNavigateToDetails}
       className={cn(
-        "relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-secondary transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 group cursor-pointer border border-white/5 preserve-3d", 
+        "relative aspect-[2/3] w-full overflow-hidden rounded-2xl bg-secondary transition-all duration-500 hover:shadow-[0_20px_50px_rgba(225,29,72,0.3)] group cursor-pointer border border-white/10 preserve-3d glint-effect", 
         className
       )}
     >
@@ -200,11 +206,11 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 p-3 md:p-4 w-full space-y-1 md:space-y-2 z-10 pointer-events-none">
-          <h3 className="font-headline text-xs md:text-sm font-black text-white leading-tight line-clamp-2 drop-shadow-lg group-hover:text-primary transition-colors">{title}</h3>
+        <div className="absolute bottom-0 left-0 p-4 w-full space-y-1.5 z-10 pointer-events-none">
+          <h3 className="font-headline text-sm md:text-base font-black text-white leading-tight line-clamp-2 drop-shadow-lg group-hover:text-primary transition-colors uppercase tracking-tight">{title}</h3>
           <div className="flex items-center gap-2">
-              <Star className="size-2.5 md:size-3 text-yellow-400 fill-current" />
-              <span className="text-[8px] md:text-[10px] font-bold text-white/70 uppercase tracking-widest">Movie</span>
+              <Star className="size-3 text-yellow-400 fill-current" />
+              <span className="text-[10px] font-black text-white/70 uppercase tracking-widest">Master Print</span>
           </div>
         </div>
       </div>
