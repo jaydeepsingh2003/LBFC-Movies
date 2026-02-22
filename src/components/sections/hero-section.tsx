@@ -13,6 +13,7 @@ import { Skeleton } from "../ui/skeleton";
 import { useVideoPlayer } from "@/context/video-provider";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { gsap } from 'gsap';
 
 interface MovieWithImages extends Movie {
     backdropUrl: string | null;
@@ -26,6 +27,7 @@ export default function HeroSection() {
     const [movies, setMovies] = React.useState<MovieWithImages[]>([]);
     const [isLoading, setIsLoading] = React.useState(true);
     const { setVideoId } = useVideoPlayer();
+    const heroRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
         async function fetchHeroMovies() {
@@ -70,6 +72,29 @@ export default function HeroSection() {
         fetchHeroMovies();
     }, []);
 
+    // Entrance Animation for Hero Content
+    React.useEffect(() => {
+        if (!isLoading && movies.length > 0 && heroRef.current) {
+            const ctx = gsap.context(() => {
+                gsap.from('.hero-content-node', {
+                    y: 50,
+                    opacity: 0,
+                    stagger: 0.2,
+                    duration: 1.2,
+                    ease: 'expo.out',
+                    delay: 0.5
+                });
+                
+                gsap.from('.hero-backdrop', {
+                    scale: 1.1,
+                    duration: 2,
+                    ease: 'power2.out'
+                });
+            }, heroRef);
+            return () => ctx.revert();
+        }
+    }, [isLoading, movies.length]);
+
     const handlePlayTrailer = (e: React.MouseEvent, videoId: string | undefined) => {
         e.preventDefault();
         e.stopPropagation();
@@ -100,7 +125,7 @@ export default function HeroSection() {
     if (movies.length === 0) return null;
 
     return (
-        <section className="relative w-full h-[calc(100vh-4.5rem)] bg-background overflow-hidden">
+        <section ref={heroRef} className="relative w-full h-[calc(100vh-4.5rem)] bg-background overflow-hidden">
             <Carousel
                 plugins={[plugin.current]}
                 className="w-full h-full"
@@ -115,13 +140,13 @@ export default function HeroSection() {
                 <CarouselContent className="h-full ml-0">
                     {movies.map((movie) => (
                         <CarouselItem key={movie.id} className="h-[calc(100vh-4.5rem)] w-full pl-0 relative">
-                            <div className="relative h-full w-full">
+                            <div className="relative h-full w-full overflow-hidden">
                                 {movie.backdropUrl && (
                                     <Image
                                         src={movie.backdropUrl}
                                         alt={movie.title}
                                         fill
-                                        className="object-cover object-center transition-opacity duration-1000 animate-in fade-in duration-[1500ms]"
+                                        className="hero-backdrop object-cover object-center transition-opacity duration-1000 animate-in fade-in duration-[1500ms]"
                                         priority
                                         sizes="100vw"
                                         unoptimized
@@ -134,7 +159,7 @@ export default function HeroSection() {
                                 
                                 <div className="absolute bottom-[12%] md:bottom-[15%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-7xl z-20 pointer-events-none">
                                     <div className="space-y-4 md:space-y-8 pointer-events-auto">
-                                        <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-10 duration-700">
+                                        <div className="hero-content-node flex items-center gap-3">
                                             <Badge className="bg-primary font-black uppercase text-[10px] md:text-xs px-3 py-1.5 rounded-sm shadow-xl shadow-primary/20 flex items-center gap-2">
                                                 <Flame className="size-3.5 fill-current" /> Featured Selection
                                             </Badge>
@@ -147,15 +172,15 @@ export default function HeroSection() {
                                             </div>
                                         </div>
                                         
-                                        <h1 className="font-headline text-4xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-black tracking-tighter text-white leading-[0.9] drop-shadow-[0_15px_15px_rgba(0,0,0,0.6)] animate-in fade-in slide-in-from-bottom-10 duration-700 delay-100 uppercase break-words max-w-5xl">
+                                        <h1 className="hero-content-node font-headline text-4xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-black tracking-tighter text-white leading-[0.9] drop-shadow-[0_15px_15px_rgba(0,0,0,0.6)] uppercase break-words max-w-5xl">
                                             {movie.title}
                                         </h1>
                                         
-                                        <p className="text-sm md:text-xl lg:text-2xl text-white/95 line-clamp-2 md:line-clamp-3 max-w-3xl font-medium leading-relaxed drop-shadow-2xl animate-in fade-in slide-in-from-bottom-12 duration-700 delay-200 italic opacity-90">
+                                        <p className="hero-content-node text-sm md:text-xl lg:text-2xl text-white/95 line-clamp-2 md:line-clamp-3 max-w-3xl font-medium leading-relaxed drop-shadow-2xl italic opacity-90">
                                             {movie.overview}
                                         </p>
                                         
-                                        <div className="flex flex-wrap gap-4 md:gap-6 pt-2 md:pt-6 animate-in fade-in slide-in-from-bottom-16 duration-700 delay-300">
+                                        <div className="hero-content-node flex flex-wrap gap-4 md:gap-6 pt-2 md:pt-6">
                                             <button 
                                                 className="bg-white text-black hover:bg-white/90 font-black rounded-full px-8 md:px-14 h-12 md:h-20 shadow-[0_20px_50px_rgba(255,255,255,0.2)] transition-all hover:scale-105 active:scale-95 text-xs md:text-xl flex items-center gap-4 group" 
                                                 onClick={(e) => handlePlayTrailer(e, movie.trailerUrl)}
