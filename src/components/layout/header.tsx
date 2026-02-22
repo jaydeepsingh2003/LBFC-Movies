@@ -20,10 +20,17 @@ import { useToast } from "@/hooks/use-toast";
 export function DesktopNav() {
     const pathname = usePathname();
     const { user } = useUser();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const items = allNavItems.map(item => {
         if (item.href === '/profile') {
-            return { ...item, href: user ? `/profile/${user.uid}` : '/login' };
+            // Stable path during SSR
+            if (!mounted || !user) return { ...item, href: '/login' };
+            return { ...item, href: `/profile/${user.uid}` };
         }
         return item;
     });
@@ -125,7 +132,6 @@ export function Header() {
             scrolled ? "bg-background/95 backdrop-blur-xl border-b shadow-2xl border-white/5" : "bg-black/80 backdrop-blur-sm border-b border-white/5"
         )}>
             <div className="w-full px-4 md:px-8 lg:px-12 max-w-[2200px] mx-auto flex items-center justify-between gap-4 h-full">
-                {/* Logo Section */}
                 <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
                     <div className="p-1 md:p-1.5 bg-primary rounded-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg shadow-primary/20">
                         <Film className="size-4 md:size-5 text-white" />
@@ -133,7 +139,6 @@ export function Header() {
                     <h1 className="font-headline text-lg md:text-2xl font-black text-primary tracking-tighter hidden xs:block">LBFC</h1>
                 </Link>
                 
-                {/* Search & Navigation Middle */}
                 <div className="flex-1 flex items-center justify-center gap-4 lg:gap-8 h-full max-w-[1000px]">
                     <div className="hidden lg:block h-full">
                         <DesktopNav />
@@ -143,13 +148,11 @@ export function Header() {
                     </div>
                 </div>
                 
-                {/* Actions Section */}
                 <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
-                    {(!isClient || isLoading) ? (
+                    {!isClient ? (
                         <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-secondary animate-pulse" />
                     ) : user ? (
                         <div className="flex items-center gap-2 md:gap-4">
-                            {/* Premium Notification Hub */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <button className="text-muted-foreground hover:text-white transition-all relative p-2 rounded-full hover:bg-white/5 group">
@@ -202,7 +205,6 @@ export function Header() {
                                 </DropdownMenuContent>
                             </DropdownMenu>
 
-                            {/* User Command Center */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <button className="relative h-8 w-8 md:h-9 md:w-9 rounded-full focus:outline-none ring-2 ring-primary/20 hover:ring-primary transition-all overflow-hidden group">
@@ -257,7 +259,6 @@ export function Header() {
                 </div>
             </div>
 
-            {/* Profile Settings Dialog */}
             <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
                 <DialogContent className="glass-panel border-white/10 text-white rounded-[2rem] sm:max-w-md">
                     <DialogHeader>

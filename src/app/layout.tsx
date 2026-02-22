@@ -13,6 +13,17 @@ import { gsap } from 'gsap';
 
 function LayoutWrapper({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // During hydration, render a stable structure
+  if (!mounted) {
+    return <div className="opacity-0">{children}</div>;
+  }
+
   const isLoginPage = pathname === '/login';
 
   if (isLoginPage) {
@@ -30,7 +41,6 @@ export default function RootLayout({
   const [showIntro, setShowIntro] = useState(true);
   const pathname = usePathname();
 
-  // Trigger intro on every navigation to maintain cinematic feel
   useEffect(() => {
     setShowIntro(true);
   }, [pathname]);
@@ -38,7 +48,6 @@ export default function RootLayout({
   const handleIntroComplete = () => {
     setShowIntro(false);
     
-    // Snappy Entrance 3D Animation
     gsap.fromTo('.main-content-layer', 
       { perspective: '1000px', rotationX: 10, scale: 0.9, opacity: 0, z: -300 },
       { 

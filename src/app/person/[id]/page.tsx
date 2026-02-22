@@ -15,9 +15,11 @@ export default function PersonPage(props: { params: { id: string } }) {
   const [person, setPerson] = useState<PersonDetails | null>(null);
   const [knownForMovies, setKnownForMovies] = useState<FilmographyMovie[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const { id } = params;
 
   useEffect(() => {
+    setMounted(true);
     if (!id) return;
 
     async function fetchPersonData() {
@@ -86,7 +88,7 @@ export default function PersonPage(props: { params: { id: string } }) {
     <div className="space-y-8 px-4 py-8 md:px-8">
       <header className="flex flex-col md:flex-row items-center md:items-start gap-8">
         <Avatar className="h-48 w-48 border-4 border-primary">
-          <AvatarImage src={getPosterUrl(person.profile_path)} alt={person.name} />
+          <AvatarImage src={getPosterUrl(person.profile_path) || ''} alt={person.name} />
           <AvatarFallback>{person.name.charAt(0)}</AvatarFallback>
         </Avatar>
         <div className="space-y-3 text-center md:text-left">
@@ -97,7 +99,7 @@ export default function PersonPage(props: { params: { id: string } }) {
                   <Clapperboard className="w-4 h-4" />
                   <span>{person.known_for_department}</span>
               </div>
-              {person.birthday && (
+              {mounted && person.birthday && (
                   <div className="flex items-center gap-2">
                       <Cake className="w-4 h-4" />
                       <span>
@@ -106,9 +108,9 @@ export default function PersonPage(props: { params: { id: string } }) {
                       </span>
                   </div>
               )}
-               {person.deathday && (
+               {mounted && person.deathday && (
                   <div className="flex items-center gap-2">
-                      <span>Died: {new Date(person.deathday).toLocaleDateString()} (aged ${getAge(person.birthday, person.deathday)})</span>
+                      <span>Died: {new Date(person.deathday).toLocaleDateString()} (aged {getAge(person.birthday!, person.deathday)})</span>
                   </div>
               )}
               {person.place_of_birth && (
@@ -160,10 +162,11 @@ export default function PersonPage(props: { params: { id: string } }) {
                       <Card key={index} className="overflow-hidden">
                          <CardContent className="p-0 aspect-square relative w-full">
                               <Image 
-                                  src={getPosterUrl(image.file_path)} 
+                                  src={getPosterUrl(image.file_path) || ''} 
                                   alt={`${person.name} photo ${index + 1}`}
                                   fill
                                   className="object-cover"
+                                  unoptimized
                               />
                           </CardContent>
                       </Card>
