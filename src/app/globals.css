@@ -34,6 +34,7 @@
   body {
     @apply bg-background text-foreground overflow-x-hidden selection:bg-primary/30 selection:text-white antialiased;
     -webkit-tap-highlight-color: transparent;
+    background-color: #050505;
   }
   
   /* Custom Cinematic Scrollbar */
@@ -56,6 +57,44 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* Premium Background Animations */
+  @keyframes mesh-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .premium-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%);
+    overflow: hidden;
+  }
+
+  .premium-bg::before {
+    content: "";
+    position: absolute;
+    inset: -100%;
+    background: radial-gradient(circle at 20% 30%, rgba(225, 29, 72, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(30, 58, 138, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 0%, #050505 80%);
+    filter: blur(100px);
+    animation: mesh-gradient 20s ease infinite;
+    background-size: 200% 200%;
+  }
+
+  .film-grain {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.035;
+    pointer-events: none;
+    background-image: url("https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop");
+    background-repeat: repeat;
+    mix-blend-mode: overlay;
   }
 
   .my-otts-text {
@@ -86,7 +125,7 @@
   }
   
   .glass-panel {
-    @apply bg-black/40 backdrop-blur-xl border border-white/5;
+    @apply bg-black/40 backdrop-blur-3xl border border-white/5;
   }
 
   html {

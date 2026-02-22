@@ -7,6 +7,7 @@ import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { AppLayout } from '@/components/layout/app-layout';
 import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
+import { PremiumBackground } from '@/components/layout/premium-background';
 
 function LayoutWrapper({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -37,6 +38,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased selection:bg-primary/30">
+          <PremiumBackground />
           <FirebaseClientProvider>
             <VideoPlayerProvider>
                 <LayoutWrapper>{children}</LayoutWrapper>
