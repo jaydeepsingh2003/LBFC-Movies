@@ -32,7 +32,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (!isClient || isLoading || ((!user || !user.emailVerified) && pathname !== '/login')) {
     return (
-      <div className="flex flex-col justify-center items-center h-svh bg-background gap-6">
+      <div className="flex flex-col justify-center items-center h-svh bg-transparent gap-6">
         <div className="relative">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
             <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full animate-pulse" />

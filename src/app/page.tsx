@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useUser } from '@/firebase/auth/auth-client';
@@ -24,17 +23,16 @@ export default function DashboardPage() {
 
   if (isLoading || !user) {
     return (
-      <div className="flex justify-center items-center h-svh bg-background">
+      <div className="flex justify-center items-center h-svh bg-transparent">
         <Loader2 className="size-12 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col w-full overflow-x-hidden">
+    <div className="flex flex-col w-full overflow-x-hidden bg-transparent">
       <HeroSection />
       
-      {/* Zero Gap Cinematic Gallery */}
       <div className="space-y-0 px-4 md:px-8 lg:px-12 max-w-[2000px] mx-auto w-full">
           <ContinueWatchingSection />
           <Top10MoviesSection />

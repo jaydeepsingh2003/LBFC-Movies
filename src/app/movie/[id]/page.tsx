@@ -154,7 +154,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
 
   if (isLoading) {
     return (
-      <div className="flex flex-col justify-center items-center h-svh gap-6 bg-background">
+      <div className="flex flex-col justify-center items-center h-svh gap-6 bg-transparent">
         <div className="relative">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
             <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full animate-pulse" />
@@ -172,7 +172,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
   const directors = movie.credits.crew.filter(person => person.job === 'Director');
 
   return (
-    <div className="relative min-h-svh bg-background">
+    <div className="relative min-h-svh bg-transparent">
       <div className="relative h-[65vh] md:h-[90vh] w-full overflow-hidden">
         {movie.backdropUrl && (
             <Image 
@@ -184,7 +184,7 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
                 unoptimized
             />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-transparent to-transparent hidden md:block" />
         
         <div className="absolute top-6 left-4 md:left-8 z-20">
