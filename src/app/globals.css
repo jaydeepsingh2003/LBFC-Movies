@@ -30,6 +30,9 @@
 @layer base {
   * {
     @apply border-border;
+    /* Eliminate touch delay and ensure sensitive response */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   
   html {
@@ -39,7 +42,8 @@
 
   body {
     @apply bg-transparent text-foreground overflow-x-hidden selection:bg-primary/30 selection:text-white antialiased;
-    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
   ::-webkit-scrollbar {
@@ -85,5 +89,10 @@
       radial-gradient(circle at 80% 20%, rgba(108, 43, 217, 0.12) 0%, transparent 50%);
     filter: blur(100px);
     opacity: 0.8;
+  }
+
+  /* Instant interaction class for cards and buttons */
+  .click-active {
+    @apply active:scale-[0.97] transition-transform duration-100;
   }
 }

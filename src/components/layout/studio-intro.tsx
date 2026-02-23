@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -21,7 +20,7 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
         onComplete: () => {
           gsap.to(containerRef.current, {
             opacity: 0,
-            duration: 0.2, 
+            duration: 0.15, // Ultra-fast exit
             ease: 'power2.inOut',
             onComplete: onComplete
           });
@@ -36,43 +35,43 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
       });
       gsap.set(glowRef.current, { opacity: 0, scale: 0.1 });
       gsap.set(lineRef.current, { width: 0, opacity: 0 });
-      gsap.set(taglineRef.current, { opacity: 0, y: 15 });
+      gsap.set(taglineRef.current, { opacity: 0, y: 10 });
 
       tl.to(glowRef.current, {
         opacity: 1,
         scale: 1.8,
-        duration: 0.4,
+        duration: 0.3, // Compressed duration
         ease: 'expo.out'
       })
       .to(textRef.current, {
         opacity: 1,
         scale: 1,
         letterSpacing: '0.15em',
-        duration: 0.6,
-        ease: 'expo.out'
-      }, '-=0.3')
-      .to(lineRef.current, {
-        width: '280px',
-        opacity: 1,
         duration: 0.4,
+        ease: 'expo.out'
+      }, '-=0.2')
+      .to(lineRef.current, {
+        width: '240px',
+        opacity: 1,
+        duration: 0.3,
         ease: 'power4.out'
-      }, '-=0.5')
+      }, '-=0.3')
       .to(taglineRef.current, {
         opacity: 1,
         y: 0,
-        duration: 0.4,
+        duration: 0.3,
         ease: 'back.out(1.2)'
-      }, '-=0.2')
+      }, '-=0.15')
       .to([textRef.current, lineRef.current, taglineRef.current], {
-        scale: 1.03,
-        duration: 0.8,
+        scale: 1.02,
+        duration: 0.4,
         ease: 'none'
       })
       .to(containerRef.current, {
-        filter: 'blur(15px)',
-        scale: 1.3,
+        filter: 'blur(10px)',
+        scale: 1.2,
         opacity: 0,
-        duration: 0.4,
+        duration: 0.3,
         ease: 'power4.in'
       });
     }, containerRef);

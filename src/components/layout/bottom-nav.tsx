@@ -38,17 +38,18 @@ export function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
+              prefetch={true}
               className={cn(
-                'flex flex-1 flex-col items-center justify-center gap-1.5 py-2 transition-all duration-500 relative group active:scale-90',
+                'flex flex-1 flex-col items-center justify-center gap-1.5 py-2 transition-all duration-300 relative group active:scale-90',
                 isActive ? 'text-primary' : 'text-muted-foreground hover:text-white'
               )}
             >
               <div className={cn(
-                "p-2.5 rounded-2xl transition-all duration-500 relative",
+                "p-2.5 rounded-2xl transition-all duration-300 relative",
                 isActive ? "bg-primary/20 shadow-[0_0_30px_rgba(255,0,0,0.4)]" : "bg-transparent"
               )}>
                 <item.icon className={cn(
-                    "h-5 w-5 transition-all duration-500", 
+                    "h-5 w-5 transition-all duration-300", 
                     isActive && "scale-110",
                     !isActive && isOtt && "text-white/90"
                 )} />
@@ -59,7 +60,7 @@ export function BottomNav() {
               </div>
 
               <span className={cn(
-                "text-[8px] font-black uppercase transition-all duration-500 truncate max-w-[60px] text-center",
+                "text-[8px] font-black uppercase transition-all duration-300 truncate max-w-[60px] text-center",
                 isActive ? "tracking-[0.15em] text-white opacity-100 scale-105" : "tracking-normal opacity-60",
                 isOtt && !isActive && 'my-otts-text'
               )}>

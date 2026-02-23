@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useRef, useEffect, memo } from 'react';
@@ -54,16 +53,16 @@ export const MovieCard = memo(function MovieCard({ id, title, posterUrl, classNa
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
       
-      const rotateX = ((y - centerY) / centerY) * -18;
-      const rotateY = ((x - centerX) / centerX) * 18;
+      const rotateX = ((y - centerY) / centerY) * -12; // Toned down for snappier feel
+      const rotateY = ((x - centerX) / centerX) * 12;
 
       gsap.to(card, {
         rotationX: rotateX,
         rotationY: rotateY,
-        scale: 1.08,
-        duration: 0.25,
-        ease: 'power3.out',
-        transformPerspective: 1500,
+        scale: 1.05,
+        duration: 0.2, // Snappier response
+        ease: 'power2.out',
+        transformPerspective: 1000,
         force3D: true,
         overwrite: 'auto'
       });
@@ -74,8 +73,8 @@ export const MovieCard = memo(function MovieCard({ id, title, posterUrl, classNa
         rotationX: 0,
         rotationY: 0,
         scale: 1,
-        duration: 0.6,
-        ease: 'elastic.out(1, 0.6)',
+        duration: 0.4,
+        ease: 'power3.out',
         force3D: true
       });
     };
@@ -117,7 +116,7 @@ export const MovieCard = memo(function MovieCard({ id, title, posterUrl, classNa
       <div 
         ref={cardRef}
         className={cn(
-          "relative aspect-[2/3] w-full overflow-hidden rounded-2xl bg-secondary transition-shadow duration-500 hover:shadow-[0_30px_70px_rgba(225,29,72,0.5)] cursor-pointer border border-white/10 preserve-3d will-change-transform", 
+          "relative aspect-[2/3] w-full overflow-hidden rounded-2xl bg-secondary transition-all duration-300 hover:shadow-[0_20px_50px_rgba(225,29,72,0.4)] cursor-pointer border border-white/10 preserve-3d will-change-transform active:scale-95 active:brightness-110", 
           className
         )}
       >
@@ -133,20 +132,20 @@ export const MovieCard = memo(function MovieCard({ id, title, posterUrl, classNa
         <div className="absolute inset-0 z-20 pointer-events-none glint-effect opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
         <div className={cn(
-          "absolute inset-0 bg-gradient-to-t from-black/95 via-black/10 to-transparent transition-opacity duration-500 z-10",
+          "absolute inset-0 bg-gradient-to-t from-black/95 via-black/10 to-transparent transition-opacity duration-300 z-10",
           isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
         )}>
           <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
-            <Button variant="secondary" size="icon" className={cn("h-8 w-8 rounded-full glass-card border-none shadow-lg transition-all", isSaved ? "bg-primary text-white" : "bg-black/40 hover:bg-primary")} onClick={handleToggleSave} disabled={isSavedLoading}>
+            <Button variant="secondary" size="icon" className={cn("h-8 w-8 rounded-full glass-card border-none shadow-lg transition-all active:scale-90", isSaved ? "bg-primary text-white" : "bg-black/40 hover:bg-primary")} onClick={handleToggleSave} disabled={isSavedLoading}>
               <Bookmark className={cn("size-3.5", isSaved && "fill-current")} />
             </Button>
-            <div className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-yellow-500 border-none shadow-lg flex items-center justify-center transition-colors">
+            <div className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-yellow-500 border-none shadow-lg flex items-center justify-center transition-colors active:scale-90">
               <Info className="size-3.5" />
             </div>
           </div>
 
           <div className="absolute inset-0 flex items-center justify-center z-10">
-            <div className="h-14 w-14 md:h-18 md:w-18 rounded-full bg-primary/95 flex items-center justify-center shadow-2xl scale-90 md:scale-75 group-hover:scale-100 transition-all duration-500 cursor-pointer" onClick={handlePlayNow}>
+            <div className="h-14 w-14 md:h-18 md:w-18 rounded-full bg-primary/95 flex items-center justify-center shadow-2xl scale-90 md:scale-75 group-hover:scale-100 transition-all duration-300 cursor-pointer active:scale-110" onClick={handlePlayNow}>
                 <Play className="size-7 md:size-9 text-white fill-current ml-1" />
             </div>
           </div>

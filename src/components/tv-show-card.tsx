@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, memo } from 'react';
@@ -95,7 +94,7 @@ export const TVShowCard = memo(function TVShowCard({ id, title, posterUrl, class
     <Link href={`/tv/${id}`} prefetch={true} className="block group">
       <div 
         className={cn(
-          "relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-secondary transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/20 cursor-pointer border border-white/5 will-change-transform", 
+          "relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-secondary transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/20 cursor-pointer border border-white/5 will-change-transform active:scale-95 active:brightness-110", 
           className
         )}
       >
@@ -117,7 +116,7 @@ export const TVShowCard = memo(function TVShowCard({ id, title, posterUrl, class
         )}
 
         <div className={cn(
-          "absolute inset-0 bg-gradient-to-t from-black/95 via-black/10 to-transparent transition-all duration-500 z-10",
+          "absolute inset-0 bg-gradient-to-t from-black/95 via-black/10 to-transparent transition-all duration-300 z-10",
           isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
         )}>
           <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
@@ -125,7 +124,7 @@ export const TVShowCard = memo(function TVShowCard({ id, title, posterUrl, class
               variant="secondary" 
               size="icon" 
               className={cn(
-                  "h-8 w-8 rounded-full glass-card border-none shadow-lg backdrop-blur-md transition-all",
+                  "h-8 w-8 rounded-full glass-card border-none shadow-lg backdrop-blur-md transition-all active:scale-90",
                   isSaved ? "bg-primary text-white" : "bg-black/40 hover:bg-primary"
               )} 
               onClick={handleToggleSave}
@@ -133,17 +132,17 @@ export const TVShowCard = memo(function TVShowCard({ id, title, posterUrl, class
             >
               <Bookmark className={cn("size-3.5", isSaved && "fill-current")} />
             </Button>
-            <div className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-blue-500 border-none shadow-lg flex items-center justify-center transition-colors" onClick={handleShare}>
+            <div className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-blue-500 border-none shadow-lg flex items-center justify-center transition-colors active:scale-90" onClick={handleShare}>
               <Share2 className="size-3.5" />
             </div>
-            <div className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-yellow-500 border-none shadow-lg flex items-center justify-center transition-colors">
+            <div className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-yellow-500 border-none shadow-lg flex items-center justify-center transition-colors active:scale-90">
               <Info className="size-3.5" />
             </div>
           </div>
 
           <div className="absolute inset-0 flex items-center justify-center z-10">
             <div 
-              className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-primary/90 flex items-center justify-center shadow-2xl scale-90 md:scale-75 group-hover:scale-100 transition-transform duration-500 cursor-pointer" 
+              className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-primary/90 flex items-center justify-center shadow-2xl scale-90 md:scale-75 group-hover:scale-100 transition-transform duration-300 cursor-pointer active:scale-110" 
               onClick={handlePlayNow}
             >
                 <Play className="size-6 md:size-8 text-white fill-current ml-1" />
