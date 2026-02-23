@@ -138,9 +138,9 @@ export default function ProfilePage(props: { params: Promise<{ userId: string }>
   if (!userProfile) return <div className="text-center py-20 font-headline text-2xl font-black uppercase text-white">Identity Lost</div>;
 
   return (
-    <div className="min-h-screen bg-transparent pb-20 overflow-x-hidden">
+    <div className="min-h-screen bg-transparent pb-20 overflow-x-hidden relative">
       {/* Dynamic Master Backdrop Tier */}
-      <div className="relative h-[45vh] md:h-[65vh] w-full overflow-hidden">
+      <div className="relative h-[45vh] md:h-[65vh] w-full overflow-hidden pointer-events-none">
         {headerBackdrop && (
             <Image 
                 src={headerBackdrop} 
@@ -154,7 +154,7 @@ export default function ProfilePage(props: { params: Promise<{ userId: string }>
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         <div className="absolute inset-0 bg-black/40" />
         
-        <div className="relative h-full flex flex-col items-center justify-center pt-16 px-4">
+        <div className="relative h-full flex flex-col items-center justify-center pt-16 px-4 pointer-events-auto">
             <div className="relative group mb-6">
                 <div className="absolute inset-0 bg-primary/30 rounded-full blur-3xl animate-pulse group-hover:bg-primary/50 transition-all" />
                 <Avatar className="h-28 w-28 md:h-44 md:w-44 border-4 border-primary shadow-[0_0_50px_rgba(225,29,72,0.4)] relative z-10 transition-all duration-500 group-hover:scale-105 active:scale-95">
@@ -194,7 +194,7 @@ export default function ProfilePage(props: { params: Promise<{ userId: string }>
         </div>
       </div>
 
-      <div className="max-w-[2000px] mx-auto px-4 md:px-8 lg:px-12">
+      <div className="max-w-[2000px] mx-auto px-4 md:px-8 lg:px-12 relative z-30">
           {/* Architectural Intelligence Pods */}
           <div className="-mt-12 md:-mt-20 relative z-30 mb-12">
               <div className="grid grid-cols-3 gap-2 md:gap-6 max-w-4xl mx-auto">
@@ -203,7 +203,7 @@ export default function ProfilePage(props: { params: Promise<{ userId: string }>
                       { label: 'Following', value: following.length, icon: UserCheck, color: 'text-purple-400', bg: 'bg-purple-400/10' },
                       { label: 'Saved', value: savedMovies.length, icon: Film, color: 'text-primary', bg: 'bg-primary/10' }
                   ].map((stat) => (
-                      <div key={stat.label} className="glass-panel p-3 md:p-8 rounded-2xl md:rounded-[2.5rem] border-white/5 flex flex-col md:flex-row items-center md:justify-between gap-3 group hover:border-white/20 transition-all hover:-translate-y-1 shadow-2xl">
+                      <div key={stat.label} className="glass-panel p-3 md:p-8 rounded-2xl md:rounded-[2.5rem] border-white/5 flex flex-col md:flex-row items-center md:justify-between gap-3 group hover:border-white/20 transition-all hover:-translate-y-1 shadow-2xl active:scale-[0.98]">
                           <div className="text-center md:text-left space-y-0.5 md:space-y-1">
                               <p className="text-[7px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-muted-foreground group-hover:text-white transition-colors">{stat.label}</p>
                               <p className="text-xl md:text-4xl font-black text-white leading-none">{stat.value}</p>
@@ -297,7 +297,7 @@ export default function ProfilePage(props: { params: Promise<{ userId: string }>
                           </div>
                           <div className="space-y-4">
                               {following.length > 0 ? following.map(person => (
-                                  <Link href={`/profile/${person.uid}`} key={person.uid} className="flex items-center justify-between p-4 md:p-6 glass-panel rounded-2xl md:rounded-3xl hover:bg-white/5 transition-all group border border-transparent hover:border-purple-500/20 active:scale-98">
+                                  <Link href={`/profile/${person.uid}`} key={person.uid} className="flex items-center justify-between p-4 md:p-6 glass-panel rounded-2xl md:rounded-3xl hover:bg-white/5 transition-all group border border-transparent hover:border-purple-500/20 active:scale-[0.98]">
                                       <div className="flex items-center gap-4">
                                           <Avatar className="size-12 md:size-16 border-2 border-white/10 group-hover:border-purple-500/50 transition-all shadow-xl">
                                               <AvatarImage src={person.photoURL} alt={person.displayName} className="object-cover" />
@@ -331,7 +331,7 @@ export default function ProfilePage(props: { params: Promise<{ userId: string }>
                           </div>
                           <div className="space-y-4">
                               {followers.length > 0 ? followers.map(person => (
-                                  <Link href={`/profile/${person.uid}`} key={person.uid} className="flex items-center justify-between p-4 md:p-6 glass-panel rounded-2xl md:rounded-3xl hover:bg-white/5 transition-all group border border-transparent hover:border-blue-400/20 active:scale-98">
+                                  <Link href={`/profile/${person.uid}`} key={person.uid} className="flex items-center justify-between p-4 md:p-6 glass-panel rounded-2xl md:rounded-3xl hover:bg-white/5 transition-all group border border-transparent hover:border-blue-400/20 active:scale-[0.98]">
                                       <div className="flex items-center gap-4">
                                           <Avatar className="size-12 md:size-16 border-2 border-white/10 group-hover:border-blue-400/50 transition-all shadow-xl">
                                               <AvatarImage src={person.photoURL} alt={person.displayName} className="object-cover" />

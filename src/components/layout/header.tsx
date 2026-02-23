@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -191,7 +192,7 @@ export function Header() {
             </div>
 
             <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-                <DialogContent className="glass-panel border-white/10 text-white rounded-[2rem] sm:max-w-md mx-4 overflow-hidden">
+                <DialogContent className="glass-panel border-white/10 text-white rounded-[2rem] w-[calc(100%-2rem)] sm:max-w-md mx-auto overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-headline font-black uppercase tracking-tighter">Settings</DialogTitle>
                         <DialogDescription className="text-muted-foreground text-xs uppercase font-bold tracking-widest">Update your profile info.</DialogDescription>
@@ -199,34 +200,44 @@ export function Header() {
                     <form onSubmit={handleUpdateProfile} className="space-y-6 py-4">
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Display Name</Label>
+                                <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Display Name</Label>
                                 <Input 
                                     id="name" 
                                     value={newDisplayName} 
                                     onChange={(e) => setNewDisplayName(e.target.value)}
-                                    className="bg-white/5 border-white/10 h-12 rounded-xl focus:border-primary transition-all"
+                                    className="bg-white/5 border-white/10 h-14 rounded-xl focus:border-primary focus:ring-primary/20 transition-all font-bold"
                                     disabled={isUpdating}
+                                    placeholder="Enter your name"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="photo" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Profile Photo URL</Label>
+                                <Label htmlFor="photo" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Profile Photo URL</Label>
                                 <Input 
                                     id="photo" 
                                     value={newPhotoURL} 
                                     onChange={(e) => setNewPhotoURL(e.target.value)}
-                                    className="bg-white/5 border-white/10 h-12 rounded-xl focus:border-primary transition-all"
+                                    className="bg-white/5 border-white/10 h-14 rounded-xl focus:border-primary focus:ring-primary/20 transition-all font-bold"
                                     disabled={isUpdating}
+                                    placeholder="https://example.com/photo.jpg"
                                 />
                             </div>
                         </div>
-                        <DialogFooter className="pt-4">
+                        <DialogFooter className="pt-4 sm:flex-col gap-3">
                             <Button 
                                 type="submit" 
-                                className="w-full h-14 bg-primary hover:bg-primary/90 rounded-xl font-black uppercase tracking-widest transition-all shadow-xl shadow-primary/20"
+                                className="w-full h-14 bg-primary hover:bg-primary/90 rounded-xl font-black uppercase tracking-widest transition-all shadow-xl shadow-primary/20 active:scale-95"
                                 disabled={isUpdating}
                             >
                                 {isUpdating ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
                                 Save Changes
+                            </Button>
+                            <Button 
+                                type="button"
+                                variant="outline"
+                                onClick={() => setIsSettingsOpen(false)}
+                                className="w-full h-12 border-white/10 bg-white/5 rounded-xl font-black uppercase tracking-widest text-[10px] active:scale-95"
+                            >
+                                Cancel
                             </Button>
                         </DialogFooter>
                     </form>
