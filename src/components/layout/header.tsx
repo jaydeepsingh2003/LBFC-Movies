@@ -112,10 +112,10 @@ export function Header() {
         )}>
             <div className="w-full px-4 md:px-8 lg:px-12 max-w-[2200px] mx-auto flex items-center justify-between gap-4 h-full">
                 <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-                    <div className="size-8 group-hover:scale-110 transition-transform">
+                    <div className="size-8 md:hidden group-hover:scale-110 transition-transform">
                         <CinevexiaLogo />
                     </div>
-                    <div className="flex items-center">
+                    <div className="hidden md:flex items-center">
                         <span className="font-headline text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-white">
                             CINE<span className="text-primary">V</span>EXIA
                         </span>
