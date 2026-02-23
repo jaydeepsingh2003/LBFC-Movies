@@ -6,7 +6,7 @@ import { Metadata, Viewport } from 'next';
 import { ClientShell } from '@/components/layout/client-shell';
 
 export const metadata: Metadata = {
-  title: "CINEVEXIA | Unlimited Movies. One Destination.",
+  title: "CINEVEXIA | Where Movies Come Alive",
   description: "Stream the latest and greatest films anytime, anywhere with CINEVEXIA. The ultimate premium OTT experience.",
 };
 

@@ -5,7 +5,7 @@ import { useUser, loginWithGoogle, signInWithEmail, signUpWithEmail, logout, res
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Film, ShieldCheck, Mail, RefreshCcw, LogOut, Info, KeyRound } from 'lucide-react';
+import { Loader2, ShieldCheck, Mail, RefreshCcw, LogOut, Info, KeyRound } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
@@ -227,12 +227,19 @@ export default function LoginPage() {
         <Image src={bgImageUrl} alt="Background" fill className="object-cover z-0 transition-opacity duration-1000 animate-in fade-in" priority unoptimized />
         <div className="absolute inset-0 bg-black/75 z-10" />
         
-        <Link href="/" className="absolute top-6 left-6 z-20 flex items-center gap-2 group">
-            <div className="p-2 bg-primary rounded-xl group-hover:scale-110 transition-transform shadow-xl shadow-primary/20">
-                <Film className="size-6 text-white" />
-            </div>
-            <h1 className="font-headline text-3xl font-black text-white tracking-tighter uppercase">LBFC</h1>
-        </Link>
+        <div className="absolute top-6 left-6 z-20 flex flex-col group">
+            <Link href="/" className="flex items-center gap-2">
+                <div className="p-2 bg-primary rounded-xl group-hover:scale-110 transition-transform shadow-xl shadow-primary/20">
+                    <svg className="size-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <h1 className="font-headline text-3xl font-black text-white tracking-tighter uppercase">
+                    CINE<span className="text-primary">V</span>EXIA
+                </h1>
+            </Link>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mt-1 ml-1">
+                Where Movies Come Alive
+            </p>
+        </div>
         
         <Card className="w-full max-w-md z-20 bg-black/80 backdrop-blur-md border-white/10 text-white shadow-2xl overflow-hidden rounded-[2.5rem]">
             <CardHeader className="text-center pt-10 pb-6">

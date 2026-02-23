@@ -12,6 +12,7 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
   const textRef = useRef<HTMLHeadingElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
+  const taglineRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -34,6 +35,7 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
       });
       gsap.set(glowRef.current, { opacity: 0, scale: 0.1 });
       gsap.set(lineRef.current, { width: 0, opacity: 0 });
+      gsap.set(taglineRef.current, { opacity: 0, y: 20 });
 
       tl.to(glowRef.current, {
         opacity: 1,
@@ -54,8 +56,14 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
         duration: 0.5,
         ease: 'power4.out'
       }, '-=0.6')
-      .to([textRef.current, lineRef.current], {
-        scale: 1.1,
+      .to(taglineRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: 'back.out(1.7)'
+      }, '-=0.2')
+      .to([textRef.current, lineRef.current, taglineRef.current], {
+        scale: 1.05,
         duration: 1.5,
         ease: 'none'
       })
@@ -78,7 +86,7 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
     >
       <div ref={glowRef} className="absolute size-[500px] bg-primary/20 rounded-full blur-[150px] pointer-events-none" />
       
-      <div className="flex flex-col items-center gap-6 relative z-10 w-full px-4">
+      <div className="flex flex-col items-center gap-6 relative z-10 w-full px-4 text-center">
         <h1 
           ref={textRef}
           className="font-headline text-4xl sm:text-6xl md:text-8xl font-black text-white tracking-widest uppercase whitespace-nowrap will-change-transform"
@@ -86,6 +94,12 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
           CINE<span className="text-primary">V</span>EXIA
         </h1>
         <div ref={lineRef} className="h-[2px] bg-primary shadow-[0_0_20px_rgba(229,9,20,0.8)] rounded-full will-change-[width]" />
+        <p 
+          ref={taglineRef}
+          className="text-[10px] sm:text-xs md:text-sm font-black uppercase tracking-[0.5em] text-muted-foreground mt-2"
+        >
+          Where Movies Come Alive
+        </p>
       </div>
 
       <div className="absolute bottom-12">
