@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import { CinevexiaLogo } from '@/components/icons/cinevexia-logo';
 
 interface StudioIntroProps {
   onComplete: () => void;
@@ -13,6 +14,7 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
   const glowRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLParagraphElement>(null);
+  const logoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -33,6 +35,7 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
         letterSpacing: '1.5em',
         force3D: true 
       });
+      gsap.set(logoRef.current, { opacity: 0, scale: 0.5 });
       gsap.set(glowRef.current, { opacity: 0, scale: 0.1 });
       gsap.set(lineRef.current, { width: 0, opacity: 0 });
       gsap.set(taglineRef.current, { opacity: 0, y: 20 });
@@ -43,6 +46,12 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
         duration: 0.6,
         ease: 'expo.out'
       })
+      .to(logoRef.current, {
+        opacity: 1,
+        scale: 1,
+        duration: 0.8,
+        ease: 'back.out(1.7)'
+      }, "-=0.4")
       .to(textRef.current, {
         opacity: 1,
         scale: 1,
@@ -62,7 +71,7 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
         duration: 0.6,
         ease: 'back.out(1.7)'
       }, '-=0.2')
-      .to([textRef.current, lineRef.current, taglineRef.current], {
+      .to([textRef.current, lineRef.current, taglineRef.current, logoRef.current], {
         scale: 1.05,
         duration: 1.5,
         ease: 'none'
@@ -87,6 +96,9 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
       <div ref={glowRef} className="absolute size-[500px] bg-primary/20 rounded-full blur-[150px] pointer-events-none" />
       
       <div className="flex flex-col items-center gap-6 relative z-10 w-full px-4 text-center">
+        <div ref={logoRef} className="size-24 md:size-32 mb-2">
+            <CinevexiaLogo />
+        </div>
         <h1 
           ref={textRef}
           className="font-headline text-4xl sm:text-6xl md:text-8xl font-black text-white tracking-widest uppercase whitespace-nowrap will-change-transform"

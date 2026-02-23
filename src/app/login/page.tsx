@@ -5,7 +5,7 @@ import { useUser, loginWithGoogle, signInWithEmail, signUpWithEmail, logout, res
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, ShieldCheck, Mail, RefreshCcw, LogOut, Info, KeyRound } from 'lucide-react';
+import { Loader2, ShieldCheck, Mail, RefreshCcw, LogOut, Info } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { getTrendingMovies, getBackdropUrl } from '@/lib/tmdb.client';
 import { sendEmailVerification, getAuth } from 'firebase/auth';
+import { CinevexiaLogo } from '@/components/icons/cinevexia-logo';
 
 export default function LoginPage() {
   const { user, isLoading: isUserLoading } = useUser();
@@ -124,9 +125,7 @@ export default function LoginPage() {
     if (!user) return;
     setIsLoading(true);
     try {
-      // Force a reload of the user's data from Firebase
       await user.reload();
-      // Important: After reload, we need to check the updated verified status
       const auth = getAuth();
       const updatedUser = auth.currentUser;
       
@@ -169,7 +168,6 @@ export default function LoginPage() {
     );
   }
 
-  // Verification Pending Screen
   if (user && !user.emailVerified) {
     return (
       <div className="relative h-screen w-screen flex items-center justify-center p-4">
@@ -206,16 +204,6 @@ export default function LoginPage() {
                   <LogOut className="mr-2 size-4" /> Sign Out
                 </Button>
               </div>
-
-              <div className="pt-6 border-t border-white/5 flex flex-col items-center justify-center gap-2">
-                <div className="flex items-center gap-2 text-primary/60">
-                    <ShieldCheck className="size-4" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secure Session: ID-{user.uid.slice(0, 8)}</span>
-                </div>
-                <p className="text-[8px] text-muted-foreground uppercase font-bold text-center mt-2 opacity-50">
-                    Tip: Add noreply@firebaseapp.com to your contacts to ensure link delivery.
-                </p>
-              </div>
             </CardContent>
         </Card>
       </div>
@@ -229,8 +217,8 @@ export default function LoginPage() {
         
         <div className="absolute top-6 left-6 z-20 flex flex-col group">
             <Link href="/" className="flex items-center gap-2">
-                <div className="p-2 bg-primary rounded-xl group-hover:scale-110 transition-transform shadow-xl shadow-primary/20">
-                    <svg className="size-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <div className="size-10 group-hover:scale-110 transition-transform shadow-xl shadow-primary/20">
+                    <CinevexiaLogo />
                 </div>
                 <h1 className="font-headline text-3xl font-black text-white tracking-tighter uppercase">
                     CINE<span className="text-primary">V</span>EXIA
