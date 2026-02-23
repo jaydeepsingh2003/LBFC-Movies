@@ -170,9 +170,9 @@ export default function LoginPage() {
   // Verification Screen
   if (user && !user.emailVerified) {
     return (
-      <div className="relative min-h-svh w-full flex items-center justify-center p-4 overflow-y-auto">
-        <div className="fixed inset-0 z-0">
-            <Image src={bgImageUrl} alt="Backdrop" fill className="object-cover blur-md opacity-40 scale-110" priority unoptimized />
+      <div className="relative min-h-screen w-full flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed top-0 left-0 w-full h-[100lvh] z-0 pointer-events-none bg-[#0B0B0F]">
+            <Image src={bgImageUrl} alt="Backdrop" fill className="object-cover blur-md opacity-40" priority unoptimized />
             <div className="absolute inset-0 bg-black/80" />
         </div>
         
@@ -219,9 +219,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative min-h-svh w-full flex flex-col items-center justify-center p-4 sm:p-8 overflow-x-hidden overflow-y-auto">
-        {/* Fixed Backdrop System */}
-        <div className="fixed inset-0 z-0">
+    <div className="relative min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-8 overflow-x-hidden overflow-y-auto">
+        {/* Fixed Backdrop System - Locked to Largest Viewport Height to prevent shifting */}
+        <div className="fixed top-0 left-0 w-full h-[100lvh] z-0 pointer-events-none bg-[#0B0B0F]">
             <Image src={bgImageUrl} alt="Backdrop" fill className="object-cover opacity-50" priority unoptimized />
             <div className="absolute inset-0 bg-gradient-to-br from-black/95 via-black/70 to-black/90" />
         </div>
