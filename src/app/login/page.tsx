@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -5,7 +6,7 @@ import { useUser, loginWithGoogle, signInWithEmail, signUpWithEmail, logout, res
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, ShieldCheck, Mail, RefreshCcw, LogOut, Info, ArrowRight, Lock, UserPlus } from 'lucide-react';
+import { Loader2, ShieldCheck, Mail, RefreshCcw, LogOut, Info, ArrowRight, Lock, UserPlus, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
@@ -22,6 +23,8 @@ export default function LoginPage() {
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [bgImageUrl, setBgImageUrl] = useState('https://image.tmdb.org/t/p/original/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg');
@@ -50,14 +53,27 @@ export default function LoginPage() {
 
   const handleAuthAction = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!email || !password) {
         toast({ variant: 'destructive', title: "Fields Required", description: "Identity credentials must be complete." });
         return;
     }
+
+    if (isSignUp) {
+        if (!fullName) {
+            toast({ variant: 'destructive', title: "Name Required", description: "Please provide your full name for the vault." });
+            return;
+        }
+        if (password !== confirmPassword) {
+            toast({ variant: 'destructive', title: "Keys Mismatch", description: "The confirmed access key does not match." });
+            return;
+        }
+    }
+
     setIsLoading(true);
     try {
       if (isSignUp) {
-        await signUpWithEmail(email, password);
+        await signUpWithEmail(email, password, fullName);
         toast({ 
             title: "Verification Dispatched", 
             description: "A link has been sent to activate your membership." 
@@ -226,6 +242,23 @@ export default function LoginPage() {
             
             <CardContent className="space-y-8 pb-14 px-10">
               <form onSubmit={handleAuthAction} className="space-y-5">
+                  {isSignUp && (
+                    <div className="space-y-2.5 animate-in fade-in slide-in-from-top-2">
+                        <Label htmlFor="fullName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Full Name</Label>
+                        <div className="relative group">
+                            <User className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
+                            <Input 
+                                id="fullName" 
+                                type="text" 
+                                placeholder="Architect Name" 
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
+                                disabled={isLoading}
+                                className="bg-white/[0.03] border-white/5 h-14 pl-12 rounded-2xl focus:ring-primary/20 focus:border-primary/50 transition-all font-bold"
+                            />
+                        </div>
+                    </div>
+                  )}
                   <div className="space-y-2.5">
                       <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Archive Address</Label>
                       <div className="relative group">
@@ -268,6 +301,23 @@ export default function LoginPage() {
                           />
                       </div>
                   </div>
+                  {isSignUp && (
+                    <div className="space-y-2.5 animate-in fade-in slide-in-from-top-2">
+                        <Label htmlFor="confirmPassword" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Confirm Access Key</Label>
+                        <div className="relative group">
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
+                            <Input 
+                                id="confirmPassword" 
+                                type="password" 
+                                placeholder="••••••••"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)} 
+                                disabled={isLoading}
+                                className="bg-white/[0.03] border-white/5 h-14 pl-12 rounded-2xl focus:ring-primary/20 focus:border-primary/50 transition-all font-bold"
+                            />
+                        </div>
+                    </div>
+                  )}
                   <Button type="submit" className="w-full h-16 bg-primary hover:bg-primary/90 text-sm font-black uppercase tracking-[0.2em] shadow-[0_15px_30px_rgba(229,9,20,0.3)] transition-all hover:scale-[1.02] active:scale-95 rounded-2xl" disabled={isLoading}>
                     {isLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (isSignUp ? 'Activate Account' : 'Access Vault')}
                   </Button>
@@ -299,7 +349,11 @@ export default function LoginPage() {
                   
                   <div className="text-center">
                     <button 
-                        onClick={() => setIsSignUp(!isSignUp)} 
+                        onClick={() => {
+                            setIsSignUp(!isSignUp);
+                            setPassword('');
+                            setConfirmPassword('');
+                        }} 
                         className="text-[10px] text-muted-foreground hover:text-white transition-colors font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 mx-auto group"
                     >
                         {isSignUp ? (

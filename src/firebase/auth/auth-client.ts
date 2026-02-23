@@ -1,3 +1,4 @@
+
 'use client';
 
 import { 
@@ -25,10 +26,10 @@ export function useUser() {
     return { user, isLoading: loading, error };
 }
 
-export async function syncUserProfile(user: User) {
+export async function syncUserProfile(user: User, providedDisplayName?: string) {
     const db = getFirestore();
     const userRef = doc(db, 'users', user.uid);
-    const displayName = user.displayName || user.email?.split('@')[0] || 'Enthusiast';
+    const displayName = providedDisplayName || user.displayName || user.email?.split('@')[0] || 'Enthusiast';
     
     await setDoc(userRef, {
         uid: user.uid,
@@ -90,13 +91,15 @@ export const loginWithGoogle = async () => {
     }
 };
 
-export const signUpWithEmail = async (email: string, password: string): Promise<User> => {
+export const signUpWithEmail = async (email: string, password: string, displayName: string): Promise<User> => {
     const auth = getAuth();
     auth.useDeviceLanguage();
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        // Immediately update profile with name
+        await updateProfile(userCredential.user, { displayName });
         await sendEmailVerification(userCredential.user);
-        await syncUserProfile(userCredential.user);
+        await syncUserProfile(userCredential.user, displayName);
         return userCredential.user;
     } catch (error) {
         console.error("Error signing up", error);
