@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -6,9 +5,8 @@ import { useUser, loginWithGoogle, signInWithEmail, signUpWithEmail, logout, res
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, ShieldCheck, Mail, RefreshCcw, LogOut, Info, ArrowRight, Lock, UserPlus, User } from 'lucide-react';
+import { Loader2, ShieldCheck, Mail, Info, ArrowRight, Lock, User } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
@@ -55,17 +53,17 @@ export default function LoginPage() {
     e.preventDefault();
     
     if (!email || !password) {
-        toast({ variant: 'destructive', title: "Fields Required", description: "Identity credentials must be complete." });
+        toast({ variant: 'destructive', title: "Fields Required", description: "Please fill in all fields." });
         return;
     }
 
     if (isSignUp) {
         if (!fullName) {
-            toast({ variant: 'destructive', title: "Name Required", description: "Please provide your full name for the vault." });
+            toast({ variant: 'destructive', title: "Name Required", description: "Please enter your full name." });
             return;
         }
         if (password !== confirmPassword) {
-            toast({ variant: 'destructive', title: "Keys Mismatch", description: "The confirmed access key does not match." });
+            toast({ variant: 'destructive', title: "Passwords Mismatch", description: "Passwords do not match." });
             return;
         }
     }
@@ -75,18 +73,18 @@ export default function LoginPage() {
       if (isSignUp) {
         await signUpWithEmail(email, password, fullName);
         toast({ 
-            title: "Verification Dispatched", 
-            description: "A link has been sent to activate your membership." 
+            title: "Account Created", 
+            description: "Please check your email to verify your account." 
         });
       } else {
         await signInWithEmail(email, password);
-        toast({ title: "Welcome Back", description: "Secure link established." });
+        toast({ title: "Welcome Back", description: "Signed in successfully." });
       }
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Access Denied',
-        description: error.message || 'Please verify your credentials.',
+        title: 'Sign In Failed',
+        description: error.message || 'Please check your email and password.',
       });
     } finally {
       setIsLoading(false);
@@ -97,8 +95,8 @@ export default function LoginPage() {
     if (!email) {
       toast({
         variant: 'destructive',
-        title: "Email Missing",
-        description: "Enter your registered address to reset your vault access.",
+        title: "Email Required",
+        description: "Please enter your email address to reset your password.",
       });
       return;
     }
@@ -107,13 +105,13 @@ export default function LoginPage() {
     try {
       await resetPassword(email);
       toast({
-        title: "Recovery Dispatched",
-        description: "Check your inbox for the reset link.",
+        title: "Email Sent",
+        description: "Check your inbox for password reset instructions.",
       });
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: "Transmission Failed",
+        title: "Error",
         description: error.message,
       });
     } finally {
@@ -125,12 +123,12 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       await loginWithGoogle();
-      toast({ title: "Authorized", description: "Access granted via Global Gateway." });
+      toast({ title: "Success", description: "Signed in with Google." });
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Auth Failed',
-        description: 'Google authentication was interrupted.',
+        title: 'Error',
+        description: 'Google sign in was unsuccessful.',
       });
     } finally {
       setIsLoading(false);
@@ -146,10 +144,10 @@ export default function LoginPage() {
       const updatedUser = auth.currentUser;
       
       if (updatedUser?.emailVerified) {
-        toast({ title: "Identity Confirmed", description: "Redirecting to main studio." });
+        toast({ title: "Verified", description: "Account verified. Redirecting..." });
         router.push('/');
       } else {
-        toast({ title: "Status: Pending", description: "Link not yet activated." });
+        toast({ title: "Not Verified", description: "Please click the link in your email." });
       }
     } catch (error) {
       console.error("Reload failed", error);
@@ -169,42 +167,42 @@ export default function LoginPage() {
   if (user && !user.emailVerified) {
     return (
       <div className="relative h-screen w-screen flex items-center justify-center p-4">
-        <Image src={bgImageUrl} alt="Cinematic Backdrop" fill className="object-cover z-0 blur-md opacity-40 scale-110" priority unoptimized />
+        <Image src={bgImageUrl} alt="Backdrop" fill className="object-cover z-0 blur-md opacity-40 scale-110" priority unoptimized />
         <div className="absolute inset-0 bg-black/80 z-10" />
         
-        <Card className="w-full max-w-md z-20 bg-black/90 backdrop-blur-3xl border-white/10 text-white shadow-[0_0_100px_rgba(0,0,0,0.8)] rounded-[3rem] overflow-hidden">
-            <CardHeader className="text-center pt-16 pb-10 space-y-6">
-              <div className="mx-auto size-24 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20 animate-pulse">
-                <Mail className="size-12 text-primary" />
+        <Card className="w-full max-w-md z-20 bg-black/90 backdrop-blur-3xl border-white/10 text-white shadow-2xl rounded-[2.5rem] overflow-hidden">
+            <CardHeader className="text-center pt-12 pb-8 space-y-6">
+              <div className="mx-auto size-20 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
+                <Mail className="size-10 text-primary" />
               </div>
               <div className="space-y-2">
-                <CardTitle className="text-3xl font-headline font-black tracking-tighter uppercase">Activate Membership</CardTitle>
-                <p className="text-muted-foreground text-xs uppercase tracking-widest font-bold">Verification Pending</p>
+                <CardTitle className="text-2xl font-headline font-black uppercase tracking-tight">Verify Your Email</CardTitle>
+                <p className="text-muted-foreground text-[10px] uppercase tracking-widest font-bold">Verification Pending</p>
               </div>
-              <div className="space-y-3 px-8">
+              <div className="space-y-3 px-6">
                 <p className="text-muted-foreground text-sm font-medium">
-                  We've sent an encrypted link to <span className="text-white font-bold">{user.email}</span>.
+                  We've sent a verification link to <br/><span className="text-white font-bold">{user.email}</span>.
                 </p>
-                <div className="flex items-center justify-center gap-2 text-yellow-500/80 bg-yellow-500/5 py-3 px-4 rounded-2xl border border-yellow-500/10">
+                <div className="flex items-center justify-center gap-2 text-yellow-500/80 bg-yellow-500/5 py-3 px-4 rounded-xl border border-yellow-500/10">
                     <Info className="size-4 shrink-0" />
-                    <span className="text-[10px] font-black uppercase tracking-wider leading-tight text-left">Check your Spam or Junk folder if the link doesn't arrive.</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider leading-tight text-left">Check your spam folder if you don't see it.</span>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4 pb-16 px-10">
-              <Button onClick={handleReloadStatus} disabled={isLoading} className="w-full h-16 bg-white text-black hover:bg-white/90 font-black uppercase tracking-[0.2em] text-xs rounded-2xl transition-all shadow-2xl group">
+            <CardContent className="space-y-4 pb-12 px-8">
+              <Button onClick={handleReloadStatus} disabled={isLoading} className="w-full h-14 bg-white text-black hover:bg-white/90 font-black uppercase tracking-widest text-xs rounded-xl transition-all group">
                 {isLoading ? <Loader2 className="size-5 animate-spin" /> : (
                     <>
-                        Check Status <ArrowRight className="ml-2 size-4 group-hover:translate-x-1 transition-transform" />
+                        I have verified <ArrowRight className="ml-2 size-4 group-hover:translate-x-1 transition-transform" />
                     </>
                 )}
               </Button>
               
               <div className="grid grid-cols-2 gap-4 pt-2">
-                <Button onClick={() => sendEmailVerification(user)} variant="outline" disabled={isLoading} className="h-14 border-white/5 bg-white/5 hover:bg-white/10 font-black uppercase text-[10px] tracking-widest rounded-2xl">
-                  Resend
+                <Button onClick={() => sendEmailVerification(user)} variant="outline" disabled={isLoading} className="h-12 border-white/5 bg-white/5 hover:bg-white/10 font-black uppercase text-[10px] tracking-widest rounded-xl">
+                  Resend Email
                 </Button>
-                <Button onClick={() => logout()} variant="outline" className="h-14 border-white/5 bg-white/5 hover:bg-white/10 font-black uppercase text-[10px] tracking-widest rounded-2xl">
+                <Button onClick={() => logout()} variant="outline" className="h-12 border-white/5 bg-white/5 hover:bg-white/10 font-black uppercase text-[10px] tracking-widest rounded-xl">
                   Sign Out
                 </Button>
               </div>
@@ -216,75 +214,75 @@ export default function LoginPage() {
 
   return (
     <div className="relative h-screen w-screen flex items-center justify-center p-4 overflow-hidden">
-        <Image src={bgImageUrl} alt="Cinematic Backdrop" fill className="object-cover z-0 transition-opacity duration-1000 animate-in fade-in zoom-in-105" priority unoptimized />
+        <Image src={bgImageUrl} alt="Backdrop" fill className="object-cover z-0 opacity-50" priority unoptimized />
         <div className="absolute inset-0 bg-gradient-to-br from-black/95 via-black/70 to-black/90 z-10" />
         
         {/* Top Branding */}
-        <div className="absolute top-10 left-1/2 -translate-x-1/2 z-20 text-center space-y-2">
-            <h1 className="font-headline text-4xl md:text-5xl font-black text-white tracking-tighter uppercase">
+        <div className="absolute top-8 left-1/2 -translate-x-1/2 z-20 text-center space-y-1">
+            <h1 className="font-headline text-3xl md:text-4xl font-black text-white tracking-tighter uppercase">
                 CINE<span className="text-primary">V</span>EXIA
             </h1>
-            <p className="text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground">
+            <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground">
                 Where Movies Come Alive
             </p>
         </div>
         
-        <Card className="w-full max-w-md z-20 bg-black/80 backdrop-blur-2xl border-white/5 text-white shadow-[0_50px_100px_rgba(0,0,0,0.9)] rounded-[3.5rem] overflow-hidden">
-            <CardHeader className="text-center pt-14 pb-8 space-y-2">
-              <CardTitle className="text-4xl font-headline font-black tracking-tighter uppercase">
-                {isSignUp ? 'Create Vault' : 'Sign In'}
+        <Card className="w-full max-w-md z-20 bg-black/80 backdrop-blur-2xl border-white/5 text-white shadow-[0_30px_60px_rgba(0,0,0,0.8)] rounded-[2.5rem] overflow-hidden">
+            <CardHeader className="text-center pt-10 pb-6 space-y-1">
+              <CardTitle className="text-3xl font-headline font-black tracking-tight uppercase">
+                {isSignUp ? 'Create Account' : 'Sign In'}
               </CardTitle>
               <div className="flex items-center justify-center gap-2 text-primary/60">
-                <ShieldCheck className="size-4" />
-                <span className="text-[9px] font-black uppercase tracking-[0.3em]">Encrypted Session</span>
+                <ShieldCheck className="size-3.5" />
+                <span className="text-[9px] font-black uppercase tracking-widest">Secure Login</span>
               </div>
             </CardHeader>
             
-            <CardContent className="space-y-8 pb-14 px-10">
-              <form onSubmit={handleAuthAction} className="space-y-5">
+            <CardContent className="space-y-6 pb-10 px-6 md:px-10">
+              <form onSubmit={handleAuthAction} className="space-y-4">
                   {isSignUp && (
-                    <div className="space-y-2.5 animate-in fade-in slide-in-from-top-2">
+                    <div className="space-y-1.5">
                         <Label htmlFor="fullName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Full Name</Label>
                         <div className="relative group">
                             <User className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
                             <Input 
                                 id="fullName" 
                                 type="text" 
-                                placeholder="Architect Name" 
+                                placeholder="Enter your full name" 
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
                                 disabled={isLoading}
-                                className="bg-white/[0.03] border-white/5 h-14 pl-12 rounded-2xl focus:ring-primary/20 focus:border-primary/50 transition-all font-bold"
+                                className="bg-white/[0.03] border-white/5 h-12 pl-12 rounded-xl focus:ring-primary/20 focus:border-primary/50 transition-all font-bold"
                             />
                         </div>
                     </div>
                   )}
-                  <div className="space-y-2.5">
-                      <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Archive Address</Label>
+                  <div className="space-y-1.5">
+                      <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Email</Label>
                       <div className="relative group">
                           <Mail className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
                           <Input 
                               id="email" 
                               type="email" 
-                              placeholder="name@cinevexia.com" 
+                              placeholder="name@example.com" 
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
                               disabled={isLoading}
-                              className="bg-white/[0.03] border-white/5 h-14 pl-12 rounded-2xl focus:ring-primary/20 focus:border-primary/50 transition-all font-bold"
+                              className="bg-white/[0.03] border-white/5 h-12 pl-12 rounded-xl focus:ring-primary/20 focus:border-primary/50 transition-all font-bold"
                           />
                       </div>
                   </div>
-                  <div className="space-y-2.5">
+                  <div className="space-y-1.5">
                       <div className="flex items-center justify-between ml-1">
-                        <Label htmlFor="password" id="password-label" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Access Key</Label>
+                        <Label htmlFor="password" id="password-label" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Password</Label>
                         {!isSignUp && (
                           <button 
                             type="button" 
                             onClick={handleForgotPassword}
-                            className="text-[9px] font-black uppercase tracking-widest text-primary hover:underline hover:text-primary/80 transition-colors"
+                            className="text-[9px] font-black uppercase tracking-widest text-primary hover:underline transition-colors"
                             disabled={isLoading}
                           >
-                            Reset?
+                            Forgot?
                           </button>
                         )}
                       </div>
@@ -297,13 +295,13 @@ export default function LoginPage() {
                               value={password}
                               onChange={(e) => setPassword(e.target.value)} 
                               disabled={isLoading}
-                              className="bg-white/[0.03] border-white/5 h-14 pl-12 rounded-2xl focus:ring-primary/20 focus:border-primary/50 transition-all font-bold"
+                              className="bg-white/[0.03] border-white/5 h-12 pl-12 rounded-xl focus:ring-primary/20 focus:border-primary/50 transition-all font-bold"
                           />
                       </div>
                   </div>
                   {isSignUp && (
-                    <div className="space-y-2.5 animate-in fade-in slide-in-from-top-2">
-                        <Label htmlFor="confirmPassword" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Confirm Access Key</Label>
+                    <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1">
+                        <Label htmlFor="confirmPassword" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Confirm Password</Label>
                         <div className="relative group">
                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
                             <Input 
@@ -313,53 +311,53 @@ export default function LoginPage() {
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)} 
                                 disabled={isLoading}
-                                className="bg-white/[0.03] border-white/5 h-14 pl-12 rounded-2xl focus:ring-primary/20 focus:border-primary/50 transition-all font-bold"
+                                className="bg-white/[0.03] border-white/5 h-12 pl-12 rounded-xl focus:ring-primary/20 focus:border-primary/50 transition-all font-bold"
                             />
                         </div>
                     </div>
                   )}
-                  <Button type="submit" className="w-full h-16 bg-primary hover:bg-primary/90 text-sm font-black uppercase tracking-[0.2em] shadow-[0_15px_30px_rgba(229,9,20,0.3)] transition-all hover:scale-[1.02] active:scale-95 rounded-2xl" disabled={isLoading}>
-                    {isLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (isSignUp ? 'Activate Account' : 'Access Vault')}
+                  <Button type="submit" className="w-full h-14 bg-primary hover:bg-primary/90 text-xs font-black uppercase tracking-widest shadow-xl transition-all rounded-xl mt-2" disabled={isLoading}>
+                    {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : (isSignUp ? 'Sign Up' : 'Sign In')}
                   </Button>
               </form>
               
-              <div className="relative">
+              <div className="relative py-2">
                   <div className="absolute inset-0 flex items-center">
                       <span className="w-full border-t border-white/5" />
                   </div>
-                  <div className="relative flex justify-center text-[9px] font-black uppercase tracking-[0.4em]">
-                      <span className="bg-[#0a0a0a]/80 px-6 py-1 rounded-full text-muted-foreground backdrop-blur-md">
-                          Global Gateway
+                  <div className="relative flex justify-center text-[9px] font-black uppercase tracking-widest">
+                      <span className="bg-black px-4 py-1 text-muted-foreground rounded-full border border-white/5">
+                          Or continue with
                       </span>
                   </div>
               </div>
 
-              <div className="space-y-6">
-                  <Button onClick={handleGoogleLogin} variant="outline" className="w-full h-16 bg-white/[0.03] border-white/5 hover:bg-white/5 text-[11px] font-black uppercase tracking-widest rounded-2xl transition-all" disabled={isLoading}>
-                      <div className="flex items-center justify-center gap-4">
-                        <svg className="size-5" viewBox="0 0 24 24">
+              <div className="space-y-4">
+                  <Button onClick={handleGoogleLogin} variant="outline" className="w-full h-12 bg-white/[0.03] border-white/5 hover:bg-white/5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all" disabled={isLoading}>
+                      <div className="flex items-center justify-center gap-3">
+                        <svg className="size-4" viewBox="0 0 24 24">
                           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                           <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
                           <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
                           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                         </svg>
-                        Sign in with Google
+                        Google
                       </div>
                   </Button>
                   
-                  <div className="text-center">
+                  <div className="text-center pt-2">
                     <button 
                         onClick={() => {
                             setIsSignUp(!isSignUp);
                             setPassword('');
                             setConfirmPassword('');
                         }} 
-                        className="text-[10px] text-muted-foreground hover:text-white transition-colors font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 mx-auto group"
+                        className="text-[10px] text-muted-foreground hover:text-white transition-colors font-bold uppercase tracking-widest flex items-center justify-center gap-2 mx-auto group"
                     >
                         {isSignUp ? (
-                            <>Existing Member? <span className="text-primary group-hover:underline">Sign In</span></>
+                            <>Already have an account? <span className="text-primary font-black">Sign In</span></>
                         ) : (
-                            <>New to CINEVEXIA? <span className="text-primary group-hover:underline">Join Now</span></>
+                            <>Don't have an account? <span className="text-primary font-black">Sign Up</span></>
                         )}
                     </button>
                   </div>
@@ -367,11 +365,11 @@ export default function LoginPage() {
             </CardContent>
         </Card>
 
-        {/* Footer info */}
-        <div className="absolute bottom-10 left-0 right-0 z-20 flex justify-center gap-8 opacity-30 text-[8px] font-black uppercase tracking-[0.3em]">
-            <span className="cursor-help hover:opacity-100 transition-opacity">Privacy Shield</span>
-            <span className="cursor-help hover:opacity-100 transition-opacity">Terms of Entry</span>
-            <span className="cursor-help hover:opacity-100 transition-opacity">Node Status: Active</span>
+        {/* Simple Footer */}
+        <div className="absolute bottom-8 left-0 right-0 z-20 flex justify-center gap-6 opacity-30 text-[8px] font-black uppercase tracking-widest">
+            <span className="hover:opacity-100 transition-opacity cursor-default">Privacy</span>
+            <span className="hover:opacity-100 transition-opacity cursor-default">Terms</span>
+            <span className="hover:opacity-100 transition-opacity cursor-default">Support</span>
         </div>
     </div>
   );
