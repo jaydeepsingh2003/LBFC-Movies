@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -127,7 +126,7 @@ export default function ProfilePage(props: { params: Promise<{ userId: string }>
     return (
       <div className="flex flex-col justify-center items-center h-svh gap-6 bg-transparent">
         <div className="relative">
-            <div className="h-10 w-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
             <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full animate-pulse" />
         </div>
         <p className="text-muted-foreground font-black tracking-[0.4em] uppercase text-[10px] animate-pulse">Decrypting Identity Vault...</p>
@@ -140,7 +139,7 @@ export default function ProfilePage(props: { params: Promise<{ userId: string }>
   return (
     <div className="min-h-screen bg-transparent pb-20 overflow-x-hidden relative">
       {/* Dynamic Master Backdrop Tier */}
-      <div className="relative h-[45vh] md:h-[65vh] w-full overflow-hidden pointer-events-none">
+      <div className="relative h-[45vh] md:h-[65vh] w-full overflow-hidden pointer-events-none z-0">
         {headerBackdrop && (
             <Image 
                 src={headerBackdrop} 
@@ -157,7 +156,7 @@ export default function ProfilePage(props: { params: Promise<{ userId: string }>
         <div className="relative h-full flex flex-col items-center justify-center pt-16 px-4 pointer-events-auto">
             <div className="relative group mb-6">
                 <div className="absolute inset-0 bg-primary/30 rounded-full blur-3xl animate-pulse group-hover:bg-primary/50 transition-all" />
-                <Avatar className="h-28 w-28 md:h-44 md:w-44 border-4 border-primary shadow-[0_0_50px_rgba(225,29,72,0.4)] relative z-10 transition-all duration-500 group-hover:scale-105 active:scale-95">
+                <Avatar className="h-28 w-28 md:h-44 md:w-44 border-4 border-primary shadow-[0_0_50px_rgba(225,29,72,0.4)] relative z-10 transition-all duration-500 group-hover:scale-105 active:scale-95 touch-none">
                     <AvatarImage src={userProfile.photoURL} alt={userProfile.displayName} className="object-cover" />
                     <AvatarFallback className="bg-secondary text-primary font-black text-3xl md:text-5xl">{userProfile.displayName?.charAt(0)}</AvatarFallback>
                 </Avatar>

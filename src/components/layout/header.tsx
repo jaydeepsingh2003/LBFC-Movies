@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -44,7 +43,7 @@ export function DesktopNav() {
                         key={item.href}
                         href={item.href}
                         className={cn(
-                            "transition-all duration-300 text-[10px] lg:text-[11px] font-black uppercase tracking-[0.15em] hover:text-primary relative group flex items-center gap-2 h-full whitespace-nowrap",
+                            "transition-all duration-300 text-[10px] lg:text-[11px] font-black uppercase tracking-[0.15em] hover:text-primary relative group flex items-center gap-2 h-full whitespace-nowrap active:scale-95",
                             isActive ? "text-primary" : "text-muted-foreground"
                         )}
                     >
@@ -112,7 +111,7 @@ export function Header() {
             scrolled ? "bg-background/95 backdrop-blur-xl border-b shadow-2xl border-white/5" : "bg-black/80 backdrop-blur-sm border-b border-white/5"
         )}>
             <div className="w-full px-4 md:px-8 lg:px-12 max-w-[2200px] mx-auto flex items-center justify-between gap-2 md:gap-4 h-full">
-                <Link href="/" className="flex items-center gap-2 md:gap-3 group flex-shrink-0">
+                <Link href="/" className="flex items-center gap-2 md:gap-3 group flex-shrink-0 active:scale-95 transition-transform">
                     <div className="size-7 md:size-8 group-hover:scale-110 transition-transform">
                         <CinevexiaLogo />
                     </div>
@@ -137,7 +136,7 @@ export function Header() {
                         <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-secondary animate-pulse" />
                     ) : user ? (
                         <div className="flex items-center">
-                            <DropdownMenu>
+                            <DropdownMenu modal={false}>
                                 <DropdownMenuTrigger asChild>
                                     <button className="relative h-9 w-9 md:h-10 md:w-10 rounded-full focus:outline-none ring-2 ring-primary/20 hover:ring-primary transition-all overflow-hidden group active:scale-90 touch-none">
                                         <Avatar className="h-full w-full group-hover:scale-110 transition-transform">
@@ -222,7 +221,7 @@ export function Header() {
                                 />
                             </div>
                         </div>
-                        <DialogFooter className="pt-4 sm:flex-col gap-3">
+                        <DialogFooter className="pt-4 flex flex-col sm:flex-col gap-3">
                             <Button 
                                 type="submit" 
                                 className="w-full h-14 bg-primary hover:bg-primary/90 rounded-xl font-black uppercase tracking-widest transition-all shadow-xl shadow-primary/20 active:scale-95"
