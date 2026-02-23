@@ -102,7 +102,7 @@ export default function PeoplePage() {
                 )} />
                 <Input
                 placeholder="Locate by name..."
-                className="pl-16 pr-16 h-20 bg-secondary/40 border-white/5 rounded-[2.5rem] text-xl font-black uppercase tracking-tighter focus:ring-primary/20 transition-all border-2 backdrop-blur-3xl shadow-2xl placeholder:text-muted-foreground/20"
+                className="pl-16 pr-16 h-20 bg-secondary/40 border-white/5 rounded-[2rem] text-xl font-black uppercase tracking-tighter focus:ring-primary/20 transition-all border-2 backdrop-blur-3xl shadow-2xl placeholder:text-muted-foreground/20"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -146,12 +146,12 @@ export default function PeoplePage() {
 
       <main className="min-h-[600px] relative">
         {isLoading ? (
-          <div className="flex flex-col justify-center items-center h-[500px] gap-8">
+          <div className="flex flex-col justify-center items-center h-[500px] gap-6">
             <div className="relative">
-                <Loader2 className="h-20 w-20 animate-spin text-primary" />
-                <div className="absolute inset-0 blur-3xl bg-primary/30 rounded-full animate-pulse" />
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full animate-pulse" />
             </div>
-            <p className="text-muted-foreground animate-pulse font-black tracking-[0.5em] uppercase text-xs">Accessing Personnel Files...</p>
+            <p className="text-muted-foreground animate-pulse font-black tracking-[0.4em] uppercase text-[10px]">Accessing Personnel Files...</p>
           </div>
         ) : people.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-10 animate-in fade-in duration-1000">

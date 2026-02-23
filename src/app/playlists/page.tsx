@@ -89,12 +89,12 @@ export default function PlaylistsPage() {
 
   if (userLoading || !user) {
     return (
-      <div className="flex flex-col justify-center items-center h-svh gap-8 bg-transparent">
+      <div className="flex flex-col justify-center items-center h-svh gap-6 bg-transparent">
         <div className="relative">
-            <Loader2 className="h-20 w-20 animate-spin text-primary" />
-            <div className="absolute inset-0 blur-3xl bg-primary/30 rounded-full animate-pulse" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full animate-pulse" />
         </div>
-        <p className="text-muted-foreground font-black tracking-[0.5em] uppercase text-xs animate-pulse">Decrypting Personal Data...</p>
+        <p className="text-muted-foreground font-black tracking-[0.4em] uppercase text-[10px] animate-pulse">Decrypting Personal Data...</p>
       </div>
     );
   }
