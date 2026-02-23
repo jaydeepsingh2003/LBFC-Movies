@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
 import { getPosterUrl, discoverMovies, discoverTvShows } from '@/lib/tmdb.client';
@@ -9,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
 import { MovieCard } from '../movie-card';
 import { TVShowCard } from '../tv-show-card';
-import { Clapperboard, MonitorPlay } from 'lucide-react';
+import { Clapperboard, MonitorPlay, Zap } from 'lucide-react';
 
 interface ContentWithPoster extends Partial<Movie>, Partial<TVShow> {
   posterUrl: string | null;
@@ -19,30 +18,12 @@ interface ContentWithPoster extends Partial<Movie>, Partial<TVShow> {
 }
 
 const ottPlatforms = [
-  {
-    name: 'Netflix',
-    provider_id: '8',
-  },
-  {
-    name: 'Prime Video',
-    provider_id: '119',
-  },
-  {
-    name: 'Disney+ Hotstar',
-    provider_id: '122|337', // Hotstar (122) is primary for Disney+ content in India (IN)
-  },
-  {
-    name: 'JioCinema',
-    provider_id: '220',
-  },
-  {
-    name: 'Sony LIV',
-    provider_id: '237',
-  },
-  {
-    name: 'Zee5',
-    provider_id: '232',
-  }
+  { name: 'Netflix', provider_id: '8' },
+  { name: 'Prime Video', provider_id: '119' },
+  { name: 'Disney+', provider_id: '122|337' },
+  { name: 'JioCinema', provider_id: '220' },
+  { name: 'Sony LIV', provider_id: '237' },
+  { name: 'Zee5', provider_id: '232' }
 ];
 
 export default function TrendingOttsSection() {
@@ -83,21 +64,21 @@ export default function TrendingOttsSection() {
   }, [activePlatform]);
 
   return (
-    <section className="py-4 space-y-8 border-b border-white/5">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg border border-primary/20">
-                <Clapperboard className="text-primary size-6 md:size-7" />
+    <section className="py-16 space-y-12 border-t border-white/5 relative">
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-10">
+        <div className="space-y-2">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-primary/10 rounded-2xl border border-primary/20 shadow-2xl shadow-primary/10">
+                <Clapperboard className="text-primary size-7 md:size-8" />
             </div>
-            <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter uppercase text-white mb-0">
-                Trending on <span className="text-primary">OTT</span>
+            <h2 className="font-headline text-3xl md:text-5xl font-black tracking-tighter uppercase text-white mb-0 leading-none">
+                Streaming <span className="text-primary">Giants</span>
             </h2>
           </div>
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] ml-12 md:ml-14">Real-time dynamic catalogs from your favorite streaming hubs.</p>
+          <p className="text-[10px] md:text-xs font-black text-muted-foreground uppercase tracking-[0.4em] opacity-60 ml-16 md:ml-20">Real-time dynamic catalogs from your favorite global hubs.</p>
         </div>
         
-        <div className="flex items-center gap-2 p-1.5 glass-panel rounded-2xl overflow-x-auto no-scrollbar max-w-full">
+        <div className="flex items-center gap-3 p-2 glass-panel rounded-[2rem] border-white/10 overflow-x-auto no-scrollbar max-w-full xl:max-w-none shadow-2xl">
           {ottPlatforms.map((platform) => {
             const isActive = activePlatform === platform.name;
             return (
@@ -105,9 +86,9 @@ export default function TrendingOttsSection() {
                     key={platform.name}
                     onClick={() => setActivePlatform(platform.name)}
                     className={cn(
-                        'flex-shrink-0 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap',
+                        'flex-shrink-0 px-8 py-3.5 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-500 whitespace-nowrap border border-transparent',
                         isActive
-                        ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-105'
+                        ? 'bg-primary text-white shadow-2xl shadow-primary/30 scale-105 border-white/10'
                         : 'text-muted-foreground hover:bg-white/5 hover:text-white'
                     )}
                 >
@@ -118,28 +99,30 @@ export default function TrendingOttsSection() {
         </div>
       </div>
 
-      <div className="min-h-[350px] relative">
+      <div className="min-h-[400px] relative">
         {isLoading ? (
-          <div className="flex gap-4 overflow-hidden">
+          <div className="flex gap-8 overflow-hidden">
             {[...Array(7)].map((_, i) => (
-              <Skeleton key={i} className="aspect-[2/3] w-40 md:w-56 flex-shrink-0 rounded-2xl" />
+              <Skeleton key={i} className="aspect-[2/3] w-48 md:w-64 flex-shrink-0 rounded-[2.5rem] bg-secondary/20" />
             ))}
           </div>
         ) : (
           <Carousel opts={{ align: 'start', loop: false, dragFree: true }} className="w-full">
-            <CarouselContent className="-ml-4 md:-ml-6">
+            <CarouselContent className="-ml-4 md:-ml-8">
               {contentData.map((item) => (
-                <CarouselItem key={`${item.type}-${item.id}`} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 2xl:basis-1/7 pl-4 md:pl-6">
-                  {item.type === 'movie' ? (
-                    <MovieCard id={item.id} title={item.title} posterUrl={item.posterUrl} overview={item.overview} poster_path={item.poster_path} />
-                  ) : (
-                    <TVShowCard id={item.id} title={item.title} posterUrl={item.posterUrl} overview={item.overview} poster_path={item.poster_path} />
-                  )}
+                <CarouselItem key={`${item.type}-${item.id}`} className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 pl-4 md:pl-8">
+                  <div className="transition-transform duration-500 hover:-translate-y-3">
+                    {item.type === 'movie' ? (
+                        <MovieCard id={item.id} title={item.title} posterUrl={item.posterUrl} overview={item.overview} poster_path={item.poster_path} className="shadow-2xl border-white/5" />
+                    ) : (
+                        <TVShowCard id={item.id} title={item.title} posterUrl={item.posterUrl} overview={item.overview} poster_path={item.poster_path} className="shadow-2xl border-white/5" />
+                    )}
+                  </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="hidden md:flex -left-12 h-12 w-12 glass-panel border-none hover:bg-primary shadow-2xl" />
-            <CarouselNext className="hidden md:flex -right-12 h-12 w-12 glass-panel border-none hover:bg-primary shadow-2xl" />
+            <CarouselPrevious className="hidden xl:flex -left-16 size-14 glass-panel border-white/10 hover:bg-primary shadow-2xl hover:text-white" />
+            <CarouselNext className="hidden xl:flex -right-16 size-14 glass-panel border-white/10 hover:bg-primary shadow-2xl hover:text-white" />
           </Carousel>
         )}
       </div>

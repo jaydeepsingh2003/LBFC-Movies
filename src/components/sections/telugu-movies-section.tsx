@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,7 +5,7 @@ import { MovieCarousel } from "../movie-carousel";
 import { discoverMovies, getPosterUrl, getMovieVideos } from "@/lib/tmdb.client";
 import { Movie } from "@/lib/tmdb";
 import { Skeleton } from "../ui/skeleton";
-import { Globe } from "lucide-react";
+import { Globe, Languages } from "lucide-react";
 
 interface MovieWithPoster extends Partial<Movie> {
     posterUrl: string | null;
@@ -46,11 +45,11 @@ export default function TeluguMoviesSection() {
 
     if (isLoading) {
         return (
-             <div className="py-4 space-y-4">
-                <Skeleton className="h-8 w-1/4" />
-                <div className="flex gap-4 overflow-x-auto pb-4">
+             <div className="py-12 space-y-8 border-t border-white/5">
+                <Skeleton className="h-10 w-64 rounded-full bg-red-600/10" />
+                <div className="flex gap-6 overflow-x-auto pb-4">
                     {[...Array(7)].map((_, i) => (
-                        <Skeleton key={i} className="aspect-[2/3] w-48 md:w-56 flex-shrink-0 rounded-lg" />
+                        <Skeleton key={i} className="aspect-[2/3] w-48 md:w-64 flex-shrink-0 rounded-[2rem] bg-secondary/20" />
                     ))}
                 </div>
             </div>
@@ -58,16 +57,16 @@ export default function TeluguMoviesSection() {
     }
 
     return (
-        <section className="py-4 space-y-8 border-b border-white/5">
-            <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-600/10 rounded-lg border border-red-600/20">
-                    <Globe className="text-red-600 size-6 md:size-7" />
+        <section className="py-16 space-y-12 border-t border-white/5">
+            <div className="flex items-center gap-4">
+                <div className="p-3 bg-red-600/10 rounded-2xl border border-red-600/20 shadow-2xl shadow-red-600/10">
+                    <Languages className="text-red-600 size-7 md:size-8" />
                 </div>
                 <div className="space-y-1">
-                    <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tighter uppercase text-white mb-0">
-                        Popular in <span className="text-red-600">Telugu</span>
+                    <h2 className="font-headline text-3xl md:text-5xl font-black tracking-tighter uppercase text-white mb-0 leading-none">
+                        Linguistic <span className="text-red-600">Hub: Telugu</span>
                     </h2>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Tollywood blockbusters and award-winning narratives.</p>
+                    <p className="text-[10px] md:text-xs font-black text-muted-foreground uppercase tracking-[0.4em] opacity-60">Tollywood blockbusters and award-winning narratives.</p>
                 </div>
             </div>
             <MovieCarousel title="" movies={moviesData} />
