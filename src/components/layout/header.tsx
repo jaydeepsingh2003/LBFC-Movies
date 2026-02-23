@@ -110,13 +110,13 @@ export function Header() {
             "fixed top-0 z-50 w-full transition-all duration-500 h-16 md:h-18",
             scrolled ? "bg-background/95 backdrop-blur-xl border-b shadow-2xl border-white/5" : "bg-black/80 backdrop-blur-sm border-b border-white/5"
         )}>
-            <div className="w-full px-4 md:px-8 lg:px-12 max-w-[2200px] mx-auto flex items-center justify-between gap-4 h-full">
-                <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-                    <div className="size-8 md:hidden group-hover:scale-110 transition-transform">
+            <div className="w-full px-4 md:px-8 lg:px-12 max-w-[2200px] mx-auto flex items-center justify-between gap-2 md:gap-4 h-full">
+                <Link href="/" className="flex items-center gap-2 md:gap-3 group flex-shrink-0">
+                    <div className="size-7 md:size-8 group-hover:scale-110 transition-transform">
                         <CinevexiaLogo />
                     </div>
-                    <div className="hidden md:flex items-center">
-                        <span className="font-headline text-xl md:text-2xl font-black uppercase tracking-[0.1em] text-white">
+                    <div className="hidden sm:flex items-center">
+                        <span className="font-headline text-lg md:text-2xl font-black uppercase tracking-[0.1em] text-white">
                             CINE<span className="text-primary">V</span>EXIA
                         </span>
                     </div>
@@ -126,28 +126,29 @@ export function Header() {
                     <div className="hidden lg:block h-full">
                         <DesktopNav />
                     </div>
-                    <div className="flex-1 w-full max-w-[320px] lg:max-w-[400px]">
+                    <div className="flex-1 w-full max-w-[240px] xs:max-w-[280px] sm:max-w-[320px] lg:max-w-[400px]">
                         <MovieSearch />
                     </div>
                 </div>
                 
-                <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
+                <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
                     {!isClient ? (
                         <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-secondary animate-pulse" />
                     ) : user ? (
-                        <div className="flex items-center gap-2 md:gap-4">
+                        <div className="flex items-center">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <button className="relative h-8 w-8 md:h-9 md:w-9 rounded-full focus:outline-none ring-2 ring-primary/20 hover:ring-primary transition-all overflow-hidden group">
+                                    <button className="relative h-9 w-9 md:h-10 md:w-10 rounded-full focus:outline-none ring-2 ring-primary/20 hover:ring-primary transition-all overflow-hidden group active:scale-90 touch-none">
                                         <Avatar className="h-full w-full group-hover:scale-110 transition-transform">
                                             {user.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
-                                            <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px] md:text-xs">
-                                                {user.displayName?.charAt(0) || <User size={14}/>}
+                                            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
+                                                {user.displayName?.charAt(0) || <User size={16}/>}
                                             </AvatarFallback>
                                         </Avatar>
+                                        <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-64 glass-panel mt-2 border-white/10 p-2" align="end">
+                                <DropdownMenuContent className="w-64 glass-panel mt-2 border-white/10 p-2 shadow-[0_20px_50px_rgba(0,0,0,0.8)]" align="end" sideOffset={8}>
                                     <DropdownMenuLabel className="font-normal p-3">
                                         <div className="flex flex-col space-y-2">
                                             <div className="flex items-center gap-2">
@@ -159,14 +160,14 @@ export function Header() {
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator className="bg-white/10 mx-2" />
                                     <DropdownMenuGroup className="space-y-1">
-                                        <DropdownMenuItem asChild className="rounded-lg cursor-pointer focus:bg-primary/10 py-3">
+                                        <DropdownMenuItem asChild className="rounded-lg cursor-pointer focus:bg-primary/10 py-3 active:scale-95 transition-transform">
                                             <Link href={`/profile/${user.uid}`}>
                                                 <User className="mr-3 h-4 w-4 text-primary" />
                                                 <span className="text-[11px] font-black uppercase tracking-widest">My Profile</span>
                                             </Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem 
-                                            className="rounded-lg cursor-pointer focus:bg-primary/10 py-3"
+                                            className="rounded-lg cursor-pointer focus:bg-primary/10 py-3 active:scale-95 transition-transform"
                                             onClick={() => setIsSettingsOpen(true)}
                                         >
                                             <Settings className="mr-3 h-4 w-4 text-primary" />
@@ -174,7 +175,7 @@ export function Header() {
                                         </DropdownMenuItem>
                                     </DropdownMenuGroup>
                                     <DropdownMenuSeparator className="bg-white/10 mx-2" />
-                                    <DropdownMenuItem onClick={handleLogout} className="rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer py-3">
+                                    <DropdownMenuItem onClick={handleLogout} className="rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer py-3 active:scale-95 transition-transform">
                                         <LogOut className="mr-3 h-4 w-4" />
                                         <span className="text-[11px] font-black uppercase tracking-widest">Logout</span>
                                     </DropdownMenuItem>
@@ -182,7 +183,7 @@ export function Header() {
                             </DropdownMenu>
                         </div>
                     ) : (
-                        <Button asChild size="sm" className="font-black rounded-full px-6 h-9 shadow-lg text-[10px] md:text-xs uppercase tracking-widest bg-primary hover:bg-primary/90">
+                        <Button asChild size="sm" className="font-black rounded-full px-4 h-9 shadow-lg text-[10px] md:text-xs uppercase tracking-widest bg-primary hover:bg-primary/90">
                             <Link href="/login">Sign In</Link>
                         </Button>
                     )}
@@ -190,7 +191,7 @@ export function Header() {
             </div>
 
             <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-                <DialogContent className="glass-panel border-white/10 text-white rounded-[2rem] sm:max-w-md">
+                <DialogContent className="glass-panel border-white/10 text-white rounded-[2rem] sm:max-w-md mx-4 overflow-hidden">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-headline font-black uppercase tracking-tighter">Settings</DialogTitle>
                         <DialogDescription className="text-muted-foreground text-xs uppercase font-bold tracking-widest">Update your profile info.</DialogDescription>
@@ -221,7 +222,7 @@ export function Header() {
                         <DialogFooter className="pt-4">
                             <Button 
                                 type="submit" 
-                                className="w-full h-14 bg-primary hover:bg-primary/90 rounded-xl font-black uppercase tracking-widest transition-all"
+                                className="w-full h-14 bg-primary hover:bg-primary/90 rounded-xl font-black uppercase tracking-widest transition-all shadow-xl shadow-primary/20"
                                 disabled={isUpdating}
                             >
                                 {isUpdating ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
