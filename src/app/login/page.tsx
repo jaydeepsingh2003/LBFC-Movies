@@ -83,8 +83,8 @@ export default function LoginPage() {
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Sign In Failed',
-        description: error.message || 'Please check your email and password.',
+        title: 'Authentication Failed',
+        description: error.message || 'Please check your details and try again.',
       });
     } finally {
       setIsLoading(false);
@@ -159,18 +159,21 @@ export default function LoginPage() {
   if (isUserLoading) {
     return (
       <div className="flex justify-center items-center h-screen bg-[#0B0B0F]">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <div className="relative">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full animate-pulse" />
+        </div>
       </div>
     );
   }
 
   if (user && !user.emailVerified) {
     return (
-      <div className="relative h-screen w-screen flex items-center justify-center p-4">
-        <Image src={bgImageUrl} alt="Backdrop" fill className="object-cover z-0 blur-md opacity-40 scale-110" priority unoptimized />
-        <div className="absolute inset-0 bg-black/80 z-10" />
+      <div className="relative min-h-screen w-full flex items-center justify-center p-4">
+        <Image src={bgImageUrl} alt="Backdrop" fill className="object-cover z-0 blur-md opacity-40 scale-110 fixed" priority unoptimized />
+        <div className="fixed inset-0 bg-black/80 z-10" />
         
-        <Card className="w-full max-w-md z-20 bg-black/90 backdrop-blur-3xl border-white/10 text-white shadow-2xl rounded-[2.5rem] overflow-hidden">
+        <Card className="w-full max-w-md z-20 bg-black/90 backdrop-blur-3xl border-white/10 text-white shadow-2xl rounded-[2.5rem] overflow-hidden my-12">
             <CardHeader className="text-center pt-12 pb-8 space-y-6">
               <div className="mx-auto size-20 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
                 <Mail className="size-10 text-primary" />
@@ -213,42 +216,42 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative h-screen w-screen flex items-center justify-center p-4 overflow-hidden">
-        <Image src={bgImageUrl} alt="Backdrop" fill className="object-cover z-0 opacity-50" priority unoptimized />
-        <div className="absolute inset-0 bg-gradient-to-br from-black/95 via-black/70 to-black/90 z-10" />
+    <div className="relative min-h-screen w-full flex flex-col items-center justify-center p-4 md:p-8 overflow-x-hidden">
+        <Image src={bgImageUrl} alt="Backdrop" fill className="object-cover z-0 opacity-50 fixed" priority unoptimized />
+        <div className="fixed inset-0 bg-gradient-to-br from-black/95 via-black/70 to-black/90 z-10" />
         
-        {/* Top Branding */}
-        <div className="absolute top-8 left-1/2 -translate-x-1/2 z-20 text-center space-y-1">
-            <h1 className="font-headline text-3xl md:text-4xl font-black text-white tracking-tighter uppercase">
+        {/* Top Branding Section */}
+        <div className="relative z-20 text-center space-y-1 mb-8 animate-in fade-in slide-in-from-top-4 duration-1000">
+            <h1 className="font-headline text-4xl md:text-5xl font-black text-white tracking-tighter uppercase">
                 CINE<span className="text-primary">V</span>EXIA
             </h1>
-            <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground">
+            <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-muted-foreground">
                 Where Movies Come Alive
             </p>
         </div>
         
-        <Card className="w-full max-w-md z-20 bg-black/80 backdrop-blur-2xl border-white/5 text-white shadow-[0_30px_60px_rgba(0,0,0,0.8)] rounded-[2.5rem] overflow-hidden">
+        <Card className="w-full max-w-md z-20 bg-black/80 backdrop-blur-2xl border-white/5 text-white shadow-[0_30px_60px_rgba(0,0,0,0.8)] rounded-[2.5rem] overflow-hidden animate-in zoom-in-95 duration-700">
             <CardHeader className="text-center pt-10 pb-6 space-y-1">
               <CardTitle className="text-3xl font-headline font-black tracking-tight uppercase">
-                {isSignUp ? 'Create Account' : 'Sign In'}
+                {isSignUp ? 'Sign Up' : 'Sign In'}
               </CardTitle>
               <div className="flex items-center justify-center gap-2 text-primary/60">
                 <ShieldCheck className="size-3.5" />
-                <span className="text-[9px] font-black uppercase tracking-widest">Secure Login</span>
+                <span className="text-[9px] font-black uppercase tracking-widest">Secure Handshake</span>
               </div>
             </CardHeader>
             
             <CardContent className="space-y-6 pb-10 px-6 md:px-10">
               <form onSubmit={handleAuthAction} className="space-y-4">
                   {isSignUp && (
-                    <div className="space-y-1.5">
+                    <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-300">
                         <Label htmlFor="fullName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Full Name</Label>
                         <div className="relative group">
                             <User className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
                             <Input 
                                 id="fullName" 
                                 type="text" 
-                                placeholder="Enter your full name" 
+                                placeholder="Enter your name" 
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
                                 disabled={isLoading}
@@ -300,7 +303,7 @@ export default function LoginPage() {
                       </div>
                   </div>
                   {isSignUp && (
-                    <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1">
+                    <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-300">
                         <Label htmlFor="confirmPassword" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Confirm Password</Label>
                         <div className="relative group">
                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
@@ -316,8 +319,8 @@ export default function LoginPage() {
                         </div>
                     </div>
                   )}
-                  <Button type="submit" className="w-full h-14 bg-primary hover:bg-primary/90 text-xs font-black uppercase tracking-widest shadow-xl transition-all rounded-xl mt-2" disabled={isLoading}>
-                    {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : (isSignUp ? 'Sign Up' : 'Sign In')}
+                  <Button type="submit" className="w-full h-14 bg-primary hover:bg-primary/90 text-xs font-black uppercase tracking-widest shadow-xl transition-all rounded-xl mt-4" disabled={isLoading}>
+                    {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : (isSignUp ? 'Create Account' : 'Sign In')}
                   </Button>
               </form>
               
@@ -327,7 +330,7 @@ export default function LoginPage() {
                   </div>
                   <div className="relative flex justify-center text-[9px] font-black uppercase tracking-widest">
                       <span className="bg-black px-4 py-1 text-muted-foreground rounded-full border border-white/5">
-                          Or continue with
+                          Or
                       </span>
                   </div>
               </div>
@@ -341,7 +344,7 @@ export default function LoginPage() {
                           <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
                           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                         </svg>
-                        Google
+                        Continue with Google
                       </div>
                   </Button>
                   
@@ -351,13 +354,14 @@ export default function LoginPage() {
                             setIsSignUp(!isSignUp);
                             setPassword('');
                             setConfirmPassword('');
+                            setFullName('');
                         }} 
                         className="text-[10px] text-muted-foreground hover:text-white transition-colors font-bold uppercase tracking-widest flex items-center justify-center gap-2 mx-auto group"
                     >
                         {isSignUp ? (
                             <>Already have an account? <span className="text-primary font-black">Sign In</span></>
                         ) : (
-                            <>Don't have an account? <span className="text-primary font-black">Sign Up</span></>
+                            <>New to CINEVEXIA? <span className="text-primary font-black">Sign Up</span></>
                         )}
                     </button>
                   </div>
@@ -365,11 +369,12 @@ export default function LoginPage() {
             </CardContent>
         </Card>
 
-        {/* Simple Footer */}
-        <div className="absolute bottom-8 left-0 right-0 z-20 flex justify-center gap-6 opacity-30 text-[8px] font-black uppercase tracking-widest">
-            <span className="hover:opacity-100 transition-opacity cursor-default">Privacy</span>
-            <span className="hover:opacity-100 transition-opacity cursor-default">Terms</span>
-            <span className="hover:opacity-100 transition-opacity cursor-default">Support</span>
+        {/* Footer Section */}
+        <div className="relative z-20 mt-12 flex flex-wrap justify-center gap-6 opacity-30 text-[8px] font-black uppercase tracking-widest pb-12">
+            <span className="hover:opacity-100 transition-opacity cursor-pointer">Privacy</span>
+            <span className="hover:opacity-100 transition-opacity cursor-pointer">Terms</span>
+            <span className="hover:opacity-100 transition-opacity cursor-pointer">Support</span>
+            <span className="hover:opacity-100 transition-opacity cursor-pointer">Cookie Policy</span>
         </div>
     </div>
   );
