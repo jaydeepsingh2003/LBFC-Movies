@@ -13,7 +13,6 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { getTrendingMovies, getBackdropUrl } from '@/lib/tmdb.client';
 import { sendEmailVerification, getAuth } from 'firebase/auth';
-import { CinevexiaLogo } from '@/components/icons/cinevexia-logo';
 
 export default function LoginPage() {
   const { user, isLoading: isUserLoading } = useUser();
@@ -217,9 +216,6 @@ export default function LoginPage() {
         
         <div className="absolute top-6 left-6 z-20 flex flex-col group">
             <Link href="/" className="flex items-center gap-2">
-                <div className="size-10 group-hover:scale-110 transition-transform shadow-xl shadow-primary/20">
-                    <CinevexiaLogo />
-                </div>
                 <h1 className="font-headline text-3xl font-black text-white tracking-tighter uppercase">
                     CINE<span className="text-primary">V</span>EXIA
                 </h1>
