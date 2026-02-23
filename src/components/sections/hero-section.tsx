@@ -12,7 +12,6 @@ import { Skeleton } from "../ui/skeleton";
 import { useVideoPlayer } from "@/context/video-provider";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { gsap } from 'gsap';
 
 interface MovieWithImages extends Movie {
     backdropUrl: string | null;
@@ -26,7 +25,6 @@ export default function HeroSection() {
     const [movies, setMovies] = React.useState<MovieWithImages[]>([]);
     const [isLoading, setIsLoading] = React.useState(true);
     const { setVideoId } = useVideoPlayer();
-    const heroRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
         async function fetchHeroMovies() {
@@ -59,67 +57,6 @@ export default function HeroSection() {
         fetchHeroMovies();
     }, []);
 
-    React.useEffect(() => {
-        if (!isLoading && movies.length > 0 && heroRef.current) {
-            const ctx = gsap.context(() => {
-                // High-Speed Visceral Entrance
-                gsap.from('.hero-content-node', {
-                    y: 80,
-                    opacity: 0,
-                    stagger: 0.08,
-                    duration: 0.8,
-                    ease: 'expo.out',
-                    delay: 0.2
-                });
-                
-                gsap.from('.hero-backdrop', {
-                    scale: 1.2,
-                    opacity: 0,
-                    duration: 1.5,
-                    ease: 'power2.out'
-                });
-
-                const handleHeroParallax = (e: MouseEvent) => {
-                    const x = (e.clientX / window.innerWidth - 0.5) * 40;
-                    const y = (e.clientY / window.innerHeight - 0.5) * 40;
-
-                    gsap.to('.hero-backdrop', {
-                        x: x * -0.5,
-                        y: y * -0.5,
-                        duration: 0.6,
-                        ease: 'power2.out',
-                        overwrite: 'auto'
-                    });
-
-                    gsap.to('.hero-text-plane', {
-                        x: x * 0.8,
-                        y: y * 0.8,
-                        duration: 0.6,
-                        ease: 'power2.out',
-                        overwrite: 'auto'
-                    });
-                };
-
-                const magneticButtons = document.querySelectorAll('.boss-magnetic');
-                magneticButtons.forEach(btn => {
-                    btn.addEventListener('mousemove', (e: any) => {
-                        const rect = btn.getBoundingClientRect();
-                        const x = e.clientX - rect.left - rect.width / 2;
-                        const y = e.clientY - rect.top - rect.height / 2;
-                        gsap.to(btn, { x: x * 0.45, y: y * 0.45, duration: 0.2, ease: 'power3.out' });
-                    });
-                    btn.addEventListener('mouseleave', () => {
-                        gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.3)' });
-                    });
-                });
-
-                window.addEventListener('mousemove', handleHeroParallax, { passive: true });
-                return () => window.removeEventListener('mousemove', handleHeroParallax);
-            }, heroRef);
-            return () => ctx.revert();
-        }
-    }, [isLoading, movies.length]);
-
     const handlePlayTrailer = (e: React.MouseEvent, videoId: string | undefined) => {
         e.preventDefault();
         if (videoId) setVideoId(videoId);
@@ -127,14 +64,14 @@ export default function HeroSection() {
 
     if (isLoading) {
         return (
-            <div className="relative w-full h-[calc(100vh-4.5rem)] bg-secondary/10">
+            <div className="relative w-full h-[85vh] bg-secondary/10">
                 <Skeleton className="w-full h-full rounded-none" />
             </div>
         )
     }
 
     return (
-        <section ref={heroRef} className="relative w-full h-[calc(100vh-4.5rem)] bg-background overflow-hidden perspective-1000">
+        <section className="relative w-full h-[85vh] bg-background overflow-hidden">
             <Carousel
                 plugins={[plugin.current]}
                 className="w-full h-full"
@@ -142,47 +79,56 @@ export default function HeroSection() {
             >
                 <CarouselContent className="h-full ml-0">
                     {movies.map((movie) => (
-                        <CarouselItem key={movie.id} className="h-[calc(100vh-4.5rem)] w-full pl-0 relative">
-                            <div className="relative h-full w-full overflow-hidden preserve-3d">
+                        <CarouselItem key={movie.id} className="h-[85vh] w-full pl-0 relative">
+                            <div className="relative h-full w-full overflow-hidden">
                                 {movie.backdropUrl && (
-                                    <Image src={movie.backdropUrl} alt={movie.title} fill className="hero-backdrop object-cover scale-105 will-change-transform" priority sizes="100vw" unoptimized />
+                                    <Image src={movie.backdropUrl} alt={movie.title} fill className="object-cover" priority sizes="100vw" unoptimized />
                                 )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-                                <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-transparent hidden lg:block" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent hidden lg:block" />
                                 
-                                <div className="absolute bottom-[15%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-7xl z-20 pointer-events-none">
-                                    <div className="space-y-6 md:space-y-8 hero-text-plane pointer-events-auto">
-                                        <div className="hero-content-node flex flex-wrap items-center gap-3">
-                                            <Badge className="bg-primary font-black uppercase text-[10px] px-4 py-2 rounded-sm shadow-[0_0_25px_rgba(225,29,72,0.4)] flex items-center gap-2">
-                                                <Flame className="size-3.5 fill-current" /> Studio Master
+                                <div className="absolute bottom-[10%] left-0 w-full px-6 md:px-12 lg:px-24 max-w-7xl z-20">
+                                    <div className="space-y-6">
+                                        <div className="flex flex-wrap items-center gap-3">
+                                            <Badge className="bg-primary font-black uppercase text-[10px] px-3 py-1 rounded-sm shadow-xl flex items-center gap-2">
+                                                <Flame className="size-3 fill-current" /> Trending Now
                                             </Badge>
-                                            <div className="flex items-center gap-2 text-white/90 font-black text-xs bg-black/60 px-4 py-1.5 rounded-full border border-white/10">
+                                            <div className="flex items-center gap-2 text-white/90 font-black text-xs bg-black/60 px-3 py-1 rounded-full border border-white/10">
                                                 <Award className="size-4 text-yellow-400" />
-                                                <span>{movie.vote_average.toFixed(1)} Studio Score</span>
+                                                <span>{movie.vote_average.toFixed(1)} Critic Score</span>
                                             </div>
                                         </div>
                                         
-                                        <h1 className="hero-content-node font-headline text-5xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[0.85] drop-shadow-2xl uppercase max-w-5xl">
-                                            {movie.title}
-                                        </h1>
+                                        <div className="space-y-2">
+                                            <h2 className="font-headline text-lg md:text-2xl font-bold text-primary uppercase tracking-widest">
+                                                Unlimited Movies. One Destination.
+                                            </h2>
+                                            <h1 className="font-headline text-4xl md:text-7xl font-black tracking-tighter text-white uppercase drop-shadow-2xl max-w-4xl">
+                                                {movie.title}
+                                            </h1>
+                                        </div>
                                         
-                                        <p className="hero-content-node text-base md:text-xl lg:text-2xl text-white/80 line-clamp-2 max-w-3xl font-medium leading-relaxed italic">
-                                            {movie.overview}
+                                        <p className="text-base md:text-xl text-white/80 line-clamp-3 max-w-2xl font-medium leading-relaxed">
+                                            Stream the latest and greatest films anytime, anywhere with CINEVEXIA. {movie.overview}
                                         </p>
                                         
-                                        <div className="hero-content-node flex flex-wrap gap-4 pt-6 md:pt-10">
-                                            <button 
-                                                className="boss-magnetic bg-white text-black hover:bg-white/90 font-black rounded-full px-10 md:px-14 h-14 md:h-20 shadow-xl transition-all hover:scale-105 text-sm md:text-xl flex items-center gap-4 group" 
+                                        <div className="flex flex-wrap gap-4 pt-4">
+                                            <Button 
+                                                size="lg"
+                                                className="bg-primary hover:bg-primary/90 text-white font-black rounded-full px-10 h-14 md:h-16 shadow-2xl transition-all hover:scale-105 text-sm md:text-lg flex items-center gap-3" 
                                                 onClick={(e) => handlePlayTrailer(e, movie.trailerUrl)}
                                             >
-                                                <div className="bg-black rounded-full p-2 md:p-3 group-hover:bg-primary transition-colors">
-                                                    <Play className="size-4 md:size-6 text-white fill-current ml-0.5" />
-                                                </div>
-                                                Initialize Feed
-                                            </button>
+                                                <Play className="size-5 fill-current" /> Start Watching
+                                            </Button>
                                             
-                                            <Link href={`/movie/${movie.id}`} className="boss-magnetic bg-white/10 hover:bg-white/20 text-white backdrop-blur-3xl border border-white/10 font-bold rounded-full px-10 md:px-14 h-14 md:h-20 transition-all hover:scale-105 text-sm md:text-xl flex items-center gap-4">
-                                                <Info className="size-5 md:size-7 text-primary" /> Intelligence
+                                            <Link href={`/movie/${movie.id}`}>
+                                                <Button 
+                                                    variant="outline"
+                                                    size="lg"
+                                                    className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border-white/10 font-bold rounded-full px-10 h-14 md:h-16 transition-all hover:scale-105 text-sm md:text-lg flex items-center gap-3"
+                                                >
+                                                    <Info className="size-5" /> More Info
+                                                </Button>
                                             </Link>
                                         </div>
                                     </div>

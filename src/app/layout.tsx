@@ -1,88 +1,42 @@
-'use client';
-
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { VideoPlayerProvider } from '@/context/video-provider';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
-import { AppLayout } from '@/components/layout/app-layout';
-import { usePathname } from 'next/navigation';
-import { ReactNode, useState, useEffect } from 'react';
-import { PremiumBackground } from '@/components/layout/premium-background';
-import { StudioIntro } from '@/components/layout/studio-intro';
-import { gsap } from 'gsap';
+import { Metadata, Viewport } from 'next';
+import { ClientShell } from '@/components/layout/client-shell';
 
-function LayoutWrapper({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
+export const metadata: Metadata = {
+  title: "CINEVEXIA | Unlimited Movies. One Destination.",
+  description: "Stream the latest and greatest films anytime, anywhere with CINEVEXIA. The ultimate premium OTT experience.",
+};
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <div className="opacity-0">{children}</div>;
-  }
-
-  const isLoginPage = pathname === '/login';
-
-  if (isLoginPage) {
-    return <>{children}</>;
-  }
-
-  return <AppLayout>{children}</AppLayout>;
-}
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [showIntro, setShowIntro] = useState(true);
-
-  // The intro now only plays ONCE on initial load, not on every route change.
-  const handleIntroComplete = () => {
-    setShowIntro(false);
-    
-    // Smooth high-speed entrance for the main layer
-    gsap.fromTo('.main-content-layer', 
-      { perspective: '1200px', rotationX: 15, scale: 0.85, opacity: 0, z: -500 },
-      { 
-        rotationX: 0, 
-        scale: 1, 
-        opacity: 1, 
-        z: 0, 
-        duration: 0.6, 
-        ease: 'expo.out',
-        clearProps: 'all'
-      }
-    );
-  };
-
   return (
     <html lang="en" className="dark">
       <head>
-        <title>LBFC | AI Movie Hub</title>
-        <meta name="description" content="AI-Powered Movie Recommendations & Discovery" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased selection:bg-primary/30 overflow-x-hidden bg-transparent">
-          {showIntro && <StudioIntro onComplete={handleIntroComplete} />}
-          <div className={`${showIntro ? 'invisible h-0 overflow-hidden' : 'visible opacity-100'} transition-opacity duration-300`}>
-            <PremiumBackground />
-            <FirebaseClientProvider>
-              <VideoPlayerProvider>
-                  <div className="main-content-layer">
-                    <LayoutWrapper>{children}</LayoutWrapper>
-                  </div>
-                  <Toaster />
-              </VideoPlayerProvider>
-            </FirebaseClientProvider>
-          </div>
+      <body className="font-body antialiased selection:bg-primary/30 overflow-x-hidden bg-[#0B0B0F]">
+          <FirebaseClientProvider>
+            <VideoPlayerProvider>
+                <ClientShell>{children}</ClientShell>
+                <Toaster />
+            </VideoPlayerProvider>
+          </FirebaseClientProvider>
       </body>
     </html>
   );
