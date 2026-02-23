@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "CINEVEXIA | Where Movies Come Alive",
   description: "Stream the latest and greatest films anytime, anywhere with CINEVEXIA. The ultimate premium OTT experience.",
   icons: {
-    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect x="16" y="16" width="480" height="480" rx="110" fill="%230B0B0F"/><path d="M170 150 L230 360 L260 360 L210 150 Z" fill="%23FF2A2A"/><path d="M302 150 L242 360 L272 360 L332 150 Z" fill="%23FF2A2A"/><polygon points="250,230 285,255 250,280" fill="%230B0B0F"/></svg>',
+    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="16" y="16" width="480" height="480" rx="110" fill="%230B0B0F"/><g filter="url(%23glow)"><path d="M170 150 L230 360 L260 360 L210 150 Z" fill="%23FF2A2A"/><path d="M302 150 L242 360 L272 360 L332 150 Z" fill="%23FF2A2A"/></g><polygon points="250,230 285,255 250,280" fill="%230B0B0F"/></svg>',
   },
 };
 

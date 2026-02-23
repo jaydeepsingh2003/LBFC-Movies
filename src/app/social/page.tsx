@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -97,7 +96,7 @@ export default function SocialPage() {
               Discover <span className="text-primary">Architects</span>
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl font-medium leading-relaxed">
-              Connect with visionary curators and explore the cinematic vaults of the global LBFC community.
+              Connect with visionary curators and explore the cinematic vaults of the global CINEVEXIA community.
             </p>
           </div>
 

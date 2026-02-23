@@ -136,8 +136,8 @@ export default function MovieDetailsPage(props: { params: Promise<{ id: string }
     if (!movie) return;
     const shareData = {
       title: movie.title,
-      text: `Check out ${movie.title} on LBFC!`,
-      url: window.location.href,
+      text: `Check out ${movie.title} on CINEVEXIA!`,
+      url: typeof window !== 'undefined' ? window.location.href : '',
     };
 
     try {

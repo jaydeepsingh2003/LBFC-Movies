@@ -129,8 +129,8 @@ export default function TVShowDetailsPage(props: { params: Promise<{ id: string 
     if (!show) return;
     const shareData = {
       title: show.name,
-      text: `Check out ${show.name} on LBFC!`,
-      url: window.location.href,
+      text: `Check out ${show.name} on CINEVEXIA!`,
+      url: typeof window !== 'undefined' ? window.location.href : '',
     };
 
     try {

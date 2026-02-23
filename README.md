@@ -1,7 +1,7 @@
 
-# LBFC - AI-Powered Movie Hub
+# CINEVEXIA - AI-Powered Movie Hub
 
-LBFC is a high-performance, production-ready movie discovery platform built with Next.js 15, Firebase, and Google Genkit. It provides personalized recommendations, AI-powered search, and a sleek, responsive interface for film enthusiasts.
+CINEVEXIA is a high-performance, production-ready movie discovery platform built with Next.js 15, Firebase, and Google Genkit. It provides personalized recommendations, AI-powered search, and a sleek, responsive interface for film enthusiasts.
 
 ## 🚀 Features
 
@@ -34,8 +34,8 @@ LBFC is a high-performance, production-ready movie discovery platform built with
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/lbfc-movies.git
-   cd lbfc-movies
+   git clone https://github.com/your-username/cinevexia-movies.git
+   cd cinevexia-movies
    ```
 
 2. **Install dependencies**:

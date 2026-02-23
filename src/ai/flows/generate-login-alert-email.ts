@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview Generates professional security alert email content for login events.
@@ -33,7 +32,7 @@ const prompt = ai.definePrompt({
   name: 'generateLoginAlertEmailPrompt',
   input: {schema: LoginAlertInputSchema},
   output: {schema: LoginAlertOutputSchema},
-  prompt: `You are a professional security communication expert for LBFC (The AI Movie Hub). 
+  prompt: `You are a professional security communication expert for CINEVEXIA (The AI Movie Hub). 
   A user has just logged into their account. Generate a high-fidelity, reassuring but security-conscious login alert email.
 
   User Details:
