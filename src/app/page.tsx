@@ -23,8 +23,12 @@ export default function DashboardPage() {
 
   if (isLoading || !user) {
     return (
-      <div className="flex justify-center items-center h-svh bg-transparent">
-        <Loader2 className="size-12 animate-spin text-primary" />
+      <div className="flex flex-col justify-center items-center h-svh bg-transparent gap-6">
+        <div className="relative">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full animate-pulse" />
+        </div>
+        <p className="text-muted-foreground animate-pulse font-black tracking-[0.4em] uppercase text-[10px]">Synchronizing Archive Nodes...</p>
       </div>
     );
   }

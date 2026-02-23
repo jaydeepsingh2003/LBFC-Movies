@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -118,12 +117,12 @@ export default function SocialPage() {
 
       <main className="min-h-[500px]">
         {isLoading ? (
-          <div className="flex flex-col justify-center items-center h-[400px] gap-6">
+          <div className="flex flex-col justify-center items-center h-[500px] gap-6">
             <div className="relative">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
                 <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full animate-pulse" />
             </div>
-            <p className="text-muted-foreground animate-pulse font-bold tracking-[0.4em] uppercase text-[10px]">Scanning Local Nodes...</p>
+            <p className="text-muted-foreground animate-pulse font-black tracking-[0.4em] uppercase text-[10px]">Scanning Local Nodes...</p>
           </div>
         ) : filteredUsers.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">

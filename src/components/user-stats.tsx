@@ -129,8 +129,12 @@ export function UserStats({ userId }: UserStatsProps) {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+      <div className="flex flex-col justify-center items-center h-[400px] gap-6">
+        <div className="relative">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full animate-pulse" />
+        </div>
+        <p className="text-muted-foreground animate-pulse font-black tracking-[0.4em] uppercase text-[10px]">Processing Cinematic Intel...</p>
       </div>
     );
   }

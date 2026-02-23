@@ -63,27 +63,36 @@ export default function OttContentPage(props: { params: { providerId: string } }
   }, [fetchContent]);
   
   return (
-    <div className="py-8 px-4 md:px-8 space-y-8">
-      <header>
-        <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground">
-          Content on {decodeURIComponent(providerName)}
+    <div className="py-12 px-4 md:px-8 space-y-12 min-h-screen">
+      <header className="space-y-2">
+        <h1 className="font-headline text-4xl md:text-6xl font-black tracking-tighter text-white uppercase">
+          Content on <span className="text-primary">{decodeURIComponent(providerName)}</span>
         </h1>
-        <p className="text-muted-foreground">Browse movies and TV shows available on this platform.</p>
+        <p className="text-muted-foreground font-medium uppercase text-[10px] tracking-[0.4em] opacity-60">Surgically filtered catalog for your current region.</p>
       </header>
 
       {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        <div className="flex flex-col justify-center items-center h-[500px] gap-6">
+          <div className="relative">
+              <Loader2 className="h-10 w-10 animate-spin text-primary" />
+              <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full animate-pulse" />
+          </div>
+          <p className="text-muted-foreground animate-pulse font-black tracking-[0.4em] uppercase text-[10px]">Retrieving Platform Catalog...</p>
         </div>
       ) : (
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'movies' | 'tv')} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 max-w-sm mx-auto">
-            <TabsTrigger value="movies"><Film className="mr-2"/>Movies ({movies.length})</TabsTrigger>
-            <TabsTrigger value="tv"><Tv className="mr-2"/>TV Shows ({tvShows.length})</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'movies' | 'tv')} className="w-full space-y-12">
+          <TabsList className="bg-secondary/40 p-1.5 rounded-2xl h-16 w-full max-w-md mx-auto border border-white/5 backdrop-blur-xl">
+            <TabsTrigger value="movies" className="rounded-xl h-full flex-1 data-[state=active]:bg-primary data-[state=active]:text-white font-black uppercase text-[10px] tracking-widest transition-all">
+              <Film className="mr-2 size-4"/>Movies ({movies.length})
+            </TabsTrigger>
+            <TabsTrigger value="tv" className="rounded-xl h-full flex-1 data-[state=active]:bg-primary data-[state=active]:text-white font-black uppercase text-[10px] tracking-widest transition-all">
+              <Tv className="mr-2 size-4"/>TV Shows ({tvShows.length})
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value="movies" className="mt-8">
+          
+          <TabsContent value="movies" className="mt-0 outline-none">
             {movies.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-8 animate-in fade-in duration-1000">
                 {movies.map(movie => (
                   <MovieCard
                     key={movie.id}
@@ -97,15 +106,17 @@ export default function OttContentPage(props: { params: { providerId: string } }
                 ))}
               </div>
             ) : (
-              <div className="text-center py-16">
-                <h3 className="text-lg font-semibold text-foreground">No Movies Found</h3>
-                <p className="text-muted-foreground mt-2">No movies found for this provider in your region.</p>
+              <div className="text-center py-32 glass-panel rounded-[3rem] border-2 border-dashed border-white/5">
+                <Film className="mx-auto size-16 text-muted-foreground/20 mb-6" />
+                <h3 className="text-2xl font-bold text-white tracking-tight uppercase">Archive Empty</h3>
+                <p className="mt-2 text-muted-foreground font-medium uppercase text-[10px] tracking-widest">No movie transmissions located for this node.</p>
               </div>
             )}
           </TabsContent>
-          <TabsContent value="tv" className="mt-8">
+
+          <TabsContent value="tv" className="mt-0 outline-none">
             {tvShows.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-8 animate-in fade-in duration-1000">
                 {tvShows.map(show => (
                   <TVShowCard
                     key={show.id}
@@ -116,9 +127,10 @@ export default function OttContentPage(props: { params: { providerId: string } }
                 ))}
               </div>
             ) : (
-              <div className="text-center py-16">
-                <h3 className="text-lg font-semibold text-foreground">No TV Shows Found</h3>
-                <p className="text-muted-foreground mt-2">No TV shows found for this provider in your region.</p>
+              <div className="text-center py-32 glass-panel rounded-[3rem] border-2 border-dashed border-white/5">
+                <Tv className="mx-auto size-16 text-muted-foreground/20 mb-6" />
+                <h3 className="text-2xl font-bold text-white tracking-tight uppercase">Archive Empty</h3>
+                <p className="mt-2 text-muted-foreground font-medium uppercase text-[10px] tracking-widest">No series sequences located for this node.</p>
               </div>
             )}
           </TabsContent>
