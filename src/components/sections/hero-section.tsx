@@ -100,9 +100,6 @@ export default function HeroSection() {
                                         </div>
                                         
                                         <div className="space-y-2">
-                                            <h2 className="font-headline text-lg md:text-2xl font-bold text-primary uppercase tracking-widest">
-                                                Unlimited Movies. One Destination.
-                                            </h2>
                                             <h1 className="font-headline text-4xl md:text-7xl font-black tracking-tighter text-white uppercase drop-shadow-2xl max-w-4xl">
                                                 {movie.title}
                                             </h1>
