@@ -6,7 +6,7 @@ import { Movie, MovieDetails, Person, PersonDetails, TVShow, TVShowDetails, Watc
 // Hardcoded fallback key to ensure the app works during setup
 const FALLBACK_KEY = "2dc0bd12c7bd63b2c691d3a64f3a3db7";
 const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY || FALLBACK_KEY;
-const TMDB_IMAGE_BASE_URL_POSTER = 'https://image.tmdb.org/t/p/w780'; 
+const TMDB_IMAGE_BASE_URL_POSTER = 'https://image.tmdb.org/t/p/w500'; 
 const TMDB_IMAGE_BASE_URL_BACKDROP = 'https://image.tmdb.org/t/p/original'; 
 const TMDB_IMAGE_BASE_URL_LOGO = 'https://image.tmdb.org/t/p/w500';
 
@@ -303,12 +303,12 @@ export async function getPersonDetails(personId: number): Promise<PersonDetails>
   return response.json();
 }
 
-export function getPosterUrl(path: string | null) {
-  return path ? `${TMDB_IMAGE_BASE_URL_POSTER}${path}` : null;
+export function getPosterUrl(path: string | null, size: 'w342' | 'w500' | 'w780' = 'w500') {
+  return path ? `https://image.tmdb.org/t/p/${size}${path}` : null;
 }
 
-export function getBackdropUrl(path: string | null) {
-  return path ? `${TMDB_IMAGE_BASE_URL_BACKDROP}${path}` : null;
+export function getBackdropUrl(path: string | null, size: 'w780' | 'w1280' | 'original' = 'original') {
+  return path ? `https://image.tmdb.org/t/p/${size}${path}` : null;
 }
 
 export function getLogoUrl(path: string | null) {

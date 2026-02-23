@@ -1,11 +1,12 @@
+
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useMemo, useRef, useEffect, memo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { Play, Bookmark, Star, Info, Share2, Clapperboard } from 'lucide-react';
+import { Play, Bookmark, Star, Info, Clapperboard } from 'lucide-react';
 import { useVideoPlayer } from '@/context/video-provider';
-import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import { useUser } from '@/firebase/auth/auth-client';
 import { useToast } from '@/hooks/use-toast';
@@ -26,12 +27,11 @@ interface MovieCardProps {
   className?: string;
 }
 
-export function MovieCard({ id, title, posterUrl, className, overview, poster_path }: MovieCardProps) {
+export const MovieCard = memo(function MovieCard({ id, title, posterUrl, className, overview, poster_path }: MovieCardProps) {
   const { setActiveMedia } = useVideoPlayer();
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const router = useRouter();
   const isMobile = useIsMobile();
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -54,7 +54,6 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
       
-      // Increased intensity for premium 3D feel
       const rotateX = ((y - centerY) / centerY) * -18;
       const rotateY = ((x - centerX) / centerX) * 18;
 
@@ -62,7 +61,7 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
         rotationX: rotateX,
         rotationY: rotateY,
         scale: 1.08,
-        duration: 0.25, // Accelerated for snappiness
+        duration: 0.25,
         ease: 'power3.out',
         transformPerspective: 1500,
         force3D: true,
@@ -76,7 +75,7 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
         rotationY: 0,
         scale: 1,
         duration: 0.6,
-        ease: 'elastic.out(1, 0.6)', // Physical recovery feel
+        ease: 'elastic.out(1, 0.6)',
         force3D: true
       });
     };
@@ -88,12 +87,6 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
       card.removeEventListener('mouseleave', onMouseLeave);
     };
   }, [isMobile]);
-
-  const handleNavigateToDetails = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    router.push(`/movie/${id}`);
-  };
 
   const handlePlayNow = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -120,53 +113,53 @@ export function MovieCard({ id, title, posterUrl, className, overview, poster_pa
   };
 
   return (
-    <div 
-      ref={cardRef}
-      onClick={handleNavigateToDetails}
-      className={cn(
-        "relative aspect-[2/3] w-full overflow-hidden rounded-2xl bg-secondary transition-shadow duration-500 hover:shadow-[0_30px_70px_rgba(225,29,72,0.5)] group cursor-pointer border border-white/10 preserve-3d will-change-transform", 
-        className
-      )}
-    >
-      {posterUrl ? (
-        <Image src={posterUrl} alt={title} fill className="object-cover" sizes="(max-width: 768px) 50vw, 25vw" quality={90} unoptimized />
-      ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
-          <Clapperboard className="w-12 h-12 text-muted-foreground/30 mb-2" />
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{title}</span>
-        </div>
-      )}
-
-      {/* Glossy Glint Layer */}
-      <div className="absolute inset-0 z-20 pointer-events-none glint-effect opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-      <div className={cn(
-        "absolute inset-0 bg-gradient-to-t from-black/95 via-black/10 to-transparent transition-opacity duration-500 z-10",
-        isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-      )}>
-        <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
-          <Button variant="secondary" size="icon" className={cn("h-8 w-8 rounded-full glass-card border-none shadow-lg transition-all", isSaved ? "bg-primary text-white" : "bg-black/40 hover:bg-primary")} onClick={handleToggleSave} disabled={isSavedLoading}>
-            <Bookmark className={cn("size-3.5", isSaved && "fill-current")} />
-          </Button>
-          <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-yellow-500 border-none shadow-lg" onClick={handleNavigateToDetails}>
-            <Info className="size-3.5" />
-          </Button>
-        </div>
-
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="h-14 w-14 md:h-18 md:w-18 rounded-full bg-primary/95 flex items-center justify-center shadow-2xl scale-90 md:scale-75 group-hover:scale-100 transition-all duration-500 cursor-pointer" onClick={handlePlayNow}>
-              <Play className="size-7 md:size-9 text-white fill-current ml-1" />
+    <Link href={`/movie/${id}`} prefetch={true} className="block group">
+      <div 
+        ref={cardRef}
+        className={cn(
+          "relative aspect-[2/3] w-full overflow-hidden rounded-2xl bg-secondary transition-shadow duration-500 hover:shadow-[0_30px_70px_rgba(225,29,72,0.5)] cursor-pointer border border-white/10 preserve-3d will-change-transform", 
+          className
+        )}
+      >
+        {posterUrl ? (
+          <Image src={posterUrl} alt={title} fill className="object-cover" sizes="(max-width: 768px) 50vw, 25vw" quality={85} unoptimized />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
+            <Clapperboard className="w-12 h-12 text-muted-foreground/30 mb-2" />
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{title}</span>
           </div>
-        </div>
+        )}
 
-        <div className="absolute bottom-0 left-0 p-4 w-full space-y-1 z-10 pointer-events-none">
-          <h3 className="font-headline text-sm md:text-base font-black text-white leading-tight line-clamp-2 uppercase tracking-tight group-hover:text-primary transition-colors">{title}</h3>
-          <div className="flex items-center gap-2">
-              <Star className="size-3 text-yellow-400 fill-current" />
-              <span className="text-[9px] font-black text-white/70 uppercase tracking-widest">Cinema Grade</span>
+        <div className="absolute inset-0 z-20 pointer-events-none glint-effect opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+        <div className={cn(
+          "absolute inset-0 bg-gradient-to-t from-black/95 via-black/10 to-transparent transition-opacity duration-500 z-10",
+          isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+        )}>
+          <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
+            <Button variant="secondary" size="icon" className={cn("h-8 w-8 rounded-full glass-card border-none shadow-lg transition-all", isSaved ? "bg-primary text-white" : "bg-black/40 hover:bg-primary")} onClick={handleToggleSave} disabled={isSavedLoading}>
+              <Bookmark className={cn("size-3.5", isSaved && "fill-current")} />
+            </Button>
+            <div className="h-8 w-8 rounded-full glass-card bg-black/40 hover:bg-yellow-500 border-none shadow-lg flex items-center justify-center transition-colors">
+              <Info className="size-3.5" />
+            </div>
+          </div>
+
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div className="h-14 w-14 md:h-18 md:w-18 rounded-full bg-primary/95 flex items-center justify-center shadow-2xl scale-90 md:scale-75 group-hover:scale-100 transition-all duration-500 cursor-pointer" onClick={handlePlayNow}>
+                <Play className="size-7 md:size-9 text-white fill-current ml-1" />
+            </div>
+          </div>
+
+          <div className="absolute bottom-0 left-0 p-4 w-full space-y-1 z-10 pointer-events-none">
+            <h3 className="font-headline text-sm md:text-base font-black text-white leading-tight line-clamp-2 uppercase tracking-tight group-hover:text-primary transition-colors">{title}</h3>
+            <div className="flex items-center gap-2">
+                <Star className="size-3 text-yellow-400 fill-current" />
+                <span className="text-[9px] font-black text-white/70 uppercase tracking-widest">Cinema Grade</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
-}
+});

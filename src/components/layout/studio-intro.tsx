@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -20,7 +21,7 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
         onComplete: () => {
           gsap.to(containerRef.current, {
             opacity: 0,
-            duration: 0.3, 
+            duration: 0.2, 
             ease: 'power2.inOut',
             onComplete: onComplete
           });
@@ -30,48 +31,48 @@ export function StudioIntro({ onComplete }: StudioIntroProps) {
       gsap.set(textRef.current, { 
         opacity: 0, 
         scale: 0.8,
-        letterSpacing: '1.5em',
+        letterSpacing: '1.2em',
         force3D: true 
       });
       gsap.set(glowRef.current, { opacity: 0, scale: 0.1 });
       gsap.set(lineRef.current, { width: 0, opacity: 0 });
-      gsap.set(taglineRef.current, { opacity: 0, y: 20 });
+      gsap.set(taglineRef.current, { opacity: 0, y: 15 });
 
       tl.to(glowRef.current, {
         opacity: 1,
-        scale: 2,
-        duration: 0.6,
+        scale: 1.8,
+        duration: 0.4,
         ease: 'expo.out'
       })
       .to(textRef.current, {
         opacity: 1,
         scale: 1,
-        letterSpacing: '0.2em',
-        duration: 0.8,
+        letterSpacing: '0.15em',
+        duration: 0.6,
         ease: 'expo.out'
-      }, '-=0.4')
+      }, '-=0.3')
       .to(lineRef.current, {
-        width: '300px',
+        width: '280px',
         opacity: 1,
-        duration: 0.5,
+        duration: 0.4,
         ease: 'power4.out'
-      }, '-=0.6')
+      }, '-=0.5')
       .to(taglineRef.current, {
         opacity: 1,
         y: 0,
-        duration: 0.6,
-        ease: 'back.out(1.7)'
+        duration: 0.4,
+        ease: 'back.out(1.2)'
       }, '-=0.2')
       .to([textRef.current, lineRef.current, taglineRef.current], {
-        scale: 1.05,
-        duration: 1.5,
+        scale: 1.03,
+        duration: 0.8,
         ease: 'none'
       })
       .to(containerRef.current, {
-        filter: 'blur(20px)',
-        scale: 1.5,
+        filter: 'blur(15px)',
+        scale: 1.3,
         opacity: 0,
-        duration: 0.5,
+        duration: 0.4,
         ease: 'power4.in'
       });
     }, containerRef);
